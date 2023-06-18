@@ -26,28 +26,19 @@ export function LoginPage() {
                 Access to the most powerfull tool in the entire design and web
                 industry.
               </p>
-              <div className='page-links'>
-                <a
-                  href='login1.html'
-                  className='active'
-                >
-                  Login
-                </a>
-                <a href='register1.html'>Register</a>
-              </div>
               <form>
                 <input
                   className='form-control'
                   type='text'
                   name='username'
-                  placeholder='E-mail Address'
+                  placeholder='example@example.com'
                   required
                 />
                 <input
                   className='form-control'
                   type='password'
                   name='password'
-                  placeholder='Password'
+                  placeholder='Contraseña'
                   required
                 />
                 <div className='form-button'>
