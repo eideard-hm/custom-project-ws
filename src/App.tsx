@@ -1,7 +1,5 @@
-import { LoginPage } from './auth/pages';
-
 function App() {
-  return <LoginPage />
+  return <h1>App</h1>
 }
 
 export default App;

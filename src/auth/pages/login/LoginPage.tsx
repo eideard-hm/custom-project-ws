@@ -1,8 +1,23 @@
+import { useFormik } from 'formik';
+
 import loginImg from '/public/img/login.jpg';
 
 import './Login.css';
+import type { IFormValues } from '../../types';
 
-export function LoginPage() {
+export default function LoginPage() {
+  const submitForm = (values: IFormValues) => {
+    console.log({ values })
+  }
+
+  const { handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: submitForm,
+  });
+
   return (
     <div
       className='form-body container-fluid'
@@ -26,13 +41,14 @@ export function LoginPage() {
                 Access to the most powerfull tool in the entire design and web
                 industry.
               </p>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <input
                   className='form-control'
-                  type='text'
-                  name='username'
+                  type='email'
+                  name='email'
                   placeholder='example@example.com'
                   required
+                  onChange={handleChange}
                 />
                 <input
                   className='form-control'
@@ -40,6 +56,7 @@ export function LoginPage() {
                   name='password'
                   placeholder='Contraseña'
                   required
+                  onChange={handleChange}
                 />
                 <div className='form-button'>
                   <button
