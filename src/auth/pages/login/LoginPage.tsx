@@ -1,21 +1,22 @@
 import { useFormik } from 'formik';
 
-import loginImg from '/public/img/login.jpg';
-
-import './Login.css';
 import type { IFormValues } from '../../types';
+import { schema } from '../../validators';
+import './Login.css';
+import loginImg from '/public/img/login.jpg';
 
 export default function LoginPage() {
   const submitForm = (values: IFormValues) => {
-    console.log({ values })
-  }
+    console.log({ values });
+  };
 
-  const { handleChange, handleSubmit } = useFormik({
+  const { handleChange, handleSubmit, errors } = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
     onSubmit: submitForm,
+    validationSchema: schema,
   });
 
   return (
@@ -44,10 +45,8 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit}>
                 <input
                   className='form-control'
-                  type='email'
                   name='email'
                   placeholder='example@example.com'
-                  required
                   onChange={handleChange}
                 />
                 <input
@@ -55,7 +54,6 @@ export default function LoginPage() {
                   type='password'
                   name='password'
                   placeholder='Contraseña'
-                  required
                   onChange={handleChange}
                 />
                 <div className='form-button'>
@@ -68,6 +66,11 @@ export default function LoginPage() {
                   </button>
                 </div>
               </form>
+
+              <br />
+              {errors.email && <span>Email inválido</span>}
+              <br />
+              {errors.password && <span>Contraseña inválido</span>}
             </div>
           </div>
         </div>
