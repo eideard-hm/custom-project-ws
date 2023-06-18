@@ -1,5 +1,9 @@
-function App() {
-  return <h1>App</h1>
-}
+import { AppRouting } from './routes/AppRouting';
 
-export default App;
+export function App() {
+  return (
+    <main>
+      <AppRouting />
+    </main>
+  );
+}

@@ -28,7 +28,8 @@ body {
   width: 100%;
 }
 
-#root {
+#root,
+main {
   height: 100vh;
 }
 
