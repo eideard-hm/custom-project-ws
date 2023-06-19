@@ -9,7 +9,7 @@ import './Login.css';
 
 export default function LoginPage() {
   const submitForm = async (values: IFormValues) => {
-    if (!errors) return;
+    if (!isValid) return;
 
     const { login } = await loginUser(values);
     console.log({ login });
@@ -17,19 +17,21 @@ export default function LoginPage() {
       toast.error('Correo contraseña inválidos. Intente, nuevamente.', {
         style: { zIndex: 1000 },
       });
+      resetForm();
     } else {
       // redict to the dashboard
     }
   };
 
-  const { handleChange, handleSubmit, errors } = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    onSubmit: submitForm,
-    validationSchema: schema,
-  });
+  const { handleChange, handleSubmit, errors, isValid, resetForm, values } =
+    useFormik({
+      initialValues: {
+        email: '',
+        password: '',
+      },
+      onSubmit: submitForm,
+      validationSchema: schema,
+    });
 
   return (
     <div
@@ -60,6 +62,7 @@ export default function LoginPage() {
                   name='email'
                   placeholder='example@example.com'
                   onChange={handleChange}
+                  value={values.email}
                 />
                 <input
                   className='form-control'
@@ -67,6 +70,7 @@ export default function LoginPage() {
                   name='password'
                   placeholder='Contraseña'
                   onChange={handleChange}
+                  value={values.password}
                 />
                 <div className='form-button'>
                   <button
