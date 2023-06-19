@@ -1,17 +1,25 @@
 import { useFormik } from 'formik';
+import toast from 'react-hot-toast';
 
+import loginImg from '../../../assets/img/login.jpg';
+import { loginUser } from '../../services';
 import type { IFormValues } from '../../types';
 import { schema } from '../../validators';
 import './Login.css';
-import loginImg from '../../../assets/img/login.jpg';
-import { loginUser } from '../../services';
 
 export default function LoginPage() {
   const submitForm = async (values: IFormValues) => {
     if (!errors) return;
 
-    const res = await loginUser(values);
-    console.log({ res });
+    const { login } = await loginUser(values);
+    console.log({ login });
+    if (!login) {
+      toast.error('Correo contraseña inválidos. Intente, nuevamente.', {
+        style: { zIndex: 1000 },
+      });
+    } else {
+      // redict to the dashboard
+    }
   };
 
   const { handleChange, handleSubmit, errors } = useFormik({
