@@ -3,11 +3,15 @@ import { useFormik } from 'formik';
 import type { IFormValues } from '../../types';
 import { schema } from '../../validators';
 import './Login.css';
-import loginImg from '/public/img/login.jpg';
+import loginImg from '../../../assets/img/login.jpg';
+import { loginUser } from '../../services';
 
 export default function LoginPage() {
-  const submitForm = (values: IFormValues) => {
-    console.log({ values });
+  const submitForm = async (values: IFormValues) => {
+    if (!errors) return;
+
+    const res = await loginUser(values);
+    console.log({ res });
   };
 
   const { handleChange, handleSubmit, errors } = useFormik({
