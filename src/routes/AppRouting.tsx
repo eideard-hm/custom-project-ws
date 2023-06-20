@@ -16,7 +16,7 @@ export function AppRouting() {
       <Router base='/dashboard'>
         <DashboardRouting />
       </Router>
-      <Route>{() => <Redirect to='/auth/auth' />}</Route>
+      <Route>{() => <Redirect to='/auth/login' />}</Route>
     </Suspense>
   );
 }
