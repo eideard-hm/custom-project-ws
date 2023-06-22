@@ -1,4 +1,5 @@
 import { Nabvar, Sidebar } from '../components';
+import './app.min.css'
 import './DashboardPage.css';
 import './components.css';
 

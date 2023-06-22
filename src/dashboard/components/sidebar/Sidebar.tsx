@@ -1,3 +1,5 @@
+import userImage from '../../../assets/img/user.png';
+
 export function Sidebar() {
   return (
     <div className='main-sidebar sidebar-style-2'>
@@ -7,7 +9,7 @@ export function Sidebar() {
             {' '}
             <img
               alt='image'
-              src='assets/img/logo.png'
+              src={userImage}
               className='header-logo'
             />{' '}
             <span className='logo-name'>Otika</span>
