@@ -1,4 +1,4 @@
-import { Nabvar, Sidebar } from '../components';
+import { Nabvar, QrImg, Sidebar } from '../components';
 import './app.min.css'
 import './DashboardPage.css';
 import './components.css';
@@ -13,6 +13,8 @@ function DashboardPage() {
 
           <Sidebar />
           {/* <!-- Main Content --> */}
+          {/* QR Image */}
+          <QrImg />
         </div>
       </div>
     </>
