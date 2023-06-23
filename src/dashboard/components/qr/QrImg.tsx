@@ -4,6 +4,8 @@ import { WHATSAAP_API_URL } from '../../../config';
 import { socket } from '../../../web-sockets';
 import './QrImage.css';
 
+const apiWsUrl = WHATSAAP_API_URL;
+
 export function QrImg() {
   const [qrImg, setQrImg] = useState('');
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -19,7 +21,8 @@ export function QrImg() {
   const receiveQr = ({ loginSuccess }: IGenerateQr) => {
     console.log({ loginSuccess });
     if (!loginSuccess) {
-      setQrImg(`${WHATSAAP_API_URL}/qr.svg?${Math.random().toString(36)}`);
+      console.log({ apiWsUrl });
+      setQrImg(`${apiWsUrl}/qr.svg?${Math.random().toString(36)}`);
     }
 
     setLoginSuccess(loginSuccess);
