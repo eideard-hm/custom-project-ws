@@ -1,40 +1,39 @@
 import { useEffect, useState } from 'react';
 
-import { WHATSAAP_API_URL } from '../../../config';
+import QRCode from 'react-qr-code';
+
 import { socket } from '../../../web-sockets';
 import './QrImage.css';
 
-const initialQrState = `${WHATSAAP_API_URL}/qr.svg`
-
 export function QrImg() {
-  const [qrImg, setQrImg] = useState(`${initialQrState}?${Math.random().toString(36)}`);
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [qrImg, setQrImg] = useState<IGenerateQr>({
+    loginSuccess: false,
+    qrImage: '',
+  });
 
   useEffect(() => {
     socket.on('qr', receiveQr);
 
     return () => {
-      socket.on('qr', receiveQr);
+      socket.off('qr', receiveQr);
     };
   }, []);
 
-  const receiveQr = ({ loginSuccess }: IGenerateQr) => {
-    console.log({ loginSuccess });
-    if (!loginSuccess) {
-      setQrImg(`${initialQrState}?${Math.random().toString(36)}`);
-    }
-
-    setLoginSuccess(loginSuccess);
+  const receiveQr = (loginIfo: IGenerateQr) => {
+    console.log({ loginIfo });
+    setQrImg(loginIfo);
   };
 
   return (
     <div
       className='qr-image'
-      style={{ display: loginSuccess ? 'none' : 'block' }}
+      style={{
+        display: qrImg.loginSuccess || qrImg.qrImage === '' ? 'none' : 'block',
+      }}
     >
-      <img
-        src={qrImg}
-        alt='QR de inicio de sesión'
+      <QRCode
+        value={qrImg.qrImage}
+        size={400}
       />
     </div>
   );
@@ -42,4 +41,5 @@ export function QrImg() {
 
 interface IGenerateQr {
   loginSuccess: boolean;
+  qrImage: string;
 }
