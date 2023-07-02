@@ -3,3 +3,7 @@
   height: 500px;
   margin-left: 50%;
 }
+
+.qr-image svg {
+  margin-top: 50px;
+}
