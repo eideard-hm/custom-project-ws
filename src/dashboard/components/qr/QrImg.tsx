@@ -13,7 +13,7 @@ export function QrImg() {
 
   useEffect(() => {
     let interval: number;
-    if (qrImg.loginSuccess) {
+    if (!qrImg.loginSuccess) {
       interval = setInterval(() => {
         retrieveLoginQr()
           .then((res) => {
