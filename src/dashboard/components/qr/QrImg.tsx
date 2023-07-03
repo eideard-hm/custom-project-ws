@@ -21,7 +21,7 @@ export function QrImg() {
           setQrImg(newRes);
         })
         .catch(console.error);
-    }, 50 * 1000);
+    }, 30 * 1000);
 
     return () => clearInterval(interval);
   }, []);
