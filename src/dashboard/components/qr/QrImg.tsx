@@ -27,7 +27,7 @@ export function QrImg() {
     }
 
     return () => clearInterval(interval);
-  }, []);
+  }, [qrImg.loginSuccess]);
 
   return (
     <div
