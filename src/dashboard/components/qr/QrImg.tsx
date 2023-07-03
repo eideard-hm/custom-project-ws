@@ -12,16 +12,19 @@ export function QrImg() {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      retrieveLoginQr()
-        .then((res) => {
-          console.log({res});
-          const newRes = { ...res };
-          newRes.qrImage = `data:image/svg+xml;base64,${res.qrImage}`;
-          setQrImg(newRes);
-        })
-        .catch(console.error);
-    }, 20 * 1000);
+    let interval: number;
+    if (qrImg.loginSuccess) {
+      interval = setInterval(() => {
+        retrieveLoginQr()
+          .then((res) => {
+            console.log({ res });
+            const newRes = { ...res };
+            newRes.qrImage = `data:image/svg+xml;base64,${res.qrImage}`;
+            setQrImg(newRes);
+          })
+          .catch(console.error);
+      }, 20 * 1000);
+    }
 
     return () => clearInterval(interval);
   }, []);
