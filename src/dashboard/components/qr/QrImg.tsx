@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import QRCode from 'react-qr-code';
+import { retrieveLoginQr } from '../../services';
+import { IGenerateQr } from '../../types';
 
-import { socket } from '../../../web-sockets';
 import './QrImage.css';
 
 export function QrImg() {
@@ -12,17 +12,19 @@ export function QrImg() {
   });
 
   useEffect(() => {
-    socket.on('qr', receiveQr);
+    const interval = setInterval(() => {
+      retrieveLoginQr()
+        .then((res) => {
+          console.log({res});
+          const newRes = { ...res };
+          newRes.qrImage = `data:image/svg+xml;base64,${res.qrImage}`;
+          setQrImg(newRes);
+        })
+        .catch(console.error);
+    }, 50 * 1000);
 
-    return () => {
-      socket.off('qr', receiveQr);
-    };
+    return () => clearInterval(interval);
   }, []);
-
-  const receiveQr = (loginIfo: IGenerateQr) => {
-    console.log({ loginIfo });
-    setQrImg(loginIfo);
-  };
 
   return (
     <div
@@ -31,15 +33,10 @@ export function QrImg() {
         display: qrImg.loginSuccess || qrImg.qrImage === '' ? 'none' : 'block',
       }}
     >
-      <QRCode
-        value={qrImg.qrImage}
-        size={400}
+      <img
+        src={qrImg.qrImage}
+        alt='Código QR de inicio de sesión'
       />
     </div>
   );
-}
-
-interface IGenerateQr {
-  loginSuccess: boolean;
-  qrImage: string;
 }
