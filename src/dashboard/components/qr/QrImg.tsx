@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { retrieveLoginQr } from '../../services';
-import { IGenerateQr } from '../../types';
+import { WHATSAAP_API_URL } from '../../../config';
+import { socket } from '../../../web-sockets';
+import type { IGenerateQr } from '../../types';
 
 import './QrImage.css';
 
@@ -12,28 +13,31 @@ export function QrImg() {
   });
 
   useEffect(() => {
-    let interval: number;
-    if (!qrImg.loginSuccess) {
-      interval = setInterval(() => {
-        retrieveLoginQr()
-          .then((res) => {
-            console.log({ res });
-            const newRes = { ...res };
-            newRes.qrImage = `data:image/svg+xml;base64,${res.qrImage}`;
-            setQrImg(newRes);
-          })
-          .catch(console.error);
-      }, 20 * 1000);
-    }
+    setQrImg({
+      loginSuccess: false,
+      qrImage: `${WHATSAAP_API_URL}/qr.svg?${Math.random().toString(36)}`,
+    });
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [qrImg.loginSuccess]);
+  useEffect(() => {
+    socket.on('qr', receiveQr);
+
+    return () => {
+      socket.off('qr', receiveQr);
+    };
+  }, []);
+
+  const receiveQr = (loginIfo: IGenerateQr) => {
+    console.log({ loginIfo });
+    loginIfo.qrImage = `data:image/svg+xml;base64,${loginIfo.qrImage}`;
+    setQrImg(loginIfo);
+  };
 
   return (
     <div
       className='qr-image'
       style={{
-        display: qrImg.loginSuccess || qrImg.qrImage === '' ? 'none' : 'block',
+        display: qrImg.loginSuccess ? 'none' : 'block',
       }}
     >
       <img
