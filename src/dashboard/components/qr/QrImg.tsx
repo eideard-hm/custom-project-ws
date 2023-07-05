@@ -40,6 +40,7 @@ export function QrImg() {
         style={{
           display: qrImg.loginSuccess ? 'none' : 'block',
         }}
+        width='70%'
       />
     </Card>
   );
