@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { WHATSAAP_API_URL } from '../../../config';
+import { Card } from '../../../shared/components';
 import { socket } from '../../../web-sockets';
 import type { IGenerateQr } from '../../types';
 
@@ -34,16 +35,18 @@ export function QrImg() {
   };
 
   return (
-    <div
-      className='qr-image'
-      style={{
-        display: qrImg.loginSuccess ? 'none' : 'block',
-      }}
-    >
-      <img
-        src={qrImg.qrImage}
-        alt='Código QR de inicio de sesión'
-      />
-    </div>
+    <Card>
+      <div
+        className='qr-image'
+        style={{
+          display: qrImg.loginSuccess ? 'none' : 'block',
+        }}
+      >
+        <img
+          src={qrImg.qrImage}
+          alt='Código QR de inicio de sesión'
+        />
+      </div>
+    </Card>
   );
 }

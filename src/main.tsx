@@ -5,7 +5,7 @@ import { App } from './App';
 
 import './index.css';
 
-createRoot(document.getElementById('root') as HTMLElement).render(
+createRoot(document.getElementById('app') as HTMLElement).render(
   <StrictMode>
     <App />
   </StrictMode>

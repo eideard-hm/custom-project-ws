@@ -1,7 +1,7 @@
 import { Nabvar, QrImg, Sidebar } from '../components';
-import './app.min.css'
-import './DashboardPage.css';
-import './components.css';
+
+import './app.min.css';
+import './style.css';
 
 function DashboardPage() {
   return (
@@ -12,9 +12,12 @@ function DashboardPage() {
           <Nabvar />
 
           <Sidebar />
+
           {/* <!-- Main Content --> */}
-          {/* QR Image */}
-          <QrImg />
+          <section className='main-content' style={{ minHeight: '530px' }}>
+            {/* QR Image */}
+            <QrImg />
+          </section>
         </div>
       </div>
     </>
