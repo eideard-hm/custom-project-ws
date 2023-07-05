@@ -8,7 +8,7 @@ interface Props {
 
 export function Card({ children, ...props }: Props) {
   return (
-    <div className='col-12'>
+    <div className='col-12' {...props}>
       <div className='card'>
         <div className='card-statistic-4'>
           <div className='row align-items-center justify-content-between'>

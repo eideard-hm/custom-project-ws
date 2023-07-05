@@ -5,8 +5,6 @@ import { Card } from '../../../shared/components';
 import { socket } from '../../../web-sockets';
 import type { IGenerateQr } from '../../types';
 
-import './QrImage.css';
-
 export function QrImg() {
   const [qrImg, setQrImg] = useState<IGenerateQr>({
     loginSuccess: false,
@@ -36,17 +34,13 @@ export function QrImg() {
 
   return (
     <Card>
-      <div
-        className='qr-image'
+      <img
+        src={qrImg.qrImage}
+        alt='Código QR de inicio de sesión'
         style={{
           display: qrImg.loginSuccess ? 'none' : 'block',
         }}
-      >
-        <img
-          src={qrImg.qrImage}
-          alt='Código QR de inicio de sesión'
-        />
-      </div>
+      />
     </Card>
   );
 }
