@@ -5,7 +5,7 @@ export interface ISendMessageLead {
 
 export interface ISendMessageResponse {
   responseDbSave: Lead | null | undefined;
-  responseExSave: { id: string };
+  responseExSave: { id?: string; error?: string };
 }
 
 export interface Lead {

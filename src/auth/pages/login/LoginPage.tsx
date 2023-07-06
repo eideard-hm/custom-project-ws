@@ -60,6 +60,7 @@ export default function LoginPage() {
                   name='email'
                   placeholder='example@example.com'
                   onChange={handleChange}
+                  autoFocus={true}
                 />
                 <input
                   className='form-control'

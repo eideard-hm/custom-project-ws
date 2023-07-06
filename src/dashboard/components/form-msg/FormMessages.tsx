@@ -1,4 +1,4 @@
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import toast from 'react-hot-toast';
 
 import { Card } from '../../../shared/components';
@@ -6,28 +6,38 @@ import { sendMesssageLead } from '../../services';
 import type { ISendMessageLead } from '../../types';
 import { sendMessageLeadSchema } from '../../validator/sendMessageSchema';
 
+const initialValuesForm: ISendMessageLead = {
+  message: '',
+  phone: '57',
+};
+
 export function FormMessages() {
-  const submitForm = async (values: ISendMessageLead) => {
+  const submitForm = async (
+    values: ISendMessageLead,
+    { resetForm }: FormikHelpers<ISendMessageLead>
+  ) => {
     if (!isValid) return;
 
-    const { responseExSave } = await sendMesssageLead(values);
+    const message = { ...values };
+    message.phone = `57${values.phone}`;
+    const { responseExSave } = await sendMesssageLead(message);
 
-    if (isNaN(Number(responseExSave.id))) {
-      toast.error(responseExSave.id);
+    if (responseExSave.error) {
+      toast.error(responseExSave.error);
       return;
     }
 
-    toast.success('Mensage enviado correctamente!');
+    toast.success(`Mensage enviado correctamente! ${responseExSave.id}`);
+    resetForm({ values: initialValuesForm });
   };
 
-  const { handleChange, handleSubmit, isValid } = useFormik<ISendMessageLead>({
-    initialValues: {
-      message: '',
-      phone: '57',
-    },
-    onSubmit: submitForm,
-    validationSchema: sendMessageLeadSchema,
-  });
+  const { dirty, handleChange, handleSubmit, isValid } =
+    useFormik<ISendMessageLead>({
+      initialValues: initialValuesForm,
+      enableReinitialize: true,
+      onSubmit: submitForm,
+      validationSchema: sendMessageLeadSchema,
+    });
 
   return (
     <Card>
@@ -48,6 +58,7 @@ export function FormMessages() {
                 <input
                   type='text'
                   name='phone'
+                  autoFocus={true}
                   className='form-control phone-number'
                   onChange={handleChange}
                 />
@@ -67,6 +78,7 @@ export function FormMessages() {
             <button
               className='btn btn-primary mr-1'
               type='submit'
+              disabled={!dirty}
             >
               Enviar
             </button>

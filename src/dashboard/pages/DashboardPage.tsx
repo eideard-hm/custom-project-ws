@@ -22,8 +22,8 @@ function DashboardPage() {
             className='main-content'
             style={{ minHeight: '530px' }}
           >
-            {auth.isLoggin ? <FormMessages /> : <QrImg />}
-            {/* <QrImg /> */}
+            <FormMessages />
+            {/* {auth.isLoggin ? <FormMessages /> : <QrImg />} */}
           </section>
         </div>
       </div>
