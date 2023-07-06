@@ -1,9 +1,13 @@
-import { Nabvar, QrImg, Sidebar } from '../components';
+import { useContext } from 'react';
+
+import { AuthContext } from '../../context';
+import { FormMessages, Nabvar, QrImg, Sidebar } from '../components';
 
 import './app.min.css';
 import './style.css';
 
 function DashboardPage() {
+  const { auth } = useContext(AuthContext);
   return (
     <>
       {/* <div className='loader'></div> */}
@@ -14,9 +18,12 @@ function DashboardPage() {
           <Sidebar />
 
           {/* <!-- Main Content --> */}
-          <section className='main-content' style={{ minHeight: '530px' }}>
-            {/* QR Image */}
-            <QrImg />
+          <section
+            className='main-content'
+            style={{ minHeight: '530px' }}
+          >
+            {auth.isLoggin ? <FormMessages /> : <QrImg />}
+            {/* <QrImg /> */}
           </section>
         </div>
       </div>

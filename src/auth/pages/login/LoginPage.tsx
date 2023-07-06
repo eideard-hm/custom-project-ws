@@ -18,7 +18,7 @@ export default function LoginPage() {
         style: { zIndex: 1000 },
       });
     } else {
-      // redict to the dashboard
+      // redirect to the dashboard
     }
   };
 

@@ -2980,26 +2980,10 @@ select.form-control:not([size]):not([multiple]) {
 }
 .card .card-statistic-4 {
   position: relative;
-  color: #000000;
+  color: #fff !important;
   padding: 15px;
   border-radius: 3px;
   overflow: hidden;
-}
-.card .card-statistic-4 .card-icon-large {
-  font-size: 110px;
-  width: 110px;
-  height: 50px;
-  text-shadow: 3px 7px rgba(0, 0, 0, 0.3);
-}
-.card .card-statistic-4 .card-icon {
-  text-align: center;
-  line-height: 50px;
-  margin-left: 15px;
-  color: #000;
-  position: absolute;
-  right: -5px;
-  top: 20px;
-  opacity: 0.1;
 }
 .card .card-statistic-4 .banner-img img {
   max-width: 100%;
