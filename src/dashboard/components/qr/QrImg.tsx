@@ -2,6 +2,8 @@ import { Card } from '../../../shared/components';
 import { WsOptions } from '../../../ws/components';
 import type { IGenerateQr } from '../../types';
 
+import './QrImg.css';
+
 interface Props {
   loginInfo: IGenerateQr;
 }
