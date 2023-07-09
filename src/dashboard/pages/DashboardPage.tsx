@@ -3,7 +3,7 @@ import { WHATSAAP_API_URL } from '../../config';
 
 import { AuthContext } from '../../context';
 import { socket } from '../../web-sockets';
-import { FormMessages, FormUserData, Nabvar, QrImg, Sidebar } from '../components';
+import { FormMessages, Nabvar, QrImg, Sidebar } from '../components';
 import type { IGenerateQr } from '../types';
 
 import './app.min.css';
