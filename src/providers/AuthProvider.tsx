@@ -1,6 +1,8 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+
 import { AuthContext } from '../context';
-import { IAuth } from '../types';
+import { retrieveCurrentStatusAuth } from '../services';
+import type { IAuth } from '../types';
 
 interface Props {
   children?: ReactNode;
@@ -9,5 +11,19 @@ interface Props {
 export function AuthProvider({ children }: Props) {
   const [auth, setAuth] = useState<IAuth>({ isLoggin: false });
 
-  return <AuthContext.Provider value={{ auth, setAuth }}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+    retrieveCurrentStatusAuth()
+      .then((res) => setAuth(res))
+      .catch(console.error);
+  }, []);
+
+  const setCurrentStatusAuth = (status: IAuth) => {
+    setAuth(status);
+  };
+
+  return (
+    <AuthContext.Provider value={{ auth, setAuth: setCurrentStatusAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }

@@ -4,5 +4,5 @@ export interface IAuth {
 
 export interface IAuthContextProps {
   auth: IAuth,
-  setAuth: React.Dispatch<React.SetStateAction<IAuth>>
+  setAuth: (status: IAuth) => void
 }
