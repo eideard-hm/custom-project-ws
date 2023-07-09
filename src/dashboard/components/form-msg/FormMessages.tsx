@@ -8,7 +8,7 @@ import { sendMessageLeadSchema } from '../../validator/sendMessageSchema';
 
 const initialValuesForm: ISendMessageLead = {
   message: '',
-  phone: '57',
+  phone: '',
 };
 
 export function FormMessages() {
@@ -31,7 +31,7 @@ export function FormMessages() {
     resetForm({ values: initialValuesForm });
   };
 
-  const { dirty, handleChange, handleSubmit, isValid } =
+  const { dirty, handleChange, handleSubmit, isValid, values } =
     useFormik<ISendMessageLead>({
       initialValues: initialValuesForm,
       enableReinitialize: true,
@@ -52,7 +52,7 @@ export function FormMessages() {
               <div className='input-group'>
                 <div className='input-group-prepend'>
                   <div className='input-group-text'>
-                    <i className='fas fa-phone'></i>
+                    57
                   </div>
                 </div>
                 <input
@@ -61,6 +61,7 @@ export function FormMessages() {
                   autoFocus={true}
                   className='form-control phone-number'
                   onChange={handleChange}
+                  value={values.phone}
                 />
               </div>
             </div>
@@ -70,6 +71,7 @@ export function FormMessages() {
                 className='form-control'
                 name='message'
                 onChange={handleChange}
+                value={values.message}
               ></textarea>
             </div>
           </div>
