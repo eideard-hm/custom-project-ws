@@ -52,7 +52,7 @@ function DashboardPage() {
             <section className='section'>
               <div className='section-body'>
                 {auth.isLoggin ? <FormMessages /> : <QrImg loginInfo={qrImg} />}
-                {/* <FormUserData />   */}
+                {/* <FormUserData /> */}
               </div>
             </section>
           </section>

@@ -1,5 +1,6 @@
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
+import { navigate } from 'wouter/use-location';
 
 import loginImg from '../../../assets/img/login.jpg';
 import { loginUser } from '../../services';
@@ -19,6 +20,7 @@ export default function LoginPage() {
       });
     } else {
       // redirect to the dashboard
+      navigate('/dashboard');
     }
   };
 

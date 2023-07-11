@@ -12,11 +12,11 @@ export function FormUserData() {
                 <label>Tipo Documento</label>
                 <select
                   className='form-control'
-                  name='documentType'
+                  name='DocumentType'
                 >
-                  <option>Option 1</option>
-                  <option>Option 2</option>
-                  <option>Option 3</option>
+                  <option value='C.C'>Cédula de Ciudadanía</option>
+                  <option value='T.I'>Tarjeta de Identidad</option>
+                  <option value='P.E'>Pasaporte</option>
                 </select>
               </div>
               <div className='form-group'>
@@ -24,7 +24,7 @@ export function FormUserData() {
                 <input
                   type='text'
                   className='form-control'
-                  name='name'
+                  name='firstName'
                   placeholder='Jhon'
                 />
               </div>
@@ -38,13 +38,22 @@ export function FormUserData() {
                 />
               </div>
               <div className='form-group'>
+                <label>Email:</label>
+                <input
+                  type='email'
+                  className='form-control'
+                  name='Edier'
+                  placeholder='example@example.com'
+                />
+              </div>
+              <div className='form-group'>
                 <label>Genero: </label>
                 <div className='custom-switches-stacked mt-2'>
                   <label className='custom-switch'>
                     <input
                       type='radio'
-                      name='option'
-                      value='1'
+                      name='sexId'
+                      value='Hombre'
                       className='custom-switch-input'
                       defaultChecked={true}
                     />
@@ -54,8 +63,8 @@ export function FormUserData() {
                   <label className='custom-switch'>
                     <input
                       type='radio'
-                      name='option'
-                      value='2'
+                      name='sexId'
+                      value='Mujer'
                       className='custom-switch-input'
                     />
                     <span className='custom-switch-indicator'></span>
@@ -64,8 +73,8 @@ export function FormUserData() {
                   <label className='custom-switch'>
                     <input
                       type='radio'
-                      name='option'
-                      value='3'
+                      name='sexId'
+                      value='otro'
                       className='custom-switch-input'
                     />
                     <span className='custom-switch-indicator'></span>
@@ -155,8 +164,8 @@ export function FormUserData() {
                   <label className='custom-switch'>
                     <input
                       type='radio'
-                      name='option'
-                      value='1'
+                      name='need'
+                      value='Alimentación'
                       className='custom-switch-input'
                       defaultChecked={true}
                     />
@@ -168,8 +177,8 @@ export function FormUserData() {
                   <label className='custom-switch'>
                     <input
                       type='radio'
-                      name='option'
-                      value='2'
+                      name='need'
+                      value='Solicitud Vivienda'
                       className='custom-switch-input'
                     />
                     <span className='custom-switch-indicator'></span>
@@ -180,8 +189,8 @@ export function FormUserData() {
                   <label className='custom-switch'>
                     <input
                       type='radio'
-                      name='option'
-                      value='3'
+                      name='need'
+                      value='Solicitud Insumos'
                       className='custom-switch-input'
                     />
                     <span className='custom-switch-indicator'></span>
@@ -195,11 +204,11 @@ export function FormUserData() {
                 <label>Vereda</label>
                 <select
                   className='form-control'
-                  name='smallVillage'
+                  name='sidewalk'
                 >
-                  <option>Option 1</option>
-                  <option>Option 2</option>
-                  <option>Option 3</option>
+                  <option value='Otanche'>Otanche</option>
+                  <option value='Las Quinchas'>Las Quinchas</option>
+                  <option value='Option 3'>Option 3</option>
                 </select>
               </div>
               <div className='form-group'>
@@ -208,7 +217,7 @@ export function FormUserData() {
                   <input
                     type='text'
                     className='form-control'
-                    name='address'
+                    name='ubication'
                   />
                 </div>
               </div>
