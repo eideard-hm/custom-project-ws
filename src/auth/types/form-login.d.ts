@@ -4,5 +4,6 @@ export interface IFormValues {
 }
 
 export interface ILoginResponse {
-  login: boolean;
+  loginSuccess: boolean;
+  userId: string;
 }

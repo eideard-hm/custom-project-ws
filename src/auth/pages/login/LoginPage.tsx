@@ -3,6 +3,8 @@ import toast from 'react-hot-toast';
 import { navigate } from 'wouter/use-location';
 
 import loginImg from '../../../assets/img/login.jpg';
+import { setSessionStorage } from '../../../services';
+import { USER_ID_KEY } from '../../../utils';
 import { loginUser } from '../../services';
 import type { IFormValues } from '../../types';
 import { schema } from '../../validators';
@@ -12,15 +14,17 @@ export default function LoginPage() {
   const submitForm = async (values: IFormValues) => {
     if (!isValid) return;
 
-    const { login } = await loginUser(values);
-    console.log({ login });
-    if (!login) {
+    const { loginSuccess, userId } = await loginUser(values);
+    console.log({ loginSuccess });
+    if (!loginSuccess) {
       toast.error('Correo contraseña inválidos. Intente, nuevamente.', {
         style: { zIndex: 1000 },
       });
     } else {
+      // guardar el Id en el session storage
+      setSessionStorage({ key: USER_ID_KEY, value: userId });
       // redirect to the dashboard
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   };
 
