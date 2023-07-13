@@ -1,4 +1,6 @@
 import { API_URL } from '../../config';
+import { getSessionStorage } from '../../services';
+import { USER_ID_KEY } from '../../utils';
 import type {
   ShipmentOrdersCreateInput,
   ShipmentOrdersCreateResponse,
@@ -20,5 +22,23 @@ export const createShipmentOrders = async (
   } catch (error) {
     console.error(error);
     return { Id: 0 };
+  }
+};
+
+export const getAllShipmentOrdersAsync = async (): Promise<
+  ShipmentOrdersCreateInput[]
+> => {
+  try {
+    const userId = getSessionStorage(USER_ID_KEY);
+    const response = await fetch(`${API_URL}/sphipment-orders/${userId}`, {
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+
+    return (await response.json()) as ShipmentOrdersCreateInput[];
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

@@ -1,3 +1,4 @@
+export * from './detail-table/DetailTable';
 export * from './form-msg/FormMessages';
 export * from './form-users-data/FormUserData';
 export * from './navbar/Nabvar';
