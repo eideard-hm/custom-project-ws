@@ -3,7 +3,7 @@ import { WHATSAAP_API_URL } from '../../config';
 
 import { AuthContext } from '../../context';
 import { socket } from '../../web-sockets';
-import { FormMessages, Nabvar, QrImg, Sidebar } from '../components';
+import { FormUserData, Nabvar, QrImg, Sidebar } from '../components';
 import type { IGenerateQr } from '../types';
 
 import './app.min.css';
@@ -51,7 +51,7 @@ function DashboardPage() {
           <section className='main-content'>
             <section className='section'>
               <div className='section-body'>
-                {auth.isLoggin ? <FormMessages /> : <QrImg loginInfo={qrImg} />}
+                {auth.isLoggin ? <FormUserData /> : <QrImg loginInfo={qrImg} />}
                 {/* <FormUserData /> */}
               </div>
             </section>
