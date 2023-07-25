@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import {
   getAllShipmentOrdersAsync,
@@ -27,7 +28,9 @@ export function DetailTable() {
     );
 
     const response = await sendMesssageBulkAsync(receivedMessages);
-    console.log({ response });
+    if (response.length > 0 && response.length === shiptmet.length) {
+      toast.success('Mensajes enviados correctamente!');
+    }
   };
 
   return (
@@ -94,10 +97,10 @@ export function DetailTable() {
                             type='checkbox'
                             data-checkboxes='mygroup'
                             className='custom-control-input'
-                            id='checkbox-1'
+                            id={'checkbox-' + i}
                           />
                           <label
-                            htmlFor='checkbox-1'
+                            htmlFor={'checkbox-' + i}
                             className='custom-control-label'
                           >
                             &nbsp;
@@ -122,7 +125,7 @@ export function DetailTable() {
           </div>
           <div className='card-footer text-right'>
             <button
-              className='btn btn-secondary'
+              className='btn btn-primary mr-1'
               onClick={handleSendBulkMessages}
             >
               Envíar Mensajes
