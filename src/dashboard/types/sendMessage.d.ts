@@ -13,3 +13,8 @@ export interface Lead {
   message: string;
   phone: string;
 }
+
+export interface ISendBulkMessage {
+  fullName: string;
+  phone: string;
+}

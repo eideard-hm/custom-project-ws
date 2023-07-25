@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { getAllShipmentOrdersAsync } from '../../services';
 
-import type { ShipmentOrdersCreateInput } from '../../types';
+import {
+  getAllShipmentOrdersAsync,
+  sendMesssageBulkAsync,
+} from '../../services';
+import type { ISendBulkMessage, ShipmentOrdersCreateInput } from '../../types';
 
 export function DetailTable() {
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersCreateInput[]>([]);
@@ -14,6 +17,18 @@ export function DetailTable() {
       })
       .catch(console.error);
   }, []);
+
+  const handleSendBulkMessages = async () => {
+    const receivedMessages: ISendBulkMessage[] = shiptmet.map(
+      ({ FirstName, LastName, Phone }) => ({
+        fullName: `${FirstName} ${LastName}`,
+        phone: `57${Phone}`,
+      })
+    );
+
+    const response = await sendMesssageBulkAsync(receivedMessages);
+    console.log({ response });
+  };
 
   return (
     <div className='row'>
@@ -104,6 +119,14 @@ export function DetailTable() {
                 </tbody>
               </table>
             </div>
+          </div>
+          <div className='card-footer text-right'>
+            <button
+              className='btn btn-secondary'
+              onClick={handleSendBulkMessages}
+            >
+              Envíar Mensajes
+            </button>
           </div>
         </div>
       </div>

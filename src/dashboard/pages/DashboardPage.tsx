@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { WHATSAAP_API_URL } from '../../config';
 
+import { WHATSAAP_API_URL } from '../../config';
 import { AuthContext } from '../../context';
 import { socket } from '../../web-sockets';
 import { FormUserData, Nabvar, QrImg, Sidebar } from '../components';
