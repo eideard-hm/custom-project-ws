@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { DashboardContext } from '../../../context';
 
 export function Upload() {
-  const { attachFile, setAttachFile } = useContext(DashboardContext);
+  const { setAttachFile } = useContext(DashboardContext);
 
   const handleFileChosen = (file: File | undefined) => {
     if (!file || /\.(jpe?g|png|pdf)$/i.test(file.name) === false) {
@@ -37,7 +37,6 @@ export function Upload() {
             <form className='dropzone dz-clickable'>
               <div className='form-group'>
                 <input
-                  value={attachFile.base64}
                   type='file'
                   className='form-control'
                   accept='image/*, application/pdf'
