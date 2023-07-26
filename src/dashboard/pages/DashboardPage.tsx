@@ -51,8 +51,8 @@ function DashboardPage() {
           <section className='main-content'>
             <section className='section'>
               <div className='section-body'>
-                {/* {auth.isLoggin ? <FormUserData /> : <QrImg loginInfo={qrImg} />} */}
-                <FormUserData />
+                {auth.isLoggin ? <FormUserData /> : <QrImg loginInfo={qrImg} />}
+                {/* <FormUserData /> */}
               </div>
             </section>
           </section>
