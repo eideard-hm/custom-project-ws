@@ -7,6 +7,7 @@ import { USER_ID_KEY } from '../../../utils';
 import { createShipmentOrders } from '../../services';
 import type { ShipmentOrdersCreateInput } from '../../types/sphipment-orders';
 import { DetailTable } from '../detail-table/DetailTable';
+import { Upload } from '../upload/Upload';
 
 const initialState: ShipmentOrdersCreateInput = {
   FirstName: '',
@@ -289,6 +290,8 @@ export function FormUserData() {
       </div>
 
       <DetailTable />
+
+      <Upload />
     </>
   );
 }

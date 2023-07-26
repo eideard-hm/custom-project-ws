@@ -1,14 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { DashboardContext } from '../../../context';
 
 import {
   getAllShipmentOrdersAsync,
   sendMesssageBulkAsync,
 } from '../../services';
-import type { ISendBulkMessage, ShipmentOrdersCreateInput } from '../../types';
+import type {
+  ISendBulkMessage,
+  ISendBulkMessageWithAttach,
+  ShipmentOrdersCreateInput,
+} from '../../types';
 
 export function DetailTable() {
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersCreateInput[]>([]);
+  const { attachFile, setAttachFile } = useContext(DashboardContext);
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
@@ -27,9 +33,15 @@ export function DetailTable() {
       })
     );
 
-    const response = await sendMesssageBulkAsync(receivedMessages);
+    const message: ISendBulkMessageWithAttach = {
+      content: receivedMessages,
+      attach: attachFile,
+    };
+
+    const response = await sendMesssageBulkAsync(message);
     if (response.length > 0 && response.length === shiptmet.length) {
       toast.success('Mensajes enviados correctamente!');
+      setAttachFile({ base64: '', type: '' });
     }
   };
 

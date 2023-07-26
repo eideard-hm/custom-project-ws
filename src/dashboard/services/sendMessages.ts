@@ -1,5 +1,5 @@
 import { WHATSAAP_API_URL } from '../../config';
-import type { ISendBulkMessage, ISendMessageLead, ISendMessageResponse } from '../types';
+import type { ISendBulkMessageWithAttach, ISendMessageLead, ISendMessageResponse } from '../types';
 
 export const sendMesssageLead = async (
   message: ISendMessageLead
@@ -22,7 +22,7 @@ export const sendMesssageLead = async (
 
 
 export const sendMesssageBulkAsync = async (
-  message: ISendBulkMessage[]
+  message: ISendBulkMessageWithAttach
 ): Promise<ISendMessageResponse[]> => {
   try {
     const response = await fetch(`${WHATSAAP_API_URL}/lead`, {
