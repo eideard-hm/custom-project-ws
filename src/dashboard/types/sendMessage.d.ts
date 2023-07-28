@@ -19,9 +19,10 @@ export interface Lead {
 export interface ISendBulkMessageWithAttach {
   content: ISendBulkMessage[];
   attach: IAttachFile;
+  sendWsContacts: boolean;
 }
 
 export interface ISendBulkMessage {
-  fullName: string;
   phone: string;
+  message: string
 }

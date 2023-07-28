@@ -1,20 +1,24 @@
 import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { DashboardContext } from '../../../context';
 
+import { DashboardContext } from '../../../context';
 import {
   getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync,
+  sendMesssageBulkAsync
 } from '../../services';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput,
+  ShipmentOrdersCreateInput
 } from '../../types';
 
 export function DetailTable() {
+  const [sendWsContacts, setSendWsContacts] = useState({
+    customMessage: '',
+    sendWsContacts: false,
+  });
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersCreateInput[]>([]);
-  const { attachFile, setAttachFile } = useContext(DashboardContext);
+  const { attachFile } = useContext(DashboardContext);
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
@@ -28,20 +32,22 @@ export function DetailTable() {
   const handleSendBulkMessages = async () => {
     const receivedMessages: ISendBulkMessage[] = shiptmet.map(
       ({ FirstName, LastName, Phone }) => ({
-        fullName: `${FirstName} ${LastName}`,
-        phone: `57${Phone}`,
+        phone: Phone,
+        message: `${sendWsContacts.customMessage
+          .replaceAll('{name}', `*${FirstName}`)
+          .replaceAll('{lastname}', `${LastName}*`)}`,
       })
     );
 
     const message: ISendBulkMessageWithAttach = {
       content: receivedMessages,
       attach: attachFile,
+      sendWsContacts: sendWsContacts.sendWsContacts,
     };
 
     const response = await sendMesssageBulkAsync(message);
-    if (response.length > 0 && response.length === shiptmet.length) {
+    if (response.length > 0) {
       toast.success('Mensajes enviados correctamente!');
-      setAttachFile({ base64: '', type: '' });
     }
   };
 
@@ -135,13 +141,57 @@ export function DetailTable() {
               </table>
             </div>
           </div>
-          <div className='card-footer text-right'>
-            <button
-              className='btn btn-primary mr-1'
-              onClick={handleSendBulkMessages}
-            >
-              Envíar Mensajes
-            </button>
+          <div className='card-footer'>
+            <hr />
+            <div className='row'>
+              <div className='form-group col-12'>
+                <label>Mensaje</label>
+                <textarea
+                  className='form-control'
+                  value={sendWsContacts.customMessage}
+                  onChange={(e) =>
+                    setSendWsContacts((prev) => ({
+                      ...prev,
+                      customMessage: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </div>
+              <div className='form-check'>
+                <input
+                  className='form-check-input'
+                  type='checkbox'
+                  id='send-ws-contacts'
+                  checked={sendWsContacts.sendWsContacts}
+                  onChange={(e) =>
+                    setSendWsContacts((prev) => ({
+                      ...prev,
+                      sendWsContacts: e.target.checked,
+                    }))
+                  }
+                />
+                <label
+                  className='form-check-label'
+                  htmlFor='send-ws-contacts'
+                >
+                  Enviar a mis <strong>contactos de WhatsApp.</strong>
+                </label>
+              </div>
+            </div>
+
+            <div className='text-right'>
+              <button
+                disabled={
+                  !sendWsContacts.customMessage ||
+                  (shiptmet.length === 0 && !sendWsContacts.sendWsContacts)
+                }
+                className='btn btn-primary mr-1'
+                onClick={handleSendBulkMessages}
+              >
+                Envíar Mensajes
+              </button>
+            </div>
           </div>
         </div>
       </div>
