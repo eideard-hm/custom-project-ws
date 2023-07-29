@@ -6,4 +6,5 @@ export interface IAttachFileContext {
 export interface IAttachFile {
   base64: string;
   type: string;
+  name: string;
 }

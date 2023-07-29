@@ -1,13 +1,16 @@
 import { useContext } from 'react';
 
+import toast from 'react-hot-toast';
+
 import { DashboardContext } from '../../../context';
 
 export function Upload() {
   const { setAttachFile } = useContext(DashboardContext);
 
   const handleFileChosen = (file: File | undefined) => {
-    if (!file || /\.(jpe?g|png|pdf)$/i.test(file.name) === false) {
-      setAttachFile({ base64: '', type: '' });
+    if (!file) {
+      toast.error('No se adjunto un archivo valido.');
+      setAttachFile({ base64: '', type: '', name: '' });
       return;
     }
 
@@ -18,11 +21,12 @@ export function Upload() {
       setAttachFile({
         base64: fileBase64,
         type: file.type,
+        name: file.name,
       });
     };
     fileReader.onerror = (error) => {
       console.error(error);
-      setAttachFile({ base64: '', type: '' });
+      setAttachFile({ base64: '', type: '', name: '' });
     };
   };
 
@@ -39,7 +43,6 @@ export function Upload() {
                 <input
                   type='file'
                   className='form-control'
-                  accept='image/*, application/pdf'
                   onChange={(e) => handleFileChosen(e.target.files?.[0])}
                 />
               </div>

@@ -4,12 +4,12 @@ import toast from 'react-hot-toast';
 import { DashboardContext } from '../../../context';
 import {
   getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync
+  sendMesssageBulkAsync,
 } from '../../services';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput
+  ShipmentOrdersCreateInput,
 } from '../../types';
 
 export function DetailTable() {
@@ -33,9 +33,11 @@ export function DetailTable() {
     const receivedMessages: ISendBulkMessage[] = shiptmet.map(
       ({ FirstName, LastName, Phone }) => ({
         phone: Phone,
-        message: `${sendWsContacts.customMessage
-          .replaceAll('{name}', `*${FirstName}`)
-          .replaceAll('{lastname}', `${LastName}*`)}`,
+        message: sendWsContacts.sendWsContacts
+          ? sendWsContacts.customMessage
+          : `${sendWsContacts.customMessage
+              .replaceAll('{name}', `*${FirstName}`)
+              .replaceAll('{lastname}', `${LastName}*`)}`,
       })
     );
 
