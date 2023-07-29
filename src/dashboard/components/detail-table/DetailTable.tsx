@@ -36,8 +36,8 @@ export function DetailTable() {
         message: sendWsContacts.sendWsContacts
           ? sendWsContacts.customMessage
           : `${sendWsContacts.customMessage
-              .replaceAll('{name}', `*${FirstName}`)
-              .replaceAll('{lastname}', `${LastName}*`)}`,
+              .replaceAll('{name}', `*${FirstName}*`)
+              .replaceAll('{lastname}', `*${LastName}*`)}`,
       })
     );
 
