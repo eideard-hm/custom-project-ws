@@ -10,6 +10,7 @@ export function DashboardProvider({ children }: Props) {
   const [attachedFile, setAttachedFile] = useState<IAttachFile>({
     base64: '',
     type: '',
+    name: ''
   });
 
   const setAttachFile = (file: IAttachFile) => {
