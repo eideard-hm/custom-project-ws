@@ -1,1 +1,3 @@
 export const USER_ID_KEY = 'userId'
+export const MAX_SIZE_MEDIA_ALLOW_BYTES = 16_777_216
+export const MAX_SIZE_DOCUMENTS_ALLOW_BYTES = 104_857_600
