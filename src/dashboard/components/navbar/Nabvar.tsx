@@ -19,7 +19,7 @@ export function Nabvar() {
   const handleLogout = async () => {
     sessionStorage.clear();
     localStorage.clear();
-    navigate('/auth/login', { replace: true });
+    navigate('/', { replace: false });
     if (isLoggin) await logout();
   };
 

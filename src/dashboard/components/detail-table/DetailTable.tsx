@@ -37,7 +37,13 @@ export function DetailTable() {
           ? sendWsContacts.customMessage
           : `${sendWsContacts.customMessage
               .replaceAll('{name}', `*${FirstName}*`)
-              .replaceAll('{lastname}', `*${LastName}*`)}`,
+              .replaceAll('{NAME}', `*${FirstName}*`)
+              .replaceAll('{Name}', `*${FirstName}*`)
+              .replaceAll('Name', `*${FirstName}*`)
+              .replaceAll('{lastname}', `*${LastName}*`)
+              .replaceAll('{Lastname}', `*${LastName}*`)
+              .replaceAll('{LastName}', `*${LastName}*`)
+              .replaceAll('{LASTNAME}', `*${LastName}*`)}`,
       })
     );
 
