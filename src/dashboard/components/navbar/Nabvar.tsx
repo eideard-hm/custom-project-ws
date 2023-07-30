@@ -17,7 +17,7 @@ export function Nabvar() {
   };
 
   const handleLogout = async () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate('/auth/login', { replace: true });
     await logout();
   };
