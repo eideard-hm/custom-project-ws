@@ -1,6 +1,23 @@
+import { useContext, useRef } from 'react';
+
 import { ASSETS_IMAGES } from '../../../assets/img';
+import { AuthContext } from '../../../context';
+import { logout } from '../../../services';
 
 export function Nabvar() {
+  const {
+    auth: { isLoggin },
+  } = useContext(AuthContext);
+  const userDropdown = useRef<HTMLDivElement>(null);
+
+  const handleUserDropdown = () => {
+    userDropdown.current?.classList.toggle('show');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <>
       <div className='navbar-bg'></div>
@@ -79,158 +96,62 @@ export function Nabvar() {
                 <path d='M13.73 21a2 2 0 0 1-3.46 0'></path>
               </svg>
             </a>
-            <div className='dropdown-menu dropdown-list dropdown-menu-right pullDown'>
-              <div className='dropdown-header'>
-                Notifications
-                <div className='float-right'>
-                  <a href='#'>Mark All As Read</a>
-                </div>
-              </div>
-              <div className='dropdown-list-content dropdown-list-icons'>
-                <a
-                  href='#'
-                  className='dropdown-item dropdown-item-unread'
-                >
-                  {' '}
-                  <span className='dropdown-item-icon bg-primary text-white'>
-                    {' '}
-                    <i
-                      className='fas
-												fa-code'
-                    ></i>
-                  </span>{' '}
-                  <span className='dropdown-item-desc'>
-                    {' '}
-                    Template update is available now!{' '}
-                    <span className='time'>2 Min Ago</span>
-                  </span>
-                </a>{' '}
-                <a
-                  href='#'
-                  className='dropdown-item'
-                >
-                  {' '}
-                  <span className='dropdown-item-icon bg-info text-white'>
-                    {' '}
-                    <i
-                      className='far
-												fa-user'
-                    ></i>
-                  </span>{' '}
-                  <span className='dropdown-item-desc'>
-                    {' '}
-                    <b>You</b> and <b>Dedik Sugiharto</b> are now friends{' '}
-                    <span className='time'>10 Hours Ago</span>
-                  </span>
-                </a>{' '}
-                <a
-                  href='#'
-                  className='dropdown-item'
-                >
-                  {' '}
-                  <span className='dropdown-item-icon bg-success text-white'>
-                    {' '}
-                    <i
-                      className='fas
-												fa-check'
-                    ></i>
-                  </span>{' '}
-                  <span className='dropdown-item-desc'>
-                    {' '}
-                    <b>Kusnaedi</b> has moved task <b>Fix bug header</b> to{' '}
-                    <b>Done</b> <span className='time'>12 Hours Ago</span>
-                  </span>
-                </a>{' '}
-                <a
-                  href='#'
-                  className='dropdown-item'
-                >
-                  {' '}
-                  <span className='dropdown-item-icon bg-danger text-white'>
-                    {' '}
-                    <i className='fas fa-exclamation-triangle'></i>
-                  </span>{' '}
-                  <span className='dropdown-item-desc'>
-                    {' '}
-                    Low disk space. Let's clean it!{' '}
-                    <span className='time'>17 Hours Ago</span>
-                  </span>
-                </a>{' '}
-                <a
-                  href='#'
-                  className='dropdown-item'
-                >
-                  {' '}
-                  <span className='dropdown-item-icon bg-info text-white'>
-                    {' '}
-                    <i
-                      className='fas
-												fa-bell'
-                    ></i>
-                  </span>{' '}
-                  <span className='dropdown-item-desc'>
-                    {' '}
-                    Welcome to Otika template!{' '}
-                    <span className='time'>Yesterday</span>
-                  </span>
-                </a>
-              </div>
-              <div className='dropdown-footer text-center'>
-                <a href='#'>
-                  View All <i className='fas fa-chevron-right'></i>
-                </a>
-              </div>
-            </div>
           </li>
-          <li className='dropdown'>
+          <li
+            className='dropdown'
+            onClick={handleUserDropdown}
+          >
             <a
               href='#'
               data-toggle='dropdown'
               className='nav-link dropdown-toggle nav-link-lg nav-link-user'
             >
-              {' '}
               <img
                 alt='image'
                 src={ASSETS_IMAGES.user}
                 className='user-img-radious-style'
-              />{' '}
+              />
               <span className='d-sm-none d-lg-inline-block'></span>
             </a>
-            <div className='dropdown-menu dropdown-menu-right pullDown'>
-              <div className='dropdown-title'>Hello Sarah Smith</div>
-              <a
-                href='profile.html'
-                className='dropdown-item has-icon'
-              >
-                {' '}
-                <i
-                  className='far
-										fa-user'
-                ></i>{' '}
-                Profile
-              </a>{' '}
-              <a
-                href='timeline.html'
-                className='dropdown-item has-icon'
-              >
-                {' '}
-                <i className='fas fa-bolt'></i>
-                Activities
-              </a>{' '}
+            <div
+              ref={userDropdown}
+              className='dropdown-menu dropdown-menu-right pullDown'
+            >
+              <div className='dropdown-title'></div>
               <a
                 href='#'
                 className='dropdown-item has-icon'
               >
-                {' '}
+                <i
+                  className='far
+										fa-user'
+                ></i>
+                Profile
+              </a>
+              <a
+                href='#'
+                className='dropdown-item has-icon'
+              >
+                <i className='fas fa-bolt'></i>
+                Activities
+              </a>
+              <a
+                href='#'
+                className='dropdown-item has-icon'
+              >
                 <i className='fas fa-cog'></i>
                 Settings
               </a>
-              <div className='dropdown-divider'></div>
+              <div
+                className='dropdown-divider'
+                hidden={!isLoggin}
+              ></div>
               <a
-                href='auth-login.html'
+                hidden={!isLoggin}
+                onClick={handleLogout}
+                href='#'
                 className='dropdown-item has-icon text-danger'
               >
-                {' '}
                 <i className='fas fa-sign-out-alt'></i>
                 Logout
               </a>

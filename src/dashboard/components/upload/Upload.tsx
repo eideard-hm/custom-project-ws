@@ -3,8 +3,10 @@ import { useContext, useRef } from 'react';
 import toast from 'react-hot-toast';
 
 import { DashboardContext } from '../../../context';
-import { MAX_SIZE_MEDIA_ALLOW_BYTES } from '../../../utils';
-import { MAX_SIZE_DOCUMENTS_ALLOW_BYTES } from '../../../utils/consts';
+import {
+  MAX_SIZE_MEDIA_ALLOW_BYTES,
+  MAX_SIZE_DOCUMENTS_ALLOW_BYTES,
+} from '../../../utils';
 
 export function Upload() {
   const { setAttachFile } = useContext(DashboardContext);
