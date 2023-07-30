@@ -18,8 +18,9 @@ export function Nabvar() {
 
   const handleLogout = async () => {
     sessionStorage.clear();
+    localStorage.clear();
     navigate('/auth/login', { replace: true });
-    await logout();
+    if (isLoggin) await logout();
   };
 
   return (
@@ -146,12 +147,8 @@ export function Nabvar() {
                 <i className='fas fa-cog'></i>
                 Settings
               </a>
-              <div
-                className='dropdown-divider'
-                hidden={!isLoggin}
-              ></div>
+              <div className='dropdown-divider'></div>
               <a
-                hidden={!isLoggin}
                 onClick={handleLogout}
                 href='#'
                 className='dropdown-item has-icon text-danger'
