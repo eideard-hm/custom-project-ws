@@ -1,3 +1,4 @@
+import type { IUserDataLogin } from '../../auth/types';
 import { API_URL } from '../../config';
 import { getSessionStorage } from '../../services';
 import { USER_ID_KEY } from '../../utils';
@@ -29,7 +30,9 @@ export const getAllShipmentOrdersAsync = async (): Promise<
   ShipmentOrdersCreateInput[]
 > => {
   try {
-    const userId = getSessionStorage(USER_ID_KEY);
+    const { userId }: IUserDataLogin = JSON.parse(
+      getSessionStorage(USER_ID_KEY) ?? ''
+    );
     const response = await fetch(`${API_URL}/sphipment-orders/${userId}`, {
       headers: {
         'Content-type': 'application/json; charset=UTF-8',

@@ -18,6 +18,9 @@ export const loginUser = async (
     return data as ILoginResponse;
   } catch (error) {
     console.error(error);
-    return { loginSuccess: false, userId: '' };
+    return {
+      loginSuccess: false,
+      userData: { fullName: '', town: '', userId: '' },
+    };
   }
 };

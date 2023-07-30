@@ -1,6 +1,8 @@
+import { decodeBase64, encodeBase64 } from '../utils';
+
 export const setSessionStorage = (data: ISetSessionStorage) => {
   try {
-    sessionStorage.setItem(data.key, data.value);
+    sessionStorage.setItem(data.key, encodeBase64(data.value));
   } catch (error) {
     console.error(error);
   }
@@ -8,7 +10,7 @@ export const setSessionStorage = (data: ISetSessionStorage) => {
 
 export const getSessionStorage = (key: string): string | null => {
   try {
-    return sessionStorage.getItem(key);
+    return decodeBase64(sessionStorage.getItem(key) ?? '');
   } catch (error) {
     console.error(error);
     return null;

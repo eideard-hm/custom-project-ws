@@ -1,7 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 
+import type { IUserDataLogin } from '../../auth/types';
 import { WHATSAAP_API_URL } from '../../config';
 import { AuthContext } from '../../context';
+import { getSessionStorage } from '../../services';
+import { USER_ID_KEY } from '../../utils';
 import { socket } from '../../web-sockets';
 import { FormUserData, Nabvar, QrImg, Sidebar } from '../components';
 import type { IGenerateQr, ILoginResponse } from '../types';
@@ -31,12 +34,19 @@ function DashboardPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const userData: IUserDataLogin = JSON.parse(
+      getSessionStorage(USER_ID_KEY) ?? ''
+    );
+    setUserData(userData);
+  }, []);
+
   const receiveQr = (loginIfo: IGenerateQr) => {
     console.log({ loginIfo });
     loginIfo.qrImage = `data:image/svg+xml;base64,${loginIfo.qrImage}`;
     setQrImg(loginIfo);
     setAuth({ isLoggin: loginIfo.loginSuccess });
-    setUserData({...userData, userImage: loginIfo.userImage})
+    setUserData({ ...userData, userImage: loginIfo.userImage });
   };
 
   return (

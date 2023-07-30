@@ -1,8 +1,11 @@
+import { useContext } from 'react';
+
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 import { navigate } from 'wouter/use-location';
 
 import loginImg from '../../../assets/img/login.jpg';
+import { AuthContext } from '../../../context';
 import { setSessionStorage } from '../../../services';
 import { USER_ID_KEY } from '../../../utils';
 import { loginUser } from '../../services';
@@ -11,10 +14,12 @@ import { schema } from '../../validators';
 import './Login.css';
 
 export default function LoginPage() {
+  const { userData: userDataProvider, setUserData } = useContext(AuthContext);
+
   const submitForm = async (values: IFormValues) => {
     if (!isValid) return;
 
-    const { loginSuccess, userId } = await loginUser(values);
+    const { loginSuccess, userData } = await loginUser(values);
     console.log({ loginSuccess });
     if (!loginSuccess) {
       toast.error('Correo contraseña inválidos. Intente, nuevamente.', {
@@ -22,7 +27,13 @@ export default function LoginPage() {
       });
     } else {
       // guardar el Id en el session storage
-      setSessionStorage({ key: USER_ID_KEY, value: userId });
+      setSessionStorage({ key: USER_ID_KEY, value: JSON.stringify(userData) });
+      // guardar la data del usuario
+      setUserData({
+        ...userDataProvider,
+        fullName: userData.fullName,
+        town: userData.town,
+      });
       // redirect to the dashboard
       navigate('/dashboard', { replace: true });
     }

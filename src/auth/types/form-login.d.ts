@@ -5,5 +5,11 @@ export interface IFormValues {
 
 export interface ILoginResponse {
   loginSuccess: boolean;
+  userData: IUserDataLogin;
+}
+
+export interface IUserDataLogin {
   userId: string;
+  fullName: string;
+  town: string;
 }
