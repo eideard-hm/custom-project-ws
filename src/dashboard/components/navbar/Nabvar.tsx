@@ -1,5 +1,7 @@
 import { useContext, useRef } from 'react';
 
+import { navigate } from 'wouter/use-location';
+
 import { ASSETS_IMAGES } from '../../../assets/img';
 import { AuthContext } from '../../../context';
 import { logout } from '../../../services';
@@ -16,6 +18,7 @@ export function Nabvar() {
 
   const handleLogout = async () => {
     await logout();
+    navigate('/auth/login', { replace: true });
   };
 
   return (
