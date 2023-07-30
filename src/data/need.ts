@@ -1,6 +1,6 @@
-import type { IUserData } from '../types';
+import type { IUserDataMaestros } from '../types';
 
-export const needs: IUserData[] = [
+export const needs: IUserDataMaestros[] = [
   {
     name: 'Alimentación',
     value: 'Alimentación',

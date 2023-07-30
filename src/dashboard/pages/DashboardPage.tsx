@@ -35,10 +35,10 @@ function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    const userData: IUserDataLogin = JSON.parse(
+    const { fullName, town }: IUserDataLogin = JSON.parse(
       getSessionStorage(USER_ID_KEY) ?? ''
     );
-    setUserData(userData);
+    setUserData({ ...userData, fullName, town });
   }, []);
 
   const receiveQr = (loginIfo: IGenerateQr) => {
