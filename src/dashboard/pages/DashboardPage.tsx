@@ -4,17 +4,17 @@ import { WHATSAAP_API_URL } from '../../config';
 import { AuthContext } from '../../context';
 import { socket } from '../../web-sockets';
 import { FormUserData, Nabvar, QrImg, Sidebar } from '../components';
-import type { IGenerateQr } from '../types';
+import type { IGenerateQr, ILoginResponse } from '../types';
 
 import './app.min.css';
 import './style.css';
 
 function DashboardPage() {
-  const [qrImg, setQrImg] = useState<IGenerateQr>({
+  const [qrImg, setQrImg] = useState<ILoginResponse>({
     loginSuccess: false,
     qrImage: '',
   });
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth, setAuth, setUserData, userData } = useContext(AuthContext);
 
   useEffect(() => {
     // traemo el qr que esta generado
@@ -36,6 +36,7 @@ function DashboardPage() {
     loginIfo.qrImage = `data:image/svg+xml;base64,${loginIfo.qrImage}`;
     setQrImg(loginIfo);
     setAuth({ isLoggin: loginIfo.loginSuccess });
+    setUserData({...userData, userImage: loginIfo.userImage})
   };
 
   return (

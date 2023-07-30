@@ -3,6 +3,14 @@ export interface IAuth {
 }
 
 export interface IAuthContextProps {
-  auth: IAuth,
-  setAuth: (status: IAuth) => void
+  auth: IAuth;
+  setAuth: (status: IAuth) => void;
+  userData: IUserData,
+  setUserData: (userData: IUserData) => void
+}
+
+export interface IUserData {
+  fullName: string;
+  town: string;
+  userImage: string;
 }

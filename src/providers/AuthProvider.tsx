@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 
 import { AuthContext } from '../context';
 import { retrieveCurrentStatusAuth } from '../services';
-import type { IAuth } from '../types';
+import type { IAuth, IUserData } from '../types';
 
 interface Props {
   children?: ReactNode;
@@ -10,6 +10,11 @@ interface Props {
 
 export function AuthProvider({ children }: Props) {
   const [auth, setAuth] = useState<IAuth>({ isLoggin: false });
+  const [userData, setUserData] = useState<IUserData>({
+    fullName: '',
+    town: '',
+    userImage: '',
+  });
 
   useEffect(() => {
     retrieveCurrentStatusAuth()
@@ -17,12 +22,19 @@ export function AuthProvider({ children }: Props) {
       .catch(console.error);
   }, []);
 
-  const setCurrentStatusAuth = (status: IAuth) => {
-    setAuth(status);
-  };
+  const setCurrentStatusAuth = (status: IAuth) => setAuth(status);
+
+  const updateUserData = (userData: IUserData) => setUserData(userData);
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth: setCurrentStatusAuth }}>
+    <AuthContext.Provider
+      value={{
+        auth,
+        setAuth: setCurrentStatusAuth,
+        userData,
+        setUserData: updateUserData,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

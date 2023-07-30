@@ -5465,6 +5465,7 @@ body.layout-3 .main-footer {
 .main-sidebar .sidebar-brand a .logo-name {
   vertical-align: middle;
   font-size: 20px;
+  margin-left: 5px;
 }
 .main-sidebar .sidebar-user {
   display: inline-block;

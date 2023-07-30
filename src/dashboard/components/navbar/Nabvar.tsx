@@ -2,13 +2,14 @@ import { useContext, useRef } from 'react';
 
 import { navigate } from 'wouter/use-location';
 
-import { ASSETS_IMAGES } from '../../../assets/img';
 import { AuthContext } from '../../../context';
 import { logout } from '../../../services';
+import { DefaultImage } from '../../../shared/components';
 
 export function Nabvar() {
   const {
     auth: { isLoggin },
+    userData: { userImage, fullName },
   } = useContext(AuthContext);
   const userDropdown = useRef<HTMLDivElement>(null);
 
@@ -111,18 +112,22 @@ export function Nabvar() {
               data-toggle='dropdown'
               className='nav-link dropdown-toggle nav-link-lg nav-link-user'
             >
-              <img
-                alt='image'
-                src={ASSETS_IMAGES.user}
-                className='user-img-radious-style'
-              />
+              {userImage ? (
+                <img
+                  alt={`Imagen de perfil ${fullName}`}
+                  src={userImage}
+                  className='user-img-radious-style'
+                />
+              ) : (
+                <DefaultImage />
+              )}
               <span className='d-sm-none d-lg-inline-block'></span>
             </a>
             <div
               ref={userDropdown}
               className='dropdown-menu dropdown-menu-right pullDown'
             >
-              <div className='dropdown-title'></div>
+              <div className='dropdown-title'>Hola {fullName}</div>
               <a
                 href='#'
                 className='dropdown-item has-icon'
