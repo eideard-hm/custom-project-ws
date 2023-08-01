@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
+
 import { DashboardContext } from '../context';
-import { IAttachFile } from '../types/dashboard';
+import type { IAttachFile } from '../types/dashboard';
 
 interface Props {
   children?: ReactNode;

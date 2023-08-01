@@ -1,9 +1,8 @@
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { documentTypes, needs } from '../../../data';
-import { getSessionStorage } from '../../../services';
-import { USER_ID_KEY } from '../../../utils';
 import { createShipmentOrders } from '../../services';
 import type { ShipmentOrdersCreateInput } from '../../types/sphipment-orders';
 import { DetailTable } from '../detail-table/DetailTable';
@@ -22,19 +21,16 @@ const initialState: ShipmentOrdersCreateInput = {
   Email: '',
   Need: '',
   Phone: '',
-  ModifyUserId: getSessionStorage(USER_ID_KEY),
+  ModifyUserId: '',
 };
 
 export function FormUserData() {
   const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
     initialValues: initialState,
     onSubmit: async (values, { resetForm }) => {
-      console.log({ values });
-
       if (!isValid) return;
 
       const { Id } = await createShipmentOrders({ ...values });
-
       if (Id === 0) {
         toast.error(
           'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
@@ -124,7 +120,9 @@ export function FormUserData() {
                           onChange={handleChange}
                         />
                         <span className='custom-switch-indicator'></span>
-                        <span className='custom-switch-description'>Hombre</span>
+                        <span className='custom-switch-description'>
+                          Hombre
+                        </span>
                       </label>
                       <label className='custom-switch'>
                         <input
@@ -228,7 +226,9 @@ export function FormUserData() {
                           onChange={handleChange}
                         />
                         <span className='custom-switch-indicator'></span>
-                        <span className='custom-switch-description'>Urbano</span>
+                        <span className='custom-switch-description'>
+                          Urbano
+                        </span>
                       </label>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../auth/types';
 import { WHATSAAP_API_URL } from '../../config';
@@ -35,10 +36,15 @@ function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    const { fullName, town }: IUserDataLogin = JSON.parse(
-      getSessionStorage(USER_ID_KEY) ?? ''
-    );
+    const userInfo = getSessionStorage(USER_ID_KEY);
+    if (!userInfo) {
+      navigate('/', { replace: false });
+      return;
+    }
+
+    const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
     setUserData({ ...userData, fullName, town });
+    console.log({ IUserDataLogin: userData });
   }, []);
 
   const receiveQr = (loginIfo: IGenerateQr) => {
@@ -46,7 +52,12 @@ function DashboardPage() {
     loginIfo.qrImage = `data:image/svg+xml;base64,${loginIfo.qrImage}`;
     setQrImg(loginIfo);
     setAuth({ isLoggin: loginIfo.loginSuccess });
-    setUserData({ ...userData, userImage: loginIfo.userImage });
+
+    if (loginIfo.userImage) {
+      setUserData({ ...userData, userImage: loginIfo.userImage });
+    }
+
+    console.log({userData})
   };
 
   return (

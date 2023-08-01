@@ -11,6 +11,10 @@ export const createShipmentOrders = async (
   body: ShipmentOrdersCreateInput
 ): Promise<ShipmentOrdersCreateResponse> => {
   try {
+    const { userId }: IUserDataLogin = JSON.parse(
+      getSessionStorage(USER_ID_KEY) ?? ''
+    );
+    body.ModifyUserId = userId;
     const response = await fetch(`${API_URL}/sphipment-orders`, {
       method: 'POST',
       body: JSON.stringify(body),

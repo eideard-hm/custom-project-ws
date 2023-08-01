@@ -1,16 +1,21 @@
 import { useContext, useEffect, useState } from 'react';
+
 import toast from 'react-hot-toast';
 
 import { DashboardContext } from '../../../context';
 import {
   getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync,
+  sendMesssageBulkAsync
 } from '../../services';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput,
+  ShipmentOrdersCreateInput
 } from '../../types';
+
+interface Props {
+  refrestData: boolean;
+}
 
 export function DetailTable() {
   const [sendWsContacts, setSendWsContacts] = useState({
@@ -22,10 +27,7 @@ export function DetailTable() {
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
-      .then((shipments) => {
-        console.log({ shipments });
-        setShiptmet(shipments);
-      })
+      .then((shipments) => setShiptmet(shipments))
       .catch(console.error);
   }, []);
 
