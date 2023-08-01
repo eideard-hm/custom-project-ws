@@ -5,22 +5,25 @@ import toast from 'react-hot-toast';
 import { AuthContext, DashboardContext } from '../../../context';
 import {
   getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync,
+  sendMesssageBulkAsync
 } from '../../services';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput,
+  ShipmentOrdersCreateInput
 } from '../../types';
 
 export function DetailTable() {
+  const [isSending, setIsSending] = useState(false);
   const [sendWsContacts, setSendWsContacts] = useState({
     customMessage: '',
     sendWsContacts: false,
   });
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersCreateInput[]>([]);
   const { attachFile } = useContext(DashboardContext);
- const {userData: {fullName, town } } =  useContext(AuthContext)
+  const {
+    userData: { fullName, town },
+  } = useContext(AuthContext);
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
@@ -34,6 +37,7 @@ export function DetailTable() {
       sendWsContacts.customMessage.includes('{User}') ||
       sendWsContacts.customMessage.includes('{USER}')
     ) {
+      setIsSending(true);
       const receivedMessages: ISendBulkMessage[] = shiptmet.map(
         ({ FirstName, LastName, Phone }) => ({
           phone: Phone,
@@ -53,8 +57,7 @@ export function DetailTable() {
                 .replaceAll('{USER}', `*${fullName}*`)
                 .replaceAll('{location}', `*${town}*`)
                 .replaceAll('{Location}', `*${town}*`)
-                .replaceAll('{LOCATION}', `*${town}*`)
-              }`,
+                .replaceAll('{LOCATION}', `*${town}*`)}`,
         })
       );
 
@@ -65,6 +68,7 @@ export function DetailTable() {
       };
 
       const response = await sendMesssageBulkAsync(message);
+      setIsSending(false);
       if (response.length > 0) {
         toast.success('Mensajes enviados correctamente!');
       }
@@ -209,7 +213,9 @@ export function DetailTable() {
                   !sendWsContacts.customMessage ||
                   (shiptmet.length === 0 && !sendWsContacts.sendWsContacts)
                 }
-                className='btn btn-primary mr-1'
+                className={`btn btn-primary mr-1 ${
+                  isSending ? 'disabled btn-progress' : ''
+                }`}
                 onClick={handleSendBulkMessages}
               >
                 Envíar Mensajes
