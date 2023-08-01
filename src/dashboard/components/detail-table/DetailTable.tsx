@@ -2,15 +2,15 @@ import { useContext, useEffect, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
-import { DashboardContext } from '../../../context';
+import { AuthContext, DashboardContext } from '../../../context';
 import {
   getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync
+  sendMesssageBulkAsync,
 } from '../../services';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput
+  ShipmentOrdersCreateInput,
 } from '../../types';
 
 export function DetailTable() {
@@ -20,6 +20,7 @@ export function DetailTable() {
   });
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersCreateInput[]>([]);
   const { attachFile } = useContext(DashboardContext);
+ const {userData: {fullName, town } } =  useContext(AuthContext)
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
@@ -28,33 +29,49 @@ export function DetailTable() {
   }, []);
 
   const handleSendBulkMessages = async () => {
-    const receivedMessages: ISendBulkMessage[] = shiptmet.map(
-      ({ FirstName, LastName, Phone }) => ({
-        phone: Phone,
-        message: sendWsContacts.sendWsContacts
-          ? sendWsContacts.customMessage
-          : `${sendWsContacts.customMessage
-              .replaceAll('{name}', `*${FirstName}*`)
-              .replaceAll('{NAME}', `*${FirstName}*`)
-              .replaceAll('{Name}', `*${FirstName}*`)
-              .replaceAll('Name', `*${FirstName}*`)
-              .replaceAll('{lastname}', `*${LastName}*`)
-              .replaceAll('{Lastname}', `*${LastName}*`)
-              .replaceAll('{LastName}', `*${LastName}*`)
-              .replaceAll('{LASTNAME}', `*${LastName}*`)}`,
-      })
-    );
+    if (
+      sendWsContacts.customMessage.includes('{user}') ||
+      sendWsContacts.customMessage.includes('{User}') ||
+      sendWsContacts.customMessage.includes('{USER}')
+    ) {
+      const receivedMessages: ISendBulkMessage[] = shiptmet.map(
+        ({ FirstName, LastName, Phone }) => ({
+          phone: Phone,
+          message: sendWsContacts.sendWsContacts
+            ? sendWsContacts.customMessage
+            : `${sendWsContacts.customMessage
+                .replaceAll('{name}', `*${FirstName}*`)
+                .replaceAll('{NAME}', `*${FirstName}*`)
+                .replaceAll('{Name}', `*${FirstName}*`)
+                .replaceAll('Name', `*${FirstName}*`)
+                .replaceAll('{lastname}', `*${LastName}*`)
+                .replaceAll('{Lastname}', `*${LastName}*`)
+                .replaceAll('{LastName}', `*${LastName}*`)
+                .replaceAll('{LASTNAME}', `*${LastName}*`)
+                .replaceAll('{user}', `*${fullName}*`)
+                .replaceAll('{User}', `*${fullName}*`)
+                .replaceAll('{USER}', `*${fullName}*`)
+                .replaceAll('{location}', `*${town}*`)
+                .replaceAll('{Location}', `*${town}*`)
+                .replaceAll('{LOCATION}', `*${town}*`)
+              }`,
+        })
+      );
 
-    const message: ISendBulkMessageWithAttach = {
-      content: receivedMessages,
-      attach: attachFile,
-      sendWsContacts: sendWsContacts.sendWsContacts,
-    };
+      const message: ISendBulkMessageWithAttach = {
+        content: receivedMessages,
+        attach: attachFile,
+        sendWsContacts: sendWsContacts.sendWsContacts,
+      };
 
-    const response = await sendMesssageBulkAsync(message);
-    if (response.length > 0) {
-      toast.success('Mensajes enviados correctamente!');
+      const response = await sendMesssageBulkAsync(message);
+      if (response.length > 0) {
+        toast.success('Mensajes enviados correctamente!');
+      }
+      return;
     }
+
+    toast.error('Debe de agregar la convensión para reemplazar la información');
   };
 
   return (
