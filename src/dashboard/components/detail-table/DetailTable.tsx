@@ -13,10 +13,6 @@ import type {
   ShipmentOrdersCreateInput
 } from '../../types';
 
-interface Props {
-  refrestData: boolean;
-}
-
 export function DetailTable() {
   const [sendWsContacts, setSendWsContacts] = useState({
     customMessage: '',
