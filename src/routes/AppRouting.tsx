@@ -3,9 +3,7 @@ import { lazy, Suspense } from 'react';
 import { Redirect, Route, Router } from 'wouter';
 
 const AuthRouting = lazy(() => import('../auth/routes/AuthRouting'));
-const DashboardRouting = lazy(
-  () => import('../dashboard/routes/DashboardRouting')
-);
+const DashboardRouting = lazy(() => import('../dashboard/pages/DashboardPage'));
 
 export function AppRouting() {
   return (

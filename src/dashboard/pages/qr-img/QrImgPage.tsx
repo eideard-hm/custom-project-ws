@@ -2,13 +2,13 @@ import { Card } from '../../../shared/components';
 import { WsOptions } from '../../../ws/components';
 import type { ILoginResponse } from '../../types';
 
-import './QrImg.css';
+import './QrImgPage.css';
 
 interface Props {
   loginInfo: ILoginResponse;
 }
 
-export function QrImg({ loginInfo }: Props) {
+function QrImgPage({ loginInfo }: Props) {
   return (
     <Card>
       <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-5'>
@@ -31,3 +31,5 @@ export function QrImg({ loginInfo }: Props) {
     </Card>
   );
 }
+
+export default QrImgPage;

@@ -1,12 +1,15 @@
 import { useContext } from 'react';
+import { NavLink } from '../../../components';
 
 import { AuthContext } from '../../../context';
+import { links } from '../../../data';
 import { DefaultImage } from '../../../shared/components';
 
 export function Sidebar() {
   const {
     userData: { fullName, userImage },
   } = useContext(AuthContext);
+
   return (
     <div className='main-sidebar sidebar-style-2'>
       <aside id='sidebar-wrapper'>
@@ -24,26 +27,20 @@ export function Sidebar() {
             <span className='logo-name'>{fullName}</span>
           </a>
         </div>
+
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
-          <li className='dropdown active'>
-            <a
-              href='#'
-              className='nav-link'
+          {links.map(({ href, label, icon }, i) => (
+            <NavLink
+              href={href}
+              key={i}
             >
-              <i data-feather='monitor'></i>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li className='dropdown'>
-            <a
-              href='#'
-              className='menu-toggle nav-link has-dropdown'
-            >
-              <i data-feather='briefcase'></i>
-              <span>Widgets</span>
-            </a>
-          </li>
+              <a className='nav-link'>
+                <i className={icon}></i>
+                <span>{label}</span>
+              </a>
+            </NavLink>
+          ))}
         </ul>
       </aside>
     </div>

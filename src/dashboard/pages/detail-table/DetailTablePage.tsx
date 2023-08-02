@@ -5,15 +5,15 @@ import toast from 'react-hot-toast';
 import { AuthContext, DashboardContext } from '../../../context';
 import {
   getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync
+  sendMesssageBulkAsync,
 } from '../../services';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput
+  ShipmentOrdersCreateInput,
 } from '../../types';
 
-export function DetailTable() {
+function DetailTablePage() {
   const [isSending, setIsSending] = useState(false);
   const [sendWsContacts, setSendWsContacts] = useState({
     customMessage: '',
@@ -227,3 +227,5 @@ export function DetailTable() {
     </div>
   );
 }
+
+export default DetailTablePage;

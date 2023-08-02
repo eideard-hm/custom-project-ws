@@ -5502,6 +5502,7 @@ body.layout-3 .main-footer {
 }
 .main-sidebar .sidebar-menu li {
   display: block;
+  cursor: pointer;
 }
 .main-sidebar .sidebar-menu li.menu-header {
   padding: 3px 15px;
@@ -5569,6 +5570,7 @@ body.layout-3 .main-footer {
   fill: rgba(75, 75, 90, 0.12);
 }
 .main-sidebar .sidebar-menu li a span {
+  font-size: 14px;
   margin-top: 3px;
   width: 100%;
 }

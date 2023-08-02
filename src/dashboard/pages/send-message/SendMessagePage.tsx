@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useContext, useRef } from 'react';
 
 import toast from 'react-hot-toast';
@@ -8,7 +9,7 @@ import {
   MAX_SIZE_DOCUMENTS_ALLOW_BYTES,
 } from '../../../utils';
 
-export function Upload() {
+function SendMessagePage() {
   const { setAttachFile } = useContext(DashboardContext);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -85,3 +86,5 @@ export function Upload() {
     </div>
   );
 }
+
+export default SendMessagePage;

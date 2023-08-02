@@ -1,4 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { lazy, useContext, useEffect, useState } from 'react';
+
 import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../auth/types';
@@ -7,18 +9,20 @@ import { AuthContext } from '../../context';
 import { getSessionStorage } from '../../services';
 import { USER_ID_KEY } from '../../utils';
 import { socket } from '../../web-sockets';
-import { FormUserData, Nabvar, QrImg, Sidebar } from '../components';
+import { Nabvar, Sidebar } from '../components';
 import type { IGenerateQr, ILoginResponse } from '../types';
 
 import './app.min.css';
 import './style.css';
+
+const DashboardRouting = lazy(() => import('../routes/DashboardRouting'));
 
 function DashboardPage() {
   const [qrImg, setQrImg] = useState<ILoginResponse>({
     loginSuccess: false,
     qrImage: '',
   });
-  const { auth, setAuth, setUserData, userData } = useContext(AuthContext);
+  const { setAuth, setUserData, userData } = useContext(AuthContext);
 
   useEffect(() => {
     // traemo el qr que esta generado
@@ -57,7 +61,7 @@ function DashboardPage() {
       setUserData({ ...userData, userImage: loginIfo.userImage });
     }
 
-    console.log({userData})
+    console.log({ userData });
   };
 
   return (
@@ -73,8 +77,7 @@ function DashboardPage() {
           <section className='main-content'>
             <section className='section'>
               <div className='section-body'>
-                {auth.isLoggin ? <FormUserData /> : <QrImg loginInfo={qrImg} />}
-                {/* <FormUserData /> */}
+                <DashboardRouting qrImg={qrImg} />
               </div>
             </section>
           </section>
