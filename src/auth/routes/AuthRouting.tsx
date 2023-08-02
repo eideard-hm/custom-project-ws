@@ -1,15 +1,18 @@
 import { lazy } from 'react';
 
-import { Route } from 'wouter';
+import { Redirect, Route, Switch } from 'wouter';
 
 const LoginPage = lazy(() => import('../pages/login/LoginPage'));
 
 function AuthRouting() {
   return (
-    <Route
-      path='/login'
-      component={LoginPage}
-    />
+    <Switch>
+      <Route
+        path='/login'
+        component={LoginPage}
+      />
+      <Route>{() => <Redirect to='/login' />}</Route>
+    </Switch>
   );
 }
 

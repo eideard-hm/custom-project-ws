@@ -3,7 +3,7 @@ import type { ILink } from '../types';
 export const links: ILink[] = [
   {
     href: '/',
-    label: 'Conectar dispositivo',
+    label: 'Conectar Dispositivo',
     icon: 'fa-solid fa-link',
   },
   {
