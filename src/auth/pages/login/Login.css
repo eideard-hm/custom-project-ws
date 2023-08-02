@@ -170,17 +170,21 @@
 }
 
 .form-content .form-button {
-  margin-top: 30px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   margin-bottom: 25px;
+  margin-top: 30px;
 }
 
 .form-content .btn {
   border-radius: 6px;
-  padding: 6px 28px;
+  border: 0;
+  cursor: pointer;
   font-size: 14px;
   font-weight: 700;
   margin-right: 10px;
-  border: 0;
+  padding: 6px 28px;
 }
 
 .form-content .btn.btn-light {

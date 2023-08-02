@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
-import { Redirect, Route, Switch } from 'wouter';
+import { Redirect, Route } from 'wouter';
+
 import type { ILoginResponse } from '../types';
 
 const QrImgPage = lazy(() => import('../pages/qr-img/QrImgPage'));
@@ -20,7 +21,7 @@ interface Props {
 
 function DashboardRouting({ qrImg }: Props) {
   return (
-    <Switch>
+    <>
       <Route path='/'>
         <QrImgPage loginInfo={qrImg} />
       </Route>
@@ -37,7 +38,7 @@ function DashboardRouting({ qrImg }: Props) {
         component={SendMessagePage}
       />
       <Route>{() => <Redirect to='/' />}</Route>
-    </Switch>
+    </>
   );
 }
 

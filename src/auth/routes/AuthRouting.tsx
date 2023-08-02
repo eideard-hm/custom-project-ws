@@ -11,7 +11,9 @@ function AuthRouting() {
         path='/login'
         component={LoginPage}
       />
-      <Route>{() => <Redirect to='/login' />}</Route>
+      <Route>
+        <Redirect to='/login' />
+      </Route>
     </Switch>
   );
 }
