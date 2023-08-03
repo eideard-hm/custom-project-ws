@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { lazy, useContext, useEffect, useState } from 'react';
-import { Route } from 'wouter';
+import { useContext, useEffect, useState, type ReactNode } from 'react';
 
-import { navigate } from 'wouter/use-location';
+import { navigate, RouteComponentProps } from '@reach/router';
 
 import type { IUserDataLogin } from '../../auth/types';
 import { WHATSAAP_API_URL } from '../../config';
@@ -16,9 +15,10 @@ import type { IGenerateQr, ILoginResponse } from '../types';
 import './app.min.css';
 import './style.css';
 
-const DashboardRouting = lazy(() => import('../routes/DashboardRouting'));
+type Props = { children: ReactNode } & RouteComponentProps;
 
-function DashboardPage() {
+function DashboardPage({ children }: Props) {
+  console.log({children});
   const [qrImg, setQrImg] = useState<ILoginResponse>({
     loginSuccess: false,
     qrImage: '',
@@ -43,7 +43,7 @@ function DashboardPage() {
   useEffect(() => {
     const userInfo = getSessionStorage(USER_ID_KEY);
     if (!userInfo) {
-      navigate('/', { replace: false });
+      navigate('/auth/login');
       return;
     }
 
@@ -65,18 +65,7 @@ function DashboardPage() {
     console.log({ userData });
   };
 
-  return (
-    <DashboardLayout>
-         <Route path='/'>
-          <h1>Hello Worlds</h1>
-          {/* <QrImgPage loginInfo={qrImg} /> */}
-        </Route>
-         <Route path='/save'>
-          <h1>Hello Worlds 2</h1>
-          {/* <QrImgPage loginInfo={qrImg} /> */}
-        </Route>
-    </DashboardLayout>
-  );
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
 
 export default DashboardPage;

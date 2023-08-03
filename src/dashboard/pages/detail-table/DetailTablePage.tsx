@@ -1,3 +1,4 @@
+import { RouteComponentProps } from '@reach/router';
 import { useContext, useEffect, useState } from 'react';
 
 import toast from 'react-hot-toast';
@@ -13,7 +14,7 @@ import type {
   ShipmentOrdersCreateInput,
 } from '../../types';
 
-function DetailTablePage() {
+function DetailTablePage(props: RouteComponentProps) {
   const [isSending, setIsSending] = useState(false);
   const [sendWsContacts, setSendWsContacts] = useState({
     customMessage: '',

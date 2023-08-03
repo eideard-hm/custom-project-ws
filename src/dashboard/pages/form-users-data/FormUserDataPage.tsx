@@ -1,5 +1,6 @@
 import { useFormik } from 'formik';
 
+import { RouteComponentProps } from '@reach/router';
 import toast from 'react-hot-toast';
 
 import { documentTypes, needs } from '../../../data';
@@ -22,7 +23,7 @@ const initialState: ShipmentOrdersCreateInput = {
   ModifyUserId: '',
 };
 
-function FormUserDataPage() {
+function FormUserDataPage(props: RouteComponentProps) {
   const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
     initialValues: initialState,
     onSubmit: async (values, { resetForm }) => {

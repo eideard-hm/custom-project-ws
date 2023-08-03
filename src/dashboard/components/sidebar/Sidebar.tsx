@@ -31,15 +31,18 @@ export function Sidebar() {
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
           {links.map(({ href, label, icon }, i) => (
-            <NavLink
-              href={href}
+            <li
+              className='dropdown'
               key={i}
             >
-              <a className='nav-link'>
+              <NavLink
+                to={href}
+                className='nav-link'
+              >
                 <i className={icon}></i>
                 <span>{label}</span>
-              </a>
-            </NavLink>
+              </NavLink>
+            </li>
           ))}
         </ul>
       </aside>

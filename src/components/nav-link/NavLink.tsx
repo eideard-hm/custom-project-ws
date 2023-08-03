@@ -1,20 +1,13 @@
 import { type ReactNode } from 'react';
 
-import { Link, useRoute } from 'wouter';
+import { Link } from '@reach/router';
 
 interface Props {
   children?: ReactNode;
-  href: string;
+  to: string;
+  className: string;
 }
 
 export function NavLink(props: Props) {
-  const [isActive] = useRoute(props.href);
-
-  return (
-    <Link {...props}>
-      <li className={`dropdown ${isActive ? 'active' : ''}`}>
-        {props.children}
-      </li>
-    </Link>
-  );
+  return <Link {...props}>{props.children}</Link>;
 }

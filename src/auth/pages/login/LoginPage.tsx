@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 
+import { navigate } from '@reach/router';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
-import { useLocation } from 'wouter';
 
 import { ASSETS_IMAGES } from '../../../assets/img';
 import { AuthContext } from '../../../context';
@@ -15,7 +15,6 @@ import { schema } from '../../validators';
 import './LoginPage.css';
 
 export default function LoginPage() {
-  const [, navigate] = useLocation();
   const { userData: userDataProvider, setUserData } = useContext(AuthContext);
 
   const submitForm = async (values: IFormValues) => {
@@ -37,7 +36,7 @@ export default function LoginPage() {
         town: userData.town,
       });
       // redirect to the dashboard
-      navigate('~/dashboard', { replace: true });
+      navigate('/dashboard', { replace: true });
     }
   };
 

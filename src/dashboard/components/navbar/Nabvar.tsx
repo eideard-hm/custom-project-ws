@@ -1,6 +1,6 @@
 import { useContext, useRef } from 'react';
 
-import { navigate } from 'wouter/use-location';
+import { navigate } from '@reach/router';
 
 import { AuthContext } from '../../../context';
 import { logout } from '../../../services';
