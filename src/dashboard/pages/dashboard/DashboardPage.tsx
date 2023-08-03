@@ -3,20 +3,20 @@ import { lazy, useContext, useEffect } from 'react';
 
 import { navigate } from '@reach/router';
 
-import type { IUserDataLogin } from '../../auth/types';
-import { WHATSAAP_API_URL } from '../../config';
-import { AuthContext } from '../../context';
-import { useDashboardContext } from '../../hooks';
-import { getSessionStorage } from '../../services';
-import { USER_ID_KEY } from '../../utils';
-import { socket } from '../../web-sockets';
-import { DashboardLayout } from '../layouts';
-import type { IGenerateQr } from '../types';
+import type { IUserDataLogin } from '../../../auth/types';
+import { WHATSAAP_API_URL } from '../../../config';
+import { AuthContext } from '../../../context';
+import { useDashboardContext } from '../../../hooks';
+import { getSessionStorage } from '../../../services';
+import { USER_ID_KEY } from '../../../utils';
+import { socket } from '../../../web-sockets';
+import { DashboardLayout } from '../../layouts';
+import type { IGenerateQr } from '../../types';
 
 import './app.min.css';
 import './style.css';
 
-const DashboardRouting = lazy(() => import('../routes/DashboardRouting'));
+const DashboardRouting = lazy(() => import('../../routes/DashboardRouting'));
 
 function DashboardPage() {
   const { setAuth, setUserData, userData } = useContext(AuthContext);
@@ -40,13 +40,17 @@ function DashboardPage() {
   useEffect(() => {
     const userInfo = getSessionStorage(USER_ID_KEY);
     if (!userInfo) {
-      navigate('/auth', { replace: true });
+      navigate('/auth/login', { replace: true });
       return;
     }
 
     const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
     setUserData({ ...userData, fullName, town });
     console.log({ IUserDataLogin: userData });
+
+    return () => {
+      socket.offAny();
+    };
   }, []);
 
   const receiveQr = (loginIfo: IGenerateQr) => {
@@ -64,8 +68,6 @@ function DashboardPage() {
     } else {
       navigate('/dashboard');
     }
-
-    console.log({ userData });
   };
 
   return (

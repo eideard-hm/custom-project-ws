@@ -1,24 +1,16 @@
 import { useContext } from 'react';
 
 import { AuthContext } from '../../../context';
-import { DefaultImage } from '../../../shared/components';
+import { UserImage } from '../user-img/UserImage';
 
 export function UserProfile() {
   const {
-    userData: { fullName, userImage },
+    userData: { fullName },
   } = useContext(AuthContext);
   return (
     <div className='sidebar-brand'>
       <a href='#'>
-        {userImage ? (
-          <img
-            alt={`Imagen de perfil ${fullName}`}
-            src={userImage}
-            className='header-logo'
-          />
-        ) : (
-          <DefaultImage />
-        )}
+        <UserImage />
         <span className='logo-name'>{fullName}</span>
       </a>
     </div>

@@ -4,7 +4,7 @@ import { Router } from '@reach/router';
 import { Route } from '../components';
 
 const AuthRouting = lazy(() => import('../auth/routes/AuthRouting'));
-const DashboardPage = lazy(() => import('../dashboard/pages/DashboardPage'));
+const DashboardPage = lazy(() => import('../dashboard/pages/dashboard/DashboardPage'));
 
 export function AppRouting() {
   return (

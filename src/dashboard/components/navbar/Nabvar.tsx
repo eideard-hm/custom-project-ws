@@ -1,16 +1,16 @@
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 
-import { navigate } from '@reach/router';
+import { Link } from '@reach/router';
 
-import { AuthContext } from '../../../context';
+import { useAuthContext } from '../../../hooks';
 import { logout } from '../../../services';
-import { DefaultImage } from '../../../shared/components';
+import { UserImage } from '../user-img/UserImage';
 
 export function Nabvar() {
   const {
     auth: { isLoggin },
-    userData: { userImage, fullName },
-  } = useContext(AuthContext);
+    userData: { fullName },
+  } = useAuthContext();
   const userDropdown = useRef<HTMLDivElement>(null);
 
   const handleUserDropdown = () => {
@@ -20,7 +20,6 @@ export function Nabvar() {
   const handleLogout = async () => {
     sessionStorage.clear();
     localStorage.clear();
-    navigate('/auth/login', { replace: true });
     if (isLoggin) await logout();
   };
 
@@ -112,15 +111,7 @@ export function Nabvar() {
               data-toggle='dropdown'
               className='nav-link dropdown-toggle nav-link-lg nav-link-user'
             >
-              {userImage ? (
-                <img
-                  alt={`Imagen de perfil ${fullName}`}
-                  src={userImage}
-                  className='user-img-radious-style'
-                />
-              ) : (
-                <DefaultImage />
-              )}
+              <UserImage />
               <span className='d-sm-none d-lg-inline-block'></span>
             </a>
             <div
@@ -153,14 +144,14 @@ export function Nabvar() {
                 Settings
               </a>
               <div className='dropdown-divider'></div>
-              <a
+              <Link
                 onClick={handleLogout}
-                href='#'
+                to='/auth'
                 className='dropdown-item has-icon text-danger'
               >
                 <i className='fas fa-sign-out-alt'></i>
                 Logout
-              </a>
+              </Link>
             </div>
           </li>
         </ul>
