@@ -23,7 +23,9 @@ export function Sidebar() {
               <NavLink
                 to={href}
                 className={`nav-link ${
-                  disabled && loginSuccess ? 'disabled' : ''
+                  (disabled && loginSuccess) || (!disabled && !loginSuccess)
+                    ? 'disabled'
+                    : ''
                 }`}
               >
                 <i className={icon}></i>

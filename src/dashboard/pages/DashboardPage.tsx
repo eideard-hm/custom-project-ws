@@ -61,6 +61,8 @@ function DashboardPage({ children }: Props) {
 
     if (loginIfo.loginSuccess) {
       navigate('/dashboard/sphipment-order');
+    }else {
+      navigate('/dashboard');
     }
 
     console.log({ userData });
