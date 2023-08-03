@@ -7,6 +7,7 @@ const LoginPage = lazy(() => import('../pages/login/LoginPage'));
 function AuthRouting() {
   return (
     <Route
+      default
       path='/login'
       element={<LoginPage />}
     />

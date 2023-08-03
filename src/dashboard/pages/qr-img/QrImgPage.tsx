@@ -8,7 +8,7 @@ interface Props {
   loginInfo: ILoginResponse;
 }
 
-function QrImgPage({ loginInfo }: Props) {
+function QrImgPage() {
   return (
     <Card>
       <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-5'>
@@ -18,14 +18,15 @@ function QrImgPage({ loginInfo }: Props) {
       </div>
       <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0'>
         <div className='banner-img'>
-          <img
-            src={loginInfo.qrImage}
+          {/* <img
+            src='{loginInfo.qrImage}'
             alt='Código QR de inicio de sesión'
             style={{
               display: loginInfo.loginSuccess ? 'none' : 'block',
             }}
             width='70%'
-          />
+          /> */}
+          <h1>Hello World</h1>
         </div>
       </div>
     </Card>

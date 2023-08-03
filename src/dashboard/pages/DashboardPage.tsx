@@ -18,7 +18,6 @@ import './style.css';
 type Props = { children: ReactNode } & RouteComponentProps;
 
 function DashboardPage({ children }: Props) {
-  console.log({children});
   const [qrImg, setQrImg] = useState<ILoginResponse>({
     loginSuccess: false,
     qrImage: '',
@@ -43,7 +42,7 @@ function DashboardPage({ children }: Props) {
   useEffect(() => {
     const userInfo = getSessionStorage(USER_ID_KEY);
     if (!userInfo) {
-      navigate('/auth/login');
+      navigate('/auth', { replace: true });
       return;
     }
 

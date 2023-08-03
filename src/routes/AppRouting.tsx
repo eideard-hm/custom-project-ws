@@ -2,13 +2,18 @@ import { lazy, Suspense } from 'react';
 
 import { Router } from '@reach/router';
 import { Route } from '../components';
-import FormUserDataPage from '../dashboard/pages/form-users-data/FormUserDataPage';
-import DetailTablePage from '../dashboard/pages/detail-table/DetailTablePage';
 
 const AuthRouting = lazy(() => import('../auth/routes/AuthRouting'));
 const DashboardPage = lazy(() => import('../dashboard/pages/DashboardPage'));
-const DashboardRouting = lazy(
-  () => import('../dashboard/routes/DashboardRouting')
+const QrImPage = lazy(() => import('../dashboard/pages/qr-img/QrImgPage'));
+const FormUserDataPage = lazy(
+  () => import('../dashboard/pages/form-users-data/FormUserDataPage')
+);
+const DetailTablePage = lazy(
+  () => import('../dashboard/pages/detail-table/DetailTablePage')
+);
+const SendMessagePage = lazy(
+  () => import('../dashboard/pages/send-message/SendMessagePage')
 );
 
 export function AppRouting() {
@@ -16,18 +21,26 @@ export function AppRouting() {
     <Suspense fallback={<>loading</>}>
       <Router>
         <Route
-          default
           path='/auth/*'
           element={<AuthRouting />}
         />
         <DashboardPage path='/dashboard'>
           <Route
-            default
             path='/'
-            element={<h1>Hello World</h1>}
+            element={<QrImPage />}
           />
-          <FormUserDataPage path='save' />
-          <DetailTablePage path='sphipment-order' />
+          <Route
+            path='/save'
+            element={<FormUserDataPage />}
+          />
+          <Route
+            path='/sphipment-order'
+            element={<DetailTablePage />}
+          />
+          <Route
+            path='/send-messages'
+            element={<SendMessagePage />}
+          />
         </DashboardPage>
       </Router>
     </Suspense>
