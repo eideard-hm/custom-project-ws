@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, type ReactNode } from 'react';
+import { lazy, useContext, useEffect } from 'react';
 
-import { navigate, RouteComponentProps } from '@reach/router';
+import { navigate } from '@reach/router';
 
 import type { IUserDataLogin } from '../../auth/types';
 import { WHATSAAP_API_URL } from '../../config';
@@ -16,9 +16,9 @@ import type { IGenerateQr } from '../types';
 import './app.min.css';
 import './style.css';
 
-type Props = { children: ReactNode } & RouteComponentProps;
+const DashboardRouting = lazy(() => import('../routes/DashboardRouting'));
 
-function DashboardPage({ children }: Props) {
+function DashboardPage() {
   const { setAuth, setUserData, userData } = useContext(AuthContext);
   const { setLoginInfo } = useDashboardContext();
 
@@ -61,14 +61,18 @@ function DashboardPage({ children }: Props) {
 
     if (loginIfo.loginSuccess) {
       navigate('/dashboard/sphipment-order');
-    }else {
+    } else {
       navigate('/dashboard');
     }
 
     console.log({ userData });
   };
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <DashboardLayout>
+      <DashboardRouting />
+    </DashboardLayout>
+  );
 }
 
 export default DashboardPage;

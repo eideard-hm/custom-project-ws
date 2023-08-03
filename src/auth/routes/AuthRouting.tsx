@@ -8,7 +8,7 @@ function AuthRouting() {
   return (
     <Route
       default
-      path='/login'
+      path='login'
       element={<LoginPage />}
     />
   );
