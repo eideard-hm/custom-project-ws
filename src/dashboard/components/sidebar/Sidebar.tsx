@@ -1,12 +1,12 @@
 import { NavLink } from '../../../components';
 import { links } from '../../../data';
-import { useDashboardContext } from '../../../hooks';
+import { useAuthContext } from '../../../hooks';
 import { UserProfile } from '../user-profile/UserProfile';
 
 export function Sidebar() {
   const {
-    loginInfo: { loginSuccess },
-  } = useDashboardContext();
+    auth: { isLoggin },
+  } = useAuthContext();
 
   return (
     <div className='main-sidebar sidebar-style-2'>
@@ -23,7 +23,7 @@ export function Sidebar() {
               <NavLink
                 to={href}
                 className={`nav-link ${
-                  (disabled && loginSuccess) || (!disabled && !loginSuccess)
+                  (disabled && isLoggin) || (!disabled && !isLoggin)
                     ? 'disabled'
                     : ''
                 }`}

@@ -1,11 +1,11 @@
-import { useContext } from 'react';
+import { useEffect } from 'react';
 
 import { navigate } from '@reach/router';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 
 import { ASSETS_IMAGES } from '../../../assets/img';
-import { AuthContext } from '../../../context';
+import { useAuthContext } from '../../../hooks';
 import { setSessionStorage } from '../../../services';
 import { USER_ID_KEY } from '../../../utils';
 import { loginUser } from '../../services';
@@ -15,7 +15,15 @@ import { schema } from '../../validators';
 import './LoginPage.css';
 
 export default function LoginPage() {
-  const { userData: userDataProvider, setUserData } = useContext(AuthContext);
+  const {
+    userData: userDataProvider,
+    setUserData,
+    auth: { isLoggin },
+  } = useAuthContext();
+
+  useEffect(() => {
+    if (isLoggin) navigate('/dashboard', { replace: true });
+  }, [isLoggin]);
 
   const submitForm = async (values: IFormValues) => {
     if (!isValid) return;

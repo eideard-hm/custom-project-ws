@@ -1,8 +1,8 @@
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 
-import { Link } from '@reach/router';
+import { navigate } from '@reach/router';
 
-import { useAuthContext } from '../../../hooks';
+import { AuthContext } from '../../../context';
 import { logout } from '../../../services';
 import { UserImage } from '../user-img/UserImage';
 
@@ -10,7 +10,7 @@ export function Nabvar() {
   const {
     auth: { isLoggin },
     userData: { fullName },
-  } = useAuthContext();
+  } = useContext(AuthContext);
   const userDropdown = useRef<HTMLDivElement>(null);
 
   const handleUserDropdown = () => {
@@ -20,6 +20,7 @@ export function Nabvar() {
   const handleLogout = async () => {
     sessionStorage.clear();
     localStorage.clear();
+    navigate('/auth/login', { replace: true });
     if (isLoggin) await logout();
   };
 
@@ -107,7 +108,6 @@ export function Nabvar() {
             onClick={handleUserDropdown}
           >
             <a
-              href='#'
               data-toggle='dropdown'
               className='nav-link dropdown-toggle nav-link-lg nav-link-user'
             >
@@ -144,14 +144,13 @@ export function Nabvar() {
                 Settings
               </a>
               <div className='dropdown-divider'></div>
-              <Link
+              <a
                 onClick={handleLogout}
-                to='/auth'
                 className='dropdown-item has-icon text-danger'
               >
                 <i className='fas fa-sign-out-alt'></i>
                 Logout
-              </Link>
+              </a>
             </div>
           </li>
         </ul>

@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { lazy, useContext, useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 
-import { navigate } from '@reach/router';
+import { useNavigate } from '@reach/router';
 
 import type { IUserDataLogin } from '../../../auth/types';
 import { WHATSAAP_API_URL } from '../../../config';
-import { AuthContext } from '../../../context';
-import { useDashboardContext } from '../../../hooks';
+import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { getSessionStorage } from '../../../services';
 import { USER_ID_KEY } from '../../../utils';
 import { socket } from '../../../web-sockets';
@@ -19,8 +18,9 @@ import './style.css';
 const DashboardRouting = lazy(() => import('../../routes/DashboardRouting'));
 
 function DashboardPage() {
-  const { setAuth, setUserData, userData } = useContext(AuthContext);
+  const { setAuth, setUserData, userData } = useAuthContext();
   const { setLoginInfo } = useDashboardContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // traemo el qr que esta generado
@@ -64,9 +64,9 @@ function DashboardPage() {
     }
 
     if (loginIfo.loginSuccess) {
-      navigate('/dashboard/sphipment-order');
+      navigate('/dashboard/sphipment-order', { replace: true });
     } else {
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   };
 
