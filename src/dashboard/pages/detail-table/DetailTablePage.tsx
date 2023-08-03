@@ -38,7 +38,59 @@ function DetailTablePage() {
       sendWsContacts.customMessage.includes('{USER}')
     ) {
       setIsSending(true);
-      const receivedMessages: ISendBulkMessage[] = shiptmet.map(
+      const receivedMessagesDumy:   ShipmentOrdersCreateInput[]  = [
+        {
+        FirstName: "David",
+        LastName: "Ciro",
+        Email:"",
+        Phone:"3184666618",
+        FromCityCode:"",
+        BirthDate:"",
+        DocumentType:"",
+        DocumentId: "",
+        SexId:"",
+        Ubication:"",
+        Sidewalk:"",
+        Need: "",
+        ModifyUserId: "",
+      
+          },
+        {
+          
+          FirstName: "Edier",
+          LastName: "Hernádez",
+          Email:"",
+        Phone:"3206371091",
+        FromCityCode:"",
+        BirthDate:"",
+        DocumentType:"",
+        DocumentId: "",
+        SexId:"",
+        Ubication:"",
+        Sidewalk:"",
+        Need: "",
+        ModifyUserId: "",
+          },
+        {
+          
+          FirstName: "Ferney",
+          LastName: "Hernádez",
+          Email:"",
+        Phone:"3197014092",
+        FromCityCode:"",
+        BirthDate:"",
+        DocumentType:"",
+        DocumentId: "",
+        SexId:"",
+        Ubication:"",
+        Sidewalk:"",
+        Need: "",
+        ModifyUserId: "",
+          },
+      ];
+
+      const receivedMessages: ISendBulkMessage[] =
+        receivedMessagesDumy.map(
         ({ FirstName, LastName, Phone }) => ({
           phone: Phone,
           message: sendWsContacts.sendWsContacts
@@ -60,6 +112,7 @@ function DetailTablePage() {
                 .replaceAll('{LOCATION}', `*${town}*`)}`,
         })
       );
+
 
       const message: ISendBulkMessageWithAttach = {
         content: receivedMessages,
