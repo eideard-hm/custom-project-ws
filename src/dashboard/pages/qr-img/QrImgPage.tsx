@@ -1,12 +1,12 @@
 import { Card } from '../../../shared/components';
 import { WsOptions } from '../../../ws/components';
-import type { ILoginResponse } from '../../types';
+// import type { ILoginResponse } from '../../types';
 
 import './QrImgPage.css';
 
-interface Props {
-  loginInfo: ILoginResponse;
-}
+// interface Props {
+//   loginInfo: ILoginResponse;
+// }
 
 function QrImgPage() {
   return (

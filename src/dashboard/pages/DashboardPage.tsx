@@ -18,7 +18,7 @@ import './style.css';
 type Props = { children: ReactNode } & RouteComponentProps;
 
 function DashboardPage({ children }: Props) {
-  const [qrImg, setQrImg] = useState<ILoginResponse>({
+  const [, setQrImg] = useState<ILoginResponse>({
     loginSuccess: false,
     qrImage: '',
   });
