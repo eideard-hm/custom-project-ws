@@ -15,7 +15,7 @@ export function Sidebar() {
 
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
-          {links.map(({ href, label, icon }, i) => (
+          {links.map(({ href, label, icon, disabled }, i) => (
             <li
               className='dropdown'
               key={i}
@@ -23,7 +23,7 @@ export function Sidebar() {
               <NavLink
                 to={href}
                 className={`nav-link ${
-                  href === '/dashboard' && loginSuccess ? 'disabled' : ''
+                  disabled && loginSuccess ? 'disabled' : ''
                 }`}
               >
                 <i className={icon}></i>
