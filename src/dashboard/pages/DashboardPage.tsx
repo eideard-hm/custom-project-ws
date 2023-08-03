@@ -59,6 +59,10 @@ function DashboardPage({ children }: Props) {
       setUserData({ ...userData, userImage: loginIfo.userImage });
     }
 
+    if (loginIfo.loginSuccess) {
+      navigate('/dashboard/sphipment-order');
+    }
+
     console.log({ userData });
   };
 
