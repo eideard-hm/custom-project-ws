@@ -5,7 +5,8 @@ import { navigate, RouteComponentProps } from '@reach/router';
 
 import type { IUserDataLogin } from '../../auth/types';
 import { WHATSAAP_API_URL } from '../../config';
-import { AuthContext, DashboardContext } from '../../context';
+import { AuthContext } from '../../context';
+import { useDashboardContext } from '../../hooks';
 import { getSessionStorage } from '../../services';
 import { USER_ID_KEY } from '../../utils';
 import { socket } from '../../web-sockets';
@@ -19,7 +20,7 @@ type Props = { children: ReactNode } & RouteComponentProps;
 
 function DashboardPage({ children }: Props) {
   const { setAuth, setUserData, userData } = useContext(AuthContext);
-  const { setLoginInfo } = useContext(DashboardContext);
+  const { setLoginInfo } = useDashboardContext();
 
   useEffect(() => {
     // traemo el qr que esta generado

@@ -1,32 +1,17 @@
-import { useContext } from 'react';
-
 import { NavLink } from '../../../components';
-import { AuthContext } from '../../../context';
 import { links } from '../../../data';
-import { DefaultImage } from '../../../shared/components';
+import { useDashboardContext } from '../../../hooks';
+import { UserProfile } from '../user-profile/UserProfile';
 
 export function Sidebar() {
   const {
-    userData: { fullName, userImage },
-  } = useContext(AuthContext);
+    loginInfo: { loginSuccess },
+  } = useDashboardContext();
 
   return (
     <div className='main-sidebar sidebar-style-2'>
       <aside id='sidebar-wrapper'>
-        <div className='sidebar-brand'>
-          <a href='#'>
-            {userImage ? (
-              <img
-                alt={`Imagen de perfil ${fullName}`}
-                src={userImage}
-                className='header-logo'
-              />
-            ) : (
-              <DefaultImage />
-            )}
-            <span className='logo-name'>{fullName}</span>
-          </a>
-        </div>
+        <UserProfile />
 
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
@@ -37,7 +22,9 @@ export function Sidebar() {
             >
               <NavLink
                 to={href}
-                className='nav-link'
+                className={`nav-link ${
+                  href === '/dashboard' && loginSuccess ? 'disabled' : ''
+                }`}
               >
                 <i className={icon}></i>
                 <span>{label}</span>
