@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { lazy, useContext, useEffect, useState } from 'react';
+import { Route } from 'wouter';
 
 import { navigate } from 'wouter/use-location';
 
@@ -9,7 +10,7 @@ import { AuthContext } from '../../context';
 import { getSessionStorage } from '../../services';
 import { USER_ID_KEY } from '../../utils';
 import { socket } from '../../web-sockets';
-import { Nabvar, Sidebar } from '../components';
+import { DashboardLayout } from '../layouts';
 import type { IGenerateQr, ILoginResponse } from '../types';
 
 import './app.min.css';
@@ -65,25 +66,16 @@ function DashboardPage() {
   };
 
   return (
-    <>
-      {/* <div className='loader'></div> */}
-      <div id='admin'>
-        <div className='main-wrapper main-wrapper-1'>
-          <Nabvar />
-
-          <Sidebar />
-
-          {/* <!-- Main Content --> */}
-          <section className='main-content'>
-            <section className='section'>
-              <div className='section-body'>
-                <DashboardRouting qrImg={qrImg} />
-              </div>
-            </section>
-          </section>
-        </div>
-      </div>
-    </>
+    <DashboardLayout>
+         <Route path='/'>
+          <h1>Hello Worlds</h1>
+          {/* <QrImgPage loginInfo={qrImg} /> */}
+        </Route>
+         <Route path='/save'>
+          <h1>Hello Worlds 2</h1>
+          {/* <QrImgPage loginInfo={qrImg} /> */}
+        </Route>
+    </DashboardLayout>
   );
 }
 

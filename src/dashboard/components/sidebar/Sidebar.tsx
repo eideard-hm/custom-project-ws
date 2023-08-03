@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { NavLink } from '../../../components';
 
+import { NavLink } from '../../../components';
 import { AuthContext } from '../../../context';
 import { links } from '../../../data';
 import { DefaultImage } from '../../../shared/components';

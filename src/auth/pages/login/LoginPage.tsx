@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
-import { navigate } from 'wouter/use-location';
+import { useLocation } from 'wouter';
 
 import { ASSETS_IMAGES } from '../../../assets/img';
 import { AuthContext } from '../../../context';
@@ -12,9 +12,10 @@ import { loginUser } from '../../services';
 import type { IFormValues } from '../../types';
 import { schema } from '../../validators';
 
-import './Login.css';
+import './LoginPage.css';
 
 export default function LoginPage() {
+  const [, navigate] = useLocation();
   const { userData: userDataProvider, setUserData } = useContext(AuthContext);
 
   const submitForm = async (values: IFormValues) => {
@@ -36,7 +37,7 @@ export default function LoginPage() {
         town: userData.town,
       });
       // redirect to the dashboard
-      navigate('~/dashboard', { replace: false });
+      navigate('~/dashboard', { replace: true });
     }
   };
 

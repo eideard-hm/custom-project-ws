@@ -1,12 +1,13 @@
 import { lazy } from 'react';
 
-import { Redirect, Route, Switch } from 'wouter';
+import { Redirect, Route } from 'wouter';
+import { NestedRoutes } from '../../components';
 
 const LoginPage = lazy(() => import('../pages/login/LoginPage'));
 
 function AuthRouting() {
   return (
-    <Switch>
+    <NestedRoutes base='/auth'>
       <Route
         path='/login'
         component={LoginPage}
@@ -14,7 +15,7 @@ function AuthRouting() {
       <Route>
         <Redirect to='/login' />
       </Route>
-    </Switch>
+    </NestedRoutes>
   );
 }
 

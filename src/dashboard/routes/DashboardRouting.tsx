@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
-import { Redirect, Route } from 'wouter';
+import { Redirect, Route, Switch } from 'wouter';
+import { NestedRoutes } from '../../components';
 
 import type { ILoginResponse } from '../types';
 
@@ -14,18 +15,20 @@ const DetailTablePage = lazy(
 const SendMessagePage = lazy(
   () => import('../pages/send-message/SendMessagePage')
 );
+const DashboardPage = lazy(
+  () => import('../pages/DashboardPage')
+);
 
 interface Props {
   qrImg: ILoginResponse;
 }
 
-function DashboardRouting({ qrImg }: Props) {
+function DashboardRouting() {
   return (
-    <>
-      <Route path='/'>
-        <QrImgPage loginInfo={qrImg} />
+    <NestedRoutes base='/dashboard'>
+      <Route path='/' component={DashboardPage}>
       </Route>
-      <Route
+      {/* <Route
         path='/save'
         component={FormUserDataPage}
       />
@@ -37,8 +40,10 @@ function DashboardRouting({ qrImg }: Props) {
         path='/send-messages'
         component={SendMessagePage}
       />
-      <Route>{() => <Redirect to='/' />}</Route>
-    </>
+      <Route>
+        <Redirect to='/' />
+      </Route> */}
+    </NestedRoutes>
   );
 }
 

@@ -1,26 +1,22 @@
 import { lazy, Suspense } from 'react';
 
-import { Redirect, Route, Router, Switch } from 'wouter';
+import { Redirect, Route } from 'wouter';
 
 const AuthRouting = lazy(() => import('../auth/routes/AuthRouting'));
-const DashboardPage = lazy(() => import('../dashboard/pages/DashboardPage'));
+const DashboardRouting = lazy(
+  () => import('../dashboard/routes/DashboardRouting')
+);
 
 export function AppRouting() {
   return (
     <Suspense fallback={<>loading</>}>
-      <Switch>
-        <Router base='/auth'>
-          <AuthRouting />
-        </Router>
-        <Router base='/dashboard'>
-          <DashboardPage />
-        </Router>
-        <Router>
-          <Route>
-            <Redirect to='/auth' />
-          </Route>
-        </Router>
-      </Switch>
+      <>
+        <AuthRouting />
+        <DashboardRouting />
+        <Route>
+          <Redirect to='/auth/login' />
+        </Route>
+      </>
     </Suspense>
   );
 }
