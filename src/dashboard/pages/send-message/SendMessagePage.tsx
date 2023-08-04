@@ -1,89 +1,181 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useContext, useRef } from 'react';
+import { useFormik } from 'formik';
 
-import toast from 'react-hot-toast';
-
-import { DashboardContext } from '../../../context';
-import {
-  MAX_SIZE_MEDIA_ALLOW_BYTES,
-  MAX_SIZE_DOCUMENTS_ALLOW_BYTES,
-} from '../../../utils';
+import { needs } from '../../../data';
+import { Card } from '../../../shared/components';
+import { AttachedFile } from '../../components';
 
 function SendMessagePage() {
-  const { setAttachFile } = useContext(DashboardContext);
-  const inputFileRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChosen = (file: File | undefined) => {
-    if (!file) {
-      toast.error('No se adjunto un archivo valido.');
-      setAttachFile({ base64: '', type: '', name: '' });
-      inputFileRef.current!.value = '';
-      return;
-    }
-
-    if (
-      file.type.includes('video') ||
-      file.type.includes('image') ||
-      file.type.includes('audio')
-    ) {
-      // El tamaño máximo permitido para todos los archivos multimedia (fotos, videos y mensajes de voz) enviados o reenviados por WhatsApp es de 16 MB.
-      // 16MB -> 16_777_216bytes
-      if (file.size >= MAX_SIZE_MEDIA_ALLOW_BYTES) {
-        toast.error('El archivo supera el máximo permitido que son 16MB.');
-        setAttachFile({ base64: '', type: '', name: '' });
-        inputFileRef.current!.value = '';
-        return;
-      }
-    }
-
-    if (file.type.includes('application')) {
-      // Para documentos, el tamaño máximo es de 100 MB.
-      if (file.size >= MAX_SIZE_DOCUMENTS_ALLOW_BYTES) {
-        toast.error('El archivo supera el máximo permitido que son 100MB.');
-        setAttachFile({ base64: '', type: '', name: '' });
-        inputFileRef.current!.value = '';
-        return;
-      }
-    }
-
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = () => {
-      const fileBase64 = fileReader.result?.toString().split(',')[1] ?? '';
-      setAttachFile({
-        base64: fileBase64,
-        type: file.type,
-        name: file.name,
-      });
-    };
-    fileReader.onerror = (error) => {
-      console.error(error);
-      setAttachFile({ base64: '', type: '', name: '' });
-    };
-  };
+  const { dirty, handleChange, handleSubmit, isValid, values } = useFormik({
+    initialValues: {},
+    enableReinitialize: true,
+    onSubmit(values) {
+      console.log({ values });
+    },
+  });
 
   return (
-    <div className='row'>
-      <div className='col-12'>
-        <div className='card'>
+    <section className='send-messages-page'>
+      <Card>
+        <div className='col-12'>
           <div className='card-header'>
-            <h4>Seleccionar Archivo a Envíar</h4>
+            <h4>Envio Mensajes</h4>
           </div>
-          <div className='card-body'>
-            <form className='dropzone dz-clickable'>
-              <div className='form-group'>
-                <input
-                  ref={inputFileRef}
-                  type='file'
-                  className='form-control'
-                  onChange={(e) => handleFileChosen(e.target.files?.[0])}
-                />
+          <section className='card-body'>
+            <form
+              onSubmit={handleSubmit}
+              className='row'
+            >
+              <div className='col-6'>
+                <div className='form-group'>
+                  <label>Ubicación: </label>
+                  <div className='custom-switches-stacked mt-2'>
+                    <label className='custom-switch'>
+                      <input
+                        type='radio'
+                        name='Ubication'
+                        value='Rural'
+                        className='custom-switch-input'
+                        onChange={handleChange}
+                      />
+                      <span className='custom-switch-indicator'></span>
+                      <span className='custom-switch-description'>Rural</span>
+                    </label>
+                    <label className='custom-switch'>
+                      <input
+                        type='radio'
+                        name='Ubication'
+                        value='Urbano'
+                        className='custom-switch-input'
+                        defaultChecked={true}
+                        onChange={handleChange}
+                      />
+                      <span className='custom-switch-indicator'></span>
+                      <span className='custom-switch-description'>Urbano</span>
+                    </label>
+                  </div>
+                </div>
+                <div className='form-group'>
+                  <label
+                    htmlFor='sendAllSidewalks'
+                    className='d-block'
+                  >
+                    Receptores
+                  </label>
+                  <div className='form-check'>
+                    <input
+                      className='form-check-input'
+                      type='checkbox'
+                      id='sendAllSidewalks'
+                      name='sendAllSidewalks'
+                      defaultChecked
+                    />
+                    <label
+                      className='form-check-label'
+                      htmlFor='sendAllSidewalks'
+                    >
+                      ¿ Envío a todas las Veredas ?
+                    </label>
+                  </div>
+                </div>
+                <div className='form-group'>
+                  <label>Genero: </label>
+                  <div className=' mt-2'>
+                    <label className='custom-switch'>
+                      <input
+                        type='radio'
+                        name='SexId'
+                        value='Hombre'
+                        className='custom-switch-input'
+                        defaultChecked={true}
+                        onChange={handleChange}
+                      />
+                      <span className='custom-switch-indicator'></span>
+                      <span className='custom-switch-description'>Hombre</span>
+                    </label>
+                    <label className='custom-switch'>
+                      <input
+                        type='radio'
+                        name='SexId'
+                        value='Mujer'
+                        className='custom-switch-input'
+                        onChange={handleChange}
+                      />
+                      <span className='custom-switch-indicator'></span>
+                      <span className='custom-switch-description'>Mujer</span>
+                    </label>
+                    <label className='custom-switch'>
+                      <input
+                        type='radio'
+                        name='SexId'
+                        value='Otro'
+                        className='custom-switch-input'
+                        onChange={handleChange}
+                      />
+                      <span className='custom-switch-indicator'></span>
+                      <span className='custom-switch-description'>Otro</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className='col-6'>
+                <div className='form-group'>
+                  <label>Caracterización:</label>
+                  <select
+                    className='form-control'
+                    name='Need'
+                    onChange={handleChange}
+                  >
+                    {needs.map(({ name, value }, i) => (
+                      <option
+                        key={i}
+                        value={value}
+                      >
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className='form-group'>
+                  <label>Vereda</label>
+                  <select
+                    className='form-control'
+                    name='Sidewalk'
+                    onChange={handleChange}
+                  >
+                    <option value='Otanche'>Otanche</option>
+                    <option value='Las Quinchas'>Las Quinchas</option>
+                    <option value='Option 3'>Option 3</option>
+                  </select>
+                </div>
               </div>
             </form>
+          </section>
+
+          <div className='card-footer text-right'>
+            <AttachedFile />
+            <button
+              className='btn btn-icon icon-left btn-success'
+              type='submit'
+              disabled={!dirty}
+            >
+              <i className='fa-solid fa-paper-plane mr-2'></i>
+              Envíar Mensaje
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+      </Card>
+      <Card>
+        <div className='col-12'>
+          <div className='card-header'>
+            <h4>Mensaje a Envíar</h4>
+          </div>
+
+          <section className='card-body'>Aqui deberia de ir el mensahe</section>
+        </div>
+      </Card>
+    </section>
   );
 }
 

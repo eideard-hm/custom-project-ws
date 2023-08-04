@@ -170,32 +170,6 @@ function FormUserDataPage() {
                     />
                   </div>
                 </div>
-                {/* <div className='form-group'>
-                    <label>¿ Posee WhatsApp ?: </label>
-                    <div className='custom-switches-stacked mt-2'>
-                      <label className='custom-switch'>
-                        <input
-                          type='radio'
-                          name='option'
-                          value='1'
-                          className='custom-switch-input'
-                          defaultChecked={true}
-                        />
-                        <span className='custom-switch-indicator'></span>
-                        <span className='custom-switch-description'>Sí</span>
-                      </label>
-                      <label className='custom-switch'>
-                        <input
-                          type='radio'
-                          name='option'
-                          value='2'
-                          className='custom-switch-input'
-                        />
-                        <span className='custom-switch-indicator'></span>
-                        <span className='custom-switch-description'>No</span>
-                      </label>
-                    </div>
-                  </div> */}
                 <div className='form-group'>
                   <label>Ubicación: </label>
                   <div className='custom-switches-stacked mt-2'>
@@ -255,16 +229,6 @@ function FormUserDataPage() {
                     <option value='Option 3'>Option 3</option>
                   </select>
                 </div>
-                {/* <div className='form-group'>
-                    <label>Dirección: </label>
-                    <div className='input-group'>
-                      <input
-                        type='text'
-                        className='form-control'
-                        name='Ubication'
-                      />
-                    </div>
-                  </div> */}
               </div>
               <div className='card-footer text-right'>
                 <button

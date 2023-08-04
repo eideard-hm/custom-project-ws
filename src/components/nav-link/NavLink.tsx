@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
-import { Link } from '@reach/router';
+import { Link, Match } from '@reach/router';
 
 interface Props {
   children?: ReactNode;
@@ -8,20 +8,12 @@ interface Props {
   className: string;
 }
 
-export function NavLink(props: Props) {
-  const [isActive, setIsActive] = useState(false);
-
-  return (
-    <li className={`dropdown  ${isActive ? 'active' : ''}`}>
-      <Link
-        {...props}
-        getProps={({ isCurrent }) => {
-          setIsActive(isCurrent);
-          return false;
-        }}
-      >
-        {props.children}
-      </Link>
-    </li>
-  );
-}
+export const NavLink = (props: Props) => (
+  <Match path={`${props.to}/*`}>
+    {({ match }) => (
+      <li className={`dropdown ${match ? 'active' : ''}`}>
+        <Link {...props} />
+      </li>
+    )}
+  </Match>
+);
