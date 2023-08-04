@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import { Link } from '@reach/router';
 
@@ -9,5 +9,19 @@ interface Props {
 }
 
 export function NavLink(props: Props) {
-  return <Link {...props}>{props.children}</Link>;
+  const [isActive, setIsActive] = useState(false);
+
+  return (
+    <li className={`dropdown  ${isActive ? 'active' : ''}`}>
+      <Link
+        {...props}
+        getProps={({ isCurrent }) => {
+          setIsActive(isCurrent);
+          return false;
+        }}
+      >
+        {props.children}
+      </Link>
+    </li>
+  );
 }
