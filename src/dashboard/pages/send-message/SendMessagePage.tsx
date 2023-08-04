@@ -5,7 +5,7 @@ import { Card } from '../../../shared/components';
 import { AttachedFile } from '../../components';
 
 function SendMessagePage() {
-  const { dirty, handleChange, handleSubmit, isValid, values } = useFormik({
+  const { dirty, handleChange, handleSubmit} = useFormik({
     initialValues: {},
     enableReinitialize: true,
     onSubmit(values) {
