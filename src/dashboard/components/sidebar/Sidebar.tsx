@@ -24,7 +24,7 @@ export function Sidebar() {
             <li
               className='dropdown'
               key={i}
-              onClick={() => handleNavigate(href)}
+              onClick={async () => await handleNavigate(href)}
             >
               <a
                 className={`nav-link ${
