@@ -40,7 +40,7 @@ function DashboardPage() {
   useEffect(() => {
     const userInfo = getSessionStorage(USER_ID_KEY);
     if (!userInfo) {
-      navigate('/auth/login', { replace: true });
+      redirectoAuth();
       return;
     }
 
@@ -65,9 +65,11 @@ function DashboardPage() {
     if (loginIfo.loginSuccess) {
       navigate('/dashboard/sphipment-order', { replace: true });
     } else {
-      navigate('/auth', { replace: true });
+      redirectoAuth();
     }
   };
+
+  const redirectoAuth = () => navigate('/auth', { replace: true });
 
   return (
     <DashboardLayout>

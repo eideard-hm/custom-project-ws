@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { navigate } from '@reach/router';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
@@ -18,12 +16,7 @@ export default function LoginPage() {
   const {
     userData: userDataProvider,
     setUserData,
-    auth: { isLoggin },
   } = useAuthContext();
-
-  useEffect(() => {
-    if (isLoggin) navigate('/dashboard', { replace: true });
-  }, [isLoggin]);
 
   const submitForm = async (values: IFormValues) => {
     if (!isValid) return;
