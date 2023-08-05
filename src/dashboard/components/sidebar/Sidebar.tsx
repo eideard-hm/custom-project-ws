@@ -1,4 +1,5 @@
-import { NavLink } from '../../../components';
+import { Link } from '@reach/router';
+
 import { links } from '../../../data';
 import { useAuthContext } from '../../../hooks';
 import { UserProfile } from '../user-profile/UserProfile';
@@ -16,7 +17,7 @@ export function Sidebar() {
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
           {links.map(({ href, label, icon, disabled }, i) => (
-            <NavLink
+            <Link
               key={i}
               to={href}
               className={`nav-link ${
@@ -27,7 +28,7 @@ export function Sidebar() {
             >
               <i className={icon}></i>
               <span>{label}</span>
-            </NavLink>
+            </Link>
           ))}
         </ul>
       </aside>
