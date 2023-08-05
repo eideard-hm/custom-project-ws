@@ -18,7 +18,12 @@ import './style.css';
 const DashboardRouting = lazy(() => import('../../routes/DashboardRouting'));
 
 function DashboardPage() {
-  const { setAuth, setUserData, userData } = useAuthContext();
+  const {
+    auth: { isLoggin },
+    setAuth,
+    setUserData,
+    userData,
+  } = useAuthContext();
   const { setLoginInfo } = useDashboardContext();
   const navigate = useNavigate();
 
@@ -62,7 +67,7 @@ function DashboardPage() {
       setUserData({ ...userData, userImage: loginIfo.userImage });
     }
 
-    if (loginIfo.loginSuccess) {
+    if (isLoggin || loginIfo.loginSuccess) {
       navigate('/dashboard/sphipment-order', { replace: true });
     } else {
       redirectoAuth();
