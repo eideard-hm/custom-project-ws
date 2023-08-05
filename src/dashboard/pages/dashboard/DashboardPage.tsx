@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { lazy, useEffect } from 'react';
 
-import { useNavigate } from '@reach/router';
+import { navigate } from '@reach/router';
 
 import type { IUserDataLogin } from '../../../auth/types';
 import { WHATSAAP_API_URL } from '../../../config';
@@ -25,7 +25,6 @@ function DashboardPage() {
     userData,
   } = useAuthContext();
   const { setLoginInfo } = useDashboardContext();
-  const navigate = useNavigate();
 
   useEffect(() => {
     // traemo el qr que esta generado
@@ -45,7 +44,7 @@ function DashboardPage() {
   useEffect(() => {
     const userInfo = getSessionStorage(USER_ID_KEY);
     if (!userInfo) {
-      redirectoAuth();
+      redirectoAuth().catch(console.error);
       return;
     }
 
@@ -68,13 +67,15 @@ function DashboardPage() {
     }
 
     if (isLoggin || loginIfo.loginSuccess) {
-      navigate('/dashboard/sphipment-order', { replace: true });
+      navigate('/dashboard/sphipment-order', { replace: true }).catch(
+        console.error
+      );
     } else {
-      redirectoAuth();
+      redirectoAuth().catch(console.error);
     }
   };
 
-  const redirectoAuth = () => navigate('/auth', { replace: true });
+  const redirectoAuth = async () => await navigate('/auth', { replace: true });
 
   return (
     <DashboardLayout>

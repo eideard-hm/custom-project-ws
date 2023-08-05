@@ -37,7 +37,7 @@ export default function LoginPage() {
         town: userData.town,
       });
       // redirect to the dashboard
-      navigate('/dashboard', { replace: true });
+      await navigate('/dashboard', { replace: true });
     }
   };
 
