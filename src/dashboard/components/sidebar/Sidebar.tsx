@@ -1,3 +1,5 @@
+import { type MouseEvent } from 'react';
+
 import { navigate } from '@reach/router';
 
 import { links } from '../../../data';
@@ -9,8 +11,9 @@ export function Sidebar() {
     auth: { isLoggin },
   } = useAuthContext();
 
-  const handleNavigate = async (target: string) => {
-    await navigate(target);
+  const handleNavigate = async (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    await navigate(e.currentTarget.href);
   };
 
   return (
@@ -24,9 +27,10 @@ export function Sidebar() {
             <li
               className='dropdown'
               key={i}
-              onClick={async () => await handleNavigate(href)}
             >
               <a
+                href={href}
+                onClick={handleNavigate}
                 className={`nav-link ${
                   (disabled && isLoggin) || (!disabled && !isLoggin)
                     ? 'disabled'

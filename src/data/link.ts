@@ -8,19 +8,19 @@ export const links: ILink[] = [
     disabled: true
   },
   {
-    href: 'save',
+    href: '/dashboard/save',
     label: 'Registrar Usuarios',
     icon: 'fa-solid fa-floppy-disk',
     disabled: false
   },
   {
-    href: 'sphipment-order',
+    href: '/dashboard/sphipment-order',
     label: 'Consultar Usuarios',
     icon: 'fa-solid fa-users-line',
     disabled: false
   },
   {
-    href: 'send-messages',
+    href: '/dashboard/send-messages',
     label: 'Envíar Mensajes',
     icon: 'fa-solid fa-paper-plane',
     disabled: false
