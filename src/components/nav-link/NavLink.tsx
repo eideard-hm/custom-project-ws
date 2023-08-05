@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-import { Link, Match } from '@reach/router';
+import { Link } from '@reach/router';
 
 interface Props {
   children?: ReactNode;
@@ -8,12 +8,26 @@ interface Props {
   className: string;
 }
 
-export const NavLink = (props: Props) => (
-  <Match path={`${props.to}/*`}>
-    {({ match }) => (
-      <li className={`dropdown ${match ? 'active' : ''}`}>
-        <Link {...props} />
-      </li>
-    )}
-  </Match>
+export const NavLink = ({ className, to, children }: Props) => (
+  <Link
+    to={to}
+    className={className}
+  >
+    {children}
+  </Link>
 );
+
+// export const NavLink = ({ className, to, children }: Props) => (
+//   <Match path={`${to}/*`}>
+//     {({ match }) => (
+//       <li className={`dropdown ${match ? 'active' : ''}`}>
+//         <Link
+//           to={to}
+//           className={className}
+//         >
+//           {children}
+//         </Link>
+//       </li>
+//     )}
+//   </Match>
+// );
