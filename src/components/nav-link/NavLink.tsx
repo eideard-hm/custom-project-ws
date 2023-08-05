@@ -11,10 +11,8 @@ export function NavLink(props: Props) {
   const [isActive] = useRoute(props.href);
 
   return (
-    <Link {...props}>
-      <li className={`dropdown ${isActive ? 'active' : ''}`}>
-        {props.children}
-      </li>
-    </Link>
+    <li className={`dropdown ${isActive ? 'active' : ''}`}>
+      <Link {...props}>{props.children}</Link>
+    </li>
   );
 }
