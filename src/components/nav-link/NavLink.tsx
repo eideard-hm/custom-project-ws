@@ -8,8 +8,13 @@ interface Props {
   className: string;
 }
 
-export const NavLink = (props: Props) => (
+export const NavLink = ({ className, to, children }: Props) => (
   <li className={`dropdown`}>
-    <Link {...props} />
+    <Link
+      to={to}
+      className={className}
+    >
+      {children}
+    </Link>
   </li>
 );
