@@ -1,4 +1,5 @@
-import { NavLink } from '../../../components';
+import { navigate } from '@reach/router';
+
 import { links } from '../../../data';
 import { useAuthContext } from '../../../hooks';
 import { UserProfile } from '../user-profile/UserProfile';
@@ -8,6 +9,10 @@ export function Sidebar() {
     auth: { isLoggin },
   } = useAuthContext();
 
+  const handleNavigate = async (target: string) => {
+    await navigate(target);
+  };
+
   return (
     <div className='main-sidebar sidebar-style-2'>
       <aside id='sidebar-wrapper'>
@@ -16,18 +21,22 @@ export function Sidebar() {
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
           {links.map(({ href, label, icon, disabled }, i) => (
-            <NavLink
+            <li
+              className='dropdown'
               key={i}
-              to={href}
-              className={`nav-link ${
-                (disabled && isLoggin) || (!disabled && !isLoggin)
-                  ? 'disabled'
-                  : ''
-              }`}
+              onClick={() => handleNavigate(href)}
             >
-              <i className={icon}></i>
-              <span>{label}</span>
-            </NavLink>
+              <a
+                className={`nav-link ${
+                  (disabled && isLoggin) || (!disabled && !isLoggin)
+                    ? 'disabled'
+                    : ''
+                }`}
+              >
+                <i className={icon}></i>
+                <span>{label}</span>
+              </a>
+            </li>
           ))}
         </ul>
       </aside>
