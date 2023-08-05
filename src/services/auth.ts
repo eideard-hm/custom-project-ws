@@ -1,5 +1,7 @@
+import { navigate } from '@reach/router';
+
 import { WHATSAAP_API_URL } from '../config';
-import { IAuth } from '../types';
+import type { IAuth } from '../types';
 
 export const retrieveCurrentStatusAuth = async (): Promise<IAuth> => {
   try {
@@ -8,6 +10,17 @@ export const retrieveCurrentStatusAuth = async (): Promise<IAuth> => {
   } catch (error) {
     console.error(error);
     return { isLoggin: false };
+  }
+};
+
+export const destroySession = async (isLoggin = true): Promise<void> => {
+  try {
+    sessionStorage.clear();
+    localStorage.clear();
+    await navigate('/auth', { replace: true });
+    if (isLoggin) await logout();
+  } catch (error) {
+    console.error(error);
   }
 };
 

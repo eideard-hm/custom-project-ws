@@ -56,6 +56,20 @@ function DashboardPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isLoggin) {
+      navigate('/dashboard/sphipment-order', { replace: true }).catch(
+        console.error
+      );
+    } else {
+      navigate('/dashboard', { replace: true }).catch(console.error);
+    }
+
+    return () => {
+      socket.offAnyOutgoing();
+    };
+  }, [isLoggin]);
+
   const receiveQr = (loginIfo: IGenerateQr) => {
     console.log({ loginIfo });
     loginIfo.qrImage = `data:image/svg+xml;base64,${loginIfo.qrImage}`;
@@ -64,14 +78,6 @@ function DashboardPage() {
 
     if (loginIfo.userImage) {
       setUserData({ ...userData, userImage: loginIfo.userImage });
-    }
-
-    if (isLoggin || loginIfo.loginSuccess) {
-      navigate('/dashboard/sphipment-order', { replace: true }).catch(
-        console.error
-      );
-    } else {
-      redirectoAuth().catch(console.error);
     }
   };
 

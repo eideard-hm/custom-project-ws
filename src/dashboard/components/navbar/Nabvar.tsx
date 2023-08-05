@@ -1,16 +1,14 @@
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 
-import { navigate } from '@reach/router';
-
-import { AuthContext } from '../../../context';
-import { logout } from '../../../services';
+import { useAuthContext } from '../../../hooks';
+import { destroySession } from '../../../services';
 import { UserImage } from '../user-img/UserImage';
 
 export function Nabvar() {
   const {
     auth: { isLoggin },
     userData: { fullName },
-  } = useContext(AuthContext);
+  } = useAuthContext();
   const userDropdown = useRef<HTMLDivElement>(null);
 
   const handleUserDropdown = () => {
@@ -18,10 +16,7 @@ export function Nabvar() {
   };
 
   const handleLogout = async () => {
-    sessionStorage.clear();
-    localStorage.clear();
-    await navigate('/auth', { replace: true });
-    if (isLoggin) await logout();
+    destroySession(isLoggin);
   };
 
   return (
