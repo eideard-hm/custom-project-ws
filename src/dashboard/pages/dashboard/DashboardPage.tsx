@@ -46,7 +46,6 @@ function DashboardPage() {
 
     const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
     setUserData({ ...userData, fullName, town });
-    console.log({ IUserDataLogin: userData });
 
     return () => {
       socket.offAny();
@@ -66,7 +65,7 @@ function DashboardPage() {
     if (loginIfo.loginSuccess) {
       navigate('/dashboard/sphipment-order', { replace: true });
     } else {
-      navigate('/dashboard', { replace: true });
+      navigate('/auth', { replace: true });
     }
   };
 
