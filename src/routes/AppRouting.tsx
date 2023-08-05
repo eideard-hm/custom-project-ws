@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 
-import { Router } from '@reach/router';
+import { Redirect, Route, Router } from 'wouter';
 
-import { Route } from '../components';
+import { NestedRoutes } from '../components';
 
 const AuthRouting = lazy(() => import('../auth/routes/AuthRouting'));
 const DashboardPage = lazy(
@@ -12,16 +12,18 @@ const DashboardPage = lazy(
 export function AppRouting() {
   return (
     <Suspense fallback={<>loading</>}>
-      <Router>
-        <Route
-          path='auth/*'
-          element={<AuthRouting />}
-        />
-        <Route
-          path='dashboard/*'
-          element={<DashboardPage />}
-        />
+      <Router
+        base='/auth'
+        key='/auth'
+      >
+        <AuthRouting />
       </Router>
+
+      <NestedRoutes base='/dashboard'>
+        <DashboardPage />
+      </NestedRoutes>
+
+      <Route>{() => <Redirect to='/auth' />}</Route>
     </Suspense>
   );
 }

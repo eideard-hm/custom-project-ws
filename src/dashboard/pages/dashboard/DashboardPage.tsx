@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { lazy, useEffect } from 'react';
 
-import { navigate } from '@reach/router';
+import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../../auth/types';
 import { WHATSAAP_API_URL } from '../../../config';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
-import { getSessionStorage } from '../../../services';
-import { USER_ID_KEY } from '../../../utils';
+import { getSessionStorageOrNavigate } from '../../../services';
 import { socket } from '../../../web-sockets';
 import { DashboardLayout } from '../../layouts';
 import type { IGenerateQr } from '../../types';
@@ -42,12 +41,7 @@ function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    const userInfo = getSessionStorage(USER_ID_KEY);
-    if (!userInfo) {
-      redirectoAuth().catch(console.error);
-      return;
-    }
-
+    const userInfo = getSessionStorageOrNavigate();
     const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
     setUserData({ ...userData, fullName, town });
 
@@ -58,11 +52,9 @@ function DashboardPage() {
 
   useEffect(() => {
     if (isLoggin) {
-      navigate('/dashboard/sphipment-order', { replace: true }).catch(
-        console.error
-      );
+      navigate('/dashboard/sphipment-order', { replace: true });
     } else {
-      navigate('/dashboard', { replace: true }).catch(console.error);
+      navigate('/dashboard', { replace: true });
     }
 
     return () => {
@@ -80,8 +72,6 @@ function DashboardPage() {
       setUserData({ ...userData, userImage: loginIfo.userImage });
     }
   };
-
-  const redirectoAuth = async () => await navigate('/auth', { replace: true });
 
   return (
     <DashboardLayout>

@@ -1,8 +1,6 @@
 import { lazy } from 'react';
 
-import { Router } from '@reach/router';
-
-import { Route } from '../../components';
+import { Redirect, Route } from 'wouter';
 
 const QrImPage = lazy(() => import('../pages/qr-img/QrImgPage'));
 const FormUserDataPage = lazy(
@@ -17,25 +15,25 @@ const SendMessagePage = lazy(
 
 function DashboardRouting() {
   return (
-    <Router>
+    <>
+      <Route
+        path='/save'
+        component={FormUserDataPage}
+      />
+      <Route
+        path='/sphipment-order'
+        component={DetailTablePage}
+      />
+      <Route
+        path='/send-messages'
+        component={SendMessagePage}
+      />
       <Route
         path='/'
-        element={<QrImPage />}
+        component={QrImPage}
       />
-      <Route
-        path='save'
-        element={<FormUserDataPage />}
-      />
-      <Route
-        default
-        path='sphipment-order'
-        element={<DetailTablePage />}
-      />
-      <Route
-        path='send-messages'
-        element={<SendMessagePage />}
-      />
-    </Router>
+      <Route>{() => <Redirect to='/' />}</Route>
+    </>
   );
 }
 

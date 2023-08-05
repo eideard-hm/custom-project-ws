@@ -1,20 +1,18 @@
 import { lazy } from 'react';
 
-import { Router } from '@reach/router';
-
-import { Route } from '../../components';
+import { Redirect, Route } from 'wouter';
 
 const LoginPage = lazy(() => import('../pages/login/LoginPage'));
 
 function AuthRouting() {
   return (
-    <Router>
+    <>
       <Route
-        default
-        path='login'
-        element={<LoginPage />}
+        path='/login'
+        component={LoginPage}
       />
-    </Router>
+      <Route>{() => <Redirect to='/login' />}</Route>
+    </>
   );
 }
 

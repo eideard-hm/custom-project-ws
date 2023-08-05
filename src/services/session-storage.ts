@@ -1,4 +1,6 @@
-import { decodeBase64, encodeBase64 } from '../utils';
+import { navigate } from 'wouter/use-location';
+
+import { decodeBase64, encodeBase64, USER_ID_KEY } from '../utils';
 
 export const setSessionStorage = (data: ISetSessionStorage) => {
   try {
@@ -15,6 +17,15 @@ export const getSessionStorage = (key: string): string | null => {
     console.error(error);
     return null;
   }
+};
+
+export const getSessionStorageOrNavigate = () => {
+  const userInfo = getSessionStorage(USER_ID_KEY);
+  if (!userInfo) {
+    navigate('/auth', { replace: true });
+  }
+
+  return userInfo ?? '';
 };
 
 interface ISetSessionStorage {

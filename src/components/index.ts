@@ -1,2 +1,2 @@
 export * from './nav-link/NavLink';
-export * from './route/Route';
+export * from './nested-routes/NestedRoutes';

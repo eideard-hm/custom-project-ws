@@ -1,6 +1,6 @@
-import { navigate } from '@reach/router';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
+import { navigate } from 'wouter/use-location';
 
 import { ASSETS_IMAGES } from '../../../assets/img';
 import { useAuthContext } from '../../../hooks';
@@ -13,10 +13,7 @@ import { schema } from '../../validators';
 import './LoginPage.css';
 
 export default function LoginPage() {
-  const {
-    userData: userDataProvider,
-    setUserData,
-  } = useAuthContext();
+  const { userData: userDataProvider, setUserData } = useAuthContext();
 
   const submitForm = async (values: IFormValues) => {
     if (!isValid) return;
@@ -37,7 +34,7 @@ export default function LoginPage() {
         town: userData.town,
       });
       // redirect to the dashboard
-      await navigate('/dashboard', { replace: true });
+      navigate('/dashboard', { replace: true });
     }
   };
 

@@ -1,20 +1,17 @@
-import { navigate } from '@reach/router';
 import type { IUserDataLogin } from '../../auth/types';
 import { API_URL } from '../../config';
-import { getSessionStorage } from '../../services';
-import { USER_ID_KEY } from '../../utils';
+import { getSessionStorageOrNavigate } from '../../services';
 import type {
   ShipmentOrdersCreateInput,
-  ShipmentOrdersCreateResponse,
+  ShipmentOrdersCreateResponse
 } from '../types';
 
 export const createShipmentOrders = async (
   body: ShipmentOrdersCreateInput
 ): Promise<ShipmentOrdersCreateResponse> => {
   try {
-    const { userId }: IUserDataLogin = JSON.parse(
-      getSessionStorage(USER_ID_KEY) ?? ''
-    );
+    const userInfo = getSessionStorageOrNavigate();
+    const { userId }: IUserDataLogin = JSON.parse(userInfo);
     body.ModifyUserId = userId;
     const response = await fetch(`${API_URL}/sphipment-orders`, {
       method: 'POST',
@@ -35,12 +32,7 @@ export const getAllShipmentOrdersAsync = async (): Promise<
   ShipmentOrdersCreateInput[]
 > => {
   try {
-    const userInfo = getSessionStorage(USER_ID_KEY);
-    if (!userInfo) {
-      await navigate('/auth', { replace: true });
-      return [];
-    }
-
+    const userInfo = getSessionStorageOrNavigate();
     const { userId }: IUserDataLogin = JSON.parse(userInfo);
     const response = await fetch(`${API_URL}/sphipment-orders/${userId}`, {
       headers: {

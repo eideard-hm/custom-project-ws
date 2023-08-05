@@ -1,4 +1,4 @@
-import { navigate } from '@reach/router';
+import { navigate } from 'wouter/use-location';
 
 import { WHATSAAP_API_URL } from '../config';
 import type { IAuth } from '../types';
@@ -17,7 +17,7 @@ export const destroySession = async (isLoggin = true): Promise<void> => {
   try {
     sessionStorage.clear();
     localStorage.clear();
-    await navigate('/auth', { replace: true });
+    navigate('/auth', { replace: true });
     if (isLoggin) await logout();
   } catch (error) {
     console.error(error);
