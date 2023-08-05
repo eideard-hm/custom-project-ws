@@ -1,3 +1,4 @@
+import { navigate } from '@reach/router';
 import type { IUserDataLogin } from '../../auth/types';
 import { API_URL } from '../../config';
 import { getSessionStorage } from '../../services';
@@ -34,9 +35,13 @@ export const getAllShipmentOrdersAsync = async (): Promise<
   ShipmentOrdersCreateInput[]
 > => {
   try {
-    const { userId }: IUserDataLogin = JSON.parse(
-      getSessionStorage(USER_ID_KEY) ?? ''
-    );
+    const userInfo = getSessionStorage(USER_ID_KEY);
+    if (!userInfo) {
+      await navigate('/auth', { replace: true });
+      return [];
+    }
+
+    const { userId }: IUserDataLogin = JSON.parse(userInfo);
     const response = await fetch(`${API_URL}/sphipment-orders/${userId}`, {
       headers: {
         'Content-type': 'application/json; charset=UTF-8',
