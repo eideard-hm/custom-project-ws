@@ -18,3 +18,24 @@ export interface ShipmentOrdersCreateInput {
 export type ShipmentOrdersCreateResponse = {
   Id: number;
 };
+
+export interface ShipmentOrdersResponse {
+  FirstName: string;
+  LastName: string;
+  Email: string | null;
+  Phone: string | null;
+  BirthDate: string | null;
+  DocumentType: string | null;
+  Need: string | null;
+  Sex: Sex;
+  Services: Services;
+}
+
+export interface Services {
+  TitleNameServices: string;
+  NaturalHose: unknown[];
+}
+
+export interface Sex {
+  TitleNaturalHose: string;
+}

@@ -10,7 +10,7 @@ import {
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
-  ShipmentOrdersCreateInput,
+  ShipmentOrdersResponse,
 } from '../../types';
 
 function DetailTablePage() {
@@ -19,7 +19,7 @@ function DetailTablePage() {
     customMessage: '',
     sendWsContacts: false,
   });
-  const [shiptmet, setShiptmet] = useState<ShipmentOrdersCreateInput[]>([]);
+  const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
   const { attachFile } = useContext(DashboardContext);
   const {
     userData: { fullName, town },
@@ -159,9 +159,13 @@ function DetailTablePage() {
                       <td className='text-center'>{s.Phone}</td>
                       <td className='text-center'>{s.BirthDate}</td>
                       <td className='text-center'>{s.DocumentType}</td>
-                      <td className='text-center'>{s.SexId}</td>
-                      <td className='text-center'>{s.ServicesId}</td>
-                      <td className='text-center'>{s.Sidewalk}</td>
+                      <td className='text-center'>{s.Sex.TitleNaturalHose}</td>
+                      <td className='text-center'>
+                        {s.Services.TitleNameServices}
+                      </td>
+                      <td className='text-center'>
+                        {s.Services.NaturalHose.join(',')}
+                      </td>
                       <td className='text-center'>{s.Need}</td>
                     </tr>
                   ))}

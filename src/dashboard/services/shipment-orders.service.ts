@@ -3,7 +3,8 @@ import { API_URL } from '../../config';
 import { getSessionStorageOrNavigate } from '../../services';
 import type {
   ShipmentOrdersCreateInput,
-  ShipmentOrdersCreateResponse
+  ShipmentOrdersCreateResponse,
+  ShipmentOrdersResponse,
 } from '../types';
 
 export const createShipmentOrders = async (
@@ -29,7 +30,7 @@ export const createShipmentOrders = async (
 };
 
 export const getAllShipmentOrdersAsync = async (): Promise<
-  ShipmentOrdersCreateInput[]
+  ShipmentOrdersResponse[]
 > => {
   try {
     const userInfo = getSessionStorageOrNavigate();
@@ -40,7 +41,7 @@ export const getAllShipmentOrdersAsync = async (): Promise<
       },
     });
 
-    return (await response.json()) as ShipmentOrdersCreateInput[];
+    return await response.json();
   } catch (error) {
     console.error(error);
     return [];
