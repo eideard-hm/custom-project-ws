@@ -142,44 +142,7 @@ function SendMessagePage() {
                     </label>
                   </div>
                 </div>
-                <div className='form-group'>
-                  <label>Genero: </label>
-                  <div className=' mt-2'>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='SexId'
-                        value='Hombre'
-                        className='custom-switch-input'
-                        defaultChecked={true}
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Hombre</span>
-                    </label>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='SexId'
-                        value='Mujer'
-                        className='custom-switch-input'
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Mujer</span>
-                    </label>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='SexId'
-                        value='Otro'
-                        className='custom-switch-input'
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Otro</span>
-                    </label>
-                  </div>
+                
                 </div> */}
               </div>
 

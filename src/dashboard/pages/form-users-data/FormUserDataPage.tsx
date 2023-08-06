@@ -1,54 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 
 import { documentTypes, needs } from '../../../data';
-import { createShipmentOrders, retrieveSexs } from '../../services';
-import type { ISex, ShipmentOrdersCreateInput } from '../../types';
+import { UBI_SERVICE_CODE } from '../../../utils';
+import {
+  createShipmentOrders,
+  getLocations,
+  retrieveNaturalHoses,
+  retrieveSexs,
+} from '../../services';
+import type {
+  INaturalHoseByService,
+  ISelectedServie,
+  IService,
+  ISex,
+  ShipmentOrdersCreateInput,
+} from '../../types';
 
 const initialState: ShipmentOrdersCreateInput = {
   FirstName: '',
   LastName: '',
-  FromCityCode: '',
-  SexId: 'Hombre',
+  SexId: 1,
   Sidewalk: '',
-  Ubication: 'Urbano',
   BirthDate: '',
-  DocumentId: null,
-  DocumentType: 'C.C',
+  DocumentType: 'CC',
   Email: '',
   Need: '',
   Phone: '',
-  ModifyUserId: '',
+  ServicesId: 26,
 };
 
 function FormUserDataPage() {
+  const [isSending, setIsSending] = useState(false);
+  const [selectedService, setSelectedService] = useState<ISelectedServie>({
+    code: '',
+    id: '',
+    label: '',
+  });
   const [sexs, setSexs] = useState<ISex[]>([]);
+  const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
+  const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
   const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
     initialValues: initialState,
     onSubmit: async (values, { resetForm }) => {
       if (!isValid) return;
 
+      setIsSending(true);
       const { Id } = await createShipmentOrders({ ...values });
       if (Id === 0) {
         toast.error(
           'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
         );
-        return;
+      } else {
+        resetForm();
+        toast.success(`Se creó el registro con el Id: ${Id}`);
       }
 
-      resetForm();
-      toast.success(`Se creó el registro con el Id: ${Id}`);
+      setIsSending(false);
     },
   });
 
   useEffect(() => initServices(), []);
 
   const initServices = () => {
+    getLocations()
+      .then((location) => setPeopleLocation(location))
+      .catch(console.error);
+
     retrieveSexs()
       .then((sex) => setSexs(sex))
       .catch(console.error);
+  };
+
+  const handlePeopleLocation = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (!e) return;
+
+    const index = e.target.selectedIndex;
+    const label = e.target[index].textContent ?? '';
+    const [serviceId, code] = e.target.value.split('-');
+
+    setSelectedService({ label, id: serviceId, code });
+    getNaturalHoses(serviceId);
+  };
+
+  const getNaturalHoses = async (serviceId: string) => {
+    const naturalHouse = await retrieveNaturalHoses(serviceId);
+    setNaturalHoses(naturalHouse);
   };
 
   return (
@@ -113,19 +152,8 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Email:</label>
-                  <input
-                    type='email'
-                    className='form-control'
-                    name='Email'
-                    placeholder='example@example.com'
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className='form-group'>
                   <label>Genero: </label>
-                  <div className='custom-switches-stacked mt-2'>
+                  <div className='mt-3'>
                     {sexs.map(({ Id, TitleNaturalHose }) => (
                       <label
                         className='custom-switch'
@@ -146,6 +174,25 @@ function FormUserDataPage() {
                       </label>
                     ))}
                   </div>
+                </div>
+
+                <div className='form-group'>
+                  <label>Ubicación Persona:</label>
+                  <select
+                    className='form-control'
+                    name='ServicesId'
+                    value={values.ServicesId}
+                    onChange={handlePeopleLocation}
+                  >
+                    {peopleLocation.map(({ Id, TitleNameServices, Type }) => (
+                      <option
+                        key={Id}
+                        value={`${Id}-${Type}`}
+                      >
+                        {TitleNameServices}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className='col-6'>
@@ -173,32 +220,15 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Ubicación: </label>
-                  <div className='mt-3'>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='Ubication'
-                        value='Rural'
-                        className='custom-switch-input'
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Rural</span>
-                    </label>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='Ubication'
-                        value='Urbano'
-                        className='custom-switch-input'
-                        defaultChecked={true}
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Urbano</span>
-                    </label>
-                  </div>
+                  <label>Email:</label>
+                  <input
+                    type='email'
+                    className='form-control'
+                    name='Email'
+                    value={values.Email}
+                    placeholder='example@example.com'
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className='form-group'>
@@ -219,23 +249,42 @@ function FormUserDataPage() {
                     ))}
                   </select>
                 </div>
-                <div className='form-group'>
-                  <label>Vereda</label>
-                  <select
-                    className='form-control'
-                    name='Sidewalk'
-                    onChange={handleChange}
-                    value={values.Sidewalk}
-                  >
-                    <option value='Otanche'>Otanche</option>
-                    <option value='Las Quinchas'>Las Quinchas</option>
-                    <option value='Option 3'>Option 3</option>
-                  </select>
-                </div>
+
+                {selectedService.id && (
+                  <div className='form-group'>
+                    <label>{selectedService.label}:</label>
+                    <select
+                      className='form-control'
+                      name={
+                        selectedService.code === UBI_SERVICE_CODE
+                          ? 'HouseId'
+                          : 'EconomicActivity'
+                      }
+                      onChange={handleChange}
+                      value={
+                        selectedService.code === UBI_SERVICE_CODE
+                          ? values.HouseId
+                          : values.EconomicActivity
+                      }
+                    >
+                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
+                        <option
+                          key={Id}
+                          value={Id}
+                        >
+                          {TitleNaturalHose}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
+
               <div className='card-footer text-right'>
                 <button
-                  className='btn btn-icon icon-left btn-success'
+                  className={`btn btn-icon icon-left btn-success ${
+                    isSending ? 'disabled btn-progress' : ''
+                  }`}
                   type='submit'
                   disabled={!dirty}
                 >

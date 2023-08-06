@@ -3,3 +3,9 @@ export interface IService {
   Type: string | null;
   TitleNameServices: string;
 }
+
+export interface ISelectedServie {
+  id: string;
+  label: string;
+  code: string;
+}

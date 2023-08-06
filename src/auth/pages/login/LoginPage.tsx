@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 import { navigate } from 'wouter/use-location';
@@ -13,11 +15,13 @@ import { schema } from '../../validators';
 import './LoginPage.css';
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const { userData: userDataProvider, setUserData } = useAuthContext();
 
   const submitForm = async (values: IFormValues) => {
     if (!isValid) return;
 
+    setIsLoading(true);
     const { loginSuccess, userData } = await loginUser(values);
     console.log({ loginSuccess });
     if (!loginSuccess) {
@@ -36,6 +40,7 @@ export default function LoginPage() {
       // redirect to the dashboard
       navigate('/dashboard', { replace: true });
     }
+    setIsLoading(false);
   };
 
   const { handleChange, handleSubmit, errors, isValid } = useFormik({
@@ -86,7 +91,9 @@ export default function LoginPage() {
                   <div className='form-button'>
                     <button
                       type='submit'
-                      className='btn'
+                      className={`btn ${
+                        isLoading ? 'disabled btn-progress' : ''
+                      }`}
                     >
                       Iniciar Sessión
                     </button>

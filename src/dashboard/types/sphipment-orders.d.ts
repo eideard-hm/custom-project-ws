@@ -1,18 +1,18 @@
 export interface ShipmentOrdersCreateInput {
-  Id?: bigint | number;
   FirstName: string;
   LastName: string;
-  Email: string;
-  Phone: string;
-  FromCityCode: string;
-  BirthDate: string;
-  DocumentType: string;
-  DocumentId?: string | null;
-  SexId: string;
-  Ubication: string;
+  Email?: string | undefined;
+  Phone?: string | undefined;
+  HouseId?: number | undefined;
+  BirthDate?: string | undefined;
+  DocumentType?: string | undefined;
+  DocumentId?: string | undefined;
+  SexId: number;
+  ServicesId: number;
   Sidewalk: string;
   Need?: string | undefined;
-  ModifyUserId?: string | null;
+  ModifyUserId?: string;
+  EconomicActivity?: number | undefined;
 }
 
 export type ShipmentOrdersCreateResponse = {
