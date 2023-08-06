@@ -8,6 +8,7 @@ import { needs } from '../../../data';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
 import type { IUserDataMaestros } from '../../../types';
+import { equalsIgnoringCase, isNullOrWhiteSpaces } from '../../../utils';
 import { AttachedFile, ConventionsReeplace } from '../../components';
 import {
   getAllShipmentOrdersAsync,
@@ -25,12 +26,15 @@ import type {
   ShipmentOrdersResponse,
 } from '../../types';
 
+const initialValues = {
+  need: '',
+  service: '0',
+  message: '',
+  sendWsContacts: false,
+};
+
 function SendMessagePage() {
   const [isSending, setIsSending] = useState(false);
-  const [sendWsContacts, setSendWsContacts] = useState({
-    customMessage: '',
-    sendWsContacts: false,
-  });
   const [selectedService, setSelectedService] = useState<IUserDataMaestros>({
     name: '',
     value: '',
@@ -39,8 +43,8 @@ function SendMessagePage() {
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
-  const { dirty, handleChange, handleSubmit } = useFormik({
-    initialValues: {},
+  const { dirty, handleChange, handleSubmit, values } = useFormik({
+    initialValues,
     enableReinitialize: true,
     onSubmit(values) {
       console.log({ values });
@@ -80,8 +84,13 @@ function SendMessagePage() {
     const label = e.target[index].textContent ?? '';
     const serviceId = e.target.value;
 
-    setSelectedService({ name: label, value: serviceId });
-    getNaturalHoses(serviceId);
+    if (Number(serviceId ?? 0) > 0) {
+      getNaturalHoses(serviceId);
+      setSelectedService({ name: label, value: serviceId });
+      return;
+    }
+
+    setSelectedService({ name: '', value: '' });
   };
 
   const getNaturalHoses = async (serviceId: string) => {
@@ -91,23 +100,36 @@ function SendMessagePage() {
 
   const handleSendBulkMessages = async () => {
     if (
-      sendWsContacts.customMessage.includes('{user}') ||
-      sendWsContacts.customMessage.includes('{User}') ||
-      sendWsContacts.customMessage.includes('{USER}')
+      values.message.includes('{user}') ||
+      values.message.includes('{User}') ||
+      values.message.includes('{USER}')
     ) {
       setIsSending(true);
+      let shipmentFilter = [...shiptmet];
 
-      const receivedMessages: ISendBulkMessage[] = shiptmet
+      // filter shipment
+      if (!isNullOrWhiteSpaces(values.need)) {
+        shipmentFilter = shipmentFilter.filter(({ Need }) =>
+          equalsIgnoringCase(values.need, Need ?? '')
+        );
+      }
+
+      if (!isNullOrWhiteSpaces(values.service)) {
+        shipmentFilter = shipmentFilter.filter(
+          ({ Services: { Id } }) => Number(values.service) === Id
+        );
+      }
+
+      const receivedMessages: ISendBulkMessage[] = shipmentFilter
         .filter(({ Phone }) => Phone)
         .map(({ FirstName, LastName, Phone }) => ({
           phone: Phone ?? '',
-          message: sendWsContacts.sendWsContacts
-            ? sendWsContacts.customMessage
-            : `${sendWsContacts.customMessage
+          message: values.sendWsContacts
+            ? values.message
+            : `${values.message
                 .replaceAll('{name}', `*${FirstName}*`)
                 .replaceAll('{NAME}', `*${FirstName}*`)
                 .replaceAll('{Name}', `*${FirstName}*`)
-                .replaceAll('Name', `*${FirstName}*`)
                 .replaceAll('{lastname}', `*${LastName}*`)
                 .replaceAll('{Lastname}', `*${LastName}*`)
                 .replaceAll('{LastName}', `*${LastName}*`)
@@ -123,7 +145,7 @@ function SendMessagePage() {
       const message: ISendBulkMessageWithAttach = {
         content: receivedMessages,
         attach: attachFile,
-        sendWsContacts: sendWsContacts.sendWsContacts,
+        sendWsContacts: values.sendWsContacts,
       };
 
       const response = await sendMesssageBulkAsync(message);
@@ -150,43 +172,43 @@ function SendMessagePage() {
               onSubmit={handleSubmit}
               className='row'
             >
-              <div className='col-6'>
+              <div className='col-12'>
                 <div className='form-group'>
-                  <label>Ubicación: </label>
-                  <div className='mt-3'>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='Ubication'
-                        value='Rural'
-                        className='custom-switch-input'
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Rural</span>
-                    </label>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='Ubication'
-                        value='Urbano'
-                        className='custom-switch-input'
-                        defaultChecked={true}
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Urbano</span>
-                    </label>
-                  </div>
+                  <label>Caracterización:</label>
+                  <select
+                    className='form-control'
+                    name='need'
+                    value={values.need}
+                    onChange={handleChange}
+                  >
+                    <option value=''>
+                      -- Seleccione una Caracterización --
+                    </option>
+                    {needs.map(({ name, value }, i) => (
+                      <option
+                        key={i}
+                        value={value}
+                      >
+                        {name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+              </div>
 
+              <div className='col-6'>
                 <div className='form-group'>
                   <label>Ubicación Persona</label>
                   <select
                     className='form-control'
-                    name='peopleLocation'
-                    onChange={handlePeopleLocation}
+                    name='service'
+                    value={values.service}
+                    onChange={(e) => {
+                      handlePeopleLocation(e);
+                      handleChange(e);
+                    }}
                   >
+                    <option value={0}>-- Seleccione un servicio --</option>
                     {peopleLocation.map(({ Id, TitleNameServices }) => (
                       <option
                         key={Id}
@@ -226,24 +248,6 @@ function SendMessagePage() {
               </div>
 
               <div className='col-6'>
-                <div className='form-group'>
-                  <label>Caracterización:</label>
-                  <select
-                    className='form-control'
-                    name='Need'
-                    onChange={handleChange}
-                  >
-                    {needs.map(({ name, value }, i) => (
-                      <option
-                        key={i}
-                        value={value}
-                      >
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 {selectedService.value && (
                   <div className='form-group'>
                     <label>{selectedService.name}</label>
@@ -267,16 +271,14 @@ function SendMessagePage() {
 
               <div className='col-12'>
                 <div className='form-group'>
-                  <label>Mensaje</label>
+                  <label>
+                    Mensaje
+                    <span className='mandatory'> *</span> :
+                  </label>
                   <textarea
                     className='form-control'
-                    value={sendWsContacts.customMessage}
-                    onChange={(e) =>
-                      setSendWsContacts((prev) => ({
-                        ...prev,
-                        customMessage: e.target.value,
-                      }))
-                    }
+                    name='message'
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -285,14 +287,10 @@ function SendMessagePage() {
                 <input
                   className='form-check-input'
                   type='checkbox'
+                  name='sendWsContacts'
                   id='send-ws-contacts'
-                  checked={sendWsContacts.sendWsContacts}
-                  onChange={(e) =>
-                    setSendWsContacts((prev) => ({
-                      ...prev,
-                      sendWsContacts: e.target.checked,
-                    }))
-                  }
+                  checked={values.sendWsContacts}
+                  onChange={handleChange}
                 />
                 <label
                   className='form-check-label'
@@ -313,8 +311,8 @@ function SendMessagePage() {
               type='submit'
               disabled={
                 !dirty ||
-                !sendWsContacts.customMessage ||
-                (shiptmet.length === 0 && !sendWsContacts.sendWsContacts)
+                !values.message ||
+                (shiptmet.length === 0 && !values.sendWsContacts)
               }
               onClick={handleSendBulkMessages}
             >
@@ -324,15 +322,18 @@ function SendMessagePage() {
           </div>
         </div>
       </Card>
-      <Card>
-        <div className='col-12'>
-          <div className='card-header'>
-            <h4>Mensaje a Envíar</h4>
-          </div>
 
-          <section className='card-body'>Aqui deberia de ir el mensahe</section>
-        </div>
-      </Card>
+      {values.message && (
+        <Card>
+          <div className='col-12'>
+            <div className='card-header'>
+              <h4>Mensaje a Envíar</h4>
+            </div>
+
+            <section className='card-body'>{values.message}</section>
+          </div>
+        </Card>
+      )}
     </section>
   );
 }

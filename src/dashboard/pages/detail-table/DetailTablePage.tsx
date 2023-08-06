@@ -66,7 +66,9 @@ function DetailTablePage() {
                         {s.Services.TitleNameServices}
                       </td>
                       <td className='text-center'>
-                        {s.Services.NaturalHose.join(',')}
+                        {s.Services.NaturalHose.map(
+                          ({ TitleNaturalHose }) => TitleNaturalHose
+                        ).join(',')}
                       </td>
                       <td className='text-center'>{s.Need}</td>
                     </tr>
