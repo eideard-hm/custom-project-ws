@@ -286,7 +286,7 @@ function FormUserDataPage() {
                     isSending ? 'disabled btn-progress' : ''
                   }`}
                   type='submit'
-                  disabled={!dirty}
+                  disabled={!dirty || isSending}
                 >
                   <i className='fa-solid fa-floppy-disk mr-2'></i>
                   Guardar

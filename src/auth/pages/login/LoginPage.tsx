@@ -91,9 +91,8 @@ export default function LoginPage() {
                   <div className='form-button'>
                     <button
                       type='submit'
-                      className={`btn ${
-                        isLoading ? 'disabled btn-progress' : ''
-                      }`}
+                      className='btn'
+                      disabled={isLoading}
                     >
                       Iniciar Sessión
                     </button>
