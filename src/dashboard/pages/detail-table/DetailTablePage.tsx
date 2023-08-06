@@ -38,25 +38,8 @@ function DetailTablePage() {
           <div className='card-body p-0'>
             <div className='table-responsive'>
               <table className='table table-striped'>
-                <tbody>
+                <thead>
                   <tr>
-                    <th className='text-center'>
-                      <div className='custom-checkbox custom-checkbox-table custom-control'>
-                        <input
-                          type='checkbox'
-                          data-checkboxes='mygroup'
-                          data-checkbox-role='dad'
-                          className='custom-control-input'
-                          id='checkbox-all'
-                        />
-                        <label
-                          htmlFor='checkbox-all'
-                          className='custom-control-label'
-                        >
-                          &nbsp;
-                        </label>
-                      </div>
-                    </th>
                     <th className='text-center'>Nombre</th>
                     <th className='text-center'>Apellidos</th>
                     <th className='text-center'>Email</th>
@@ -68,24 +51,10 @@ function DetailTablePage() {
                     <th className='text-center'>Vereda</th>
                     <th className='text-center'>Caracterización</th>
                   </tr>
+                </thead>
+                <tbody>
                   {shiptmet.map((s, i) => (
                     <tr key={i}>
-                      <td className='p-0 text-center'>
-                        <div className='custom-checkbox custom-control'>
-                          <input
-                            type='checkbox'
-                            data-checkboxes='mygroup'
-                            className='custom-control-input'
-                            id={'checkbox-' + i}
-                          />
-                          <label
-                            htmlFor={'checkbox-' + i}
-                            className='custom-control-label'
-                          >
-                            &nbsp;
-                          </label>
-                        </div>
-                      </td>
                       <td className='text-center'>{s.FirstName}</td>
                       <td className='text-center'>{s.LastName}</td>
                       <td className='text-center'>{s.Email}</td>

@@ -97,8 +97,9 @@ function SendMessagePage() {
     ) {
       setIsSending(true);
 
-      const receivedMessages: ISendBulkMessage[] = shiptmet.map(
-        ({ FirstName, LastName, Phone }) => ({
+      const receivedMessages: ISendBulkMessage[] = shiptmet
+        .filter(({ Phone }) => Phone)
+        .map(({ FirstName, LastName, Phone }) => ({
           phone: Phone ?? '',
           message: sendWsContacts.sendWsContacts
             ? sendWsContacts.customMessage
@@ -117,8 +118,7 @@ function SendMessagePage() {
                 .replaceAll('{location}', `*${town}*`)
                 .replaceAll('{Location}', `*${town}*`)
                 .replaceAll('{LOCATION}', `*${town}*`)}`,
-        })
-      );
+        }));
 
       const message: ISendBulkMessageWithAttach = {
         content: receivedMessages,
@@ -139,6 +139,7 @@ function SendMessagePage() {
 
   return (
     <section className='send-messages-page'>
+      <ConventionsReeplace />
       <Card>
         <div className='col-12'>
           <div className='card-header'>
@@ -265,8 +266,6 @@ function SendMessagePage() {
               </div>
 
               <div className='col-12'>
-                <ConventionsReeplace />
-
                 <div className='form-group'>
                   <label>Mensaje</label>
                   <textarea
