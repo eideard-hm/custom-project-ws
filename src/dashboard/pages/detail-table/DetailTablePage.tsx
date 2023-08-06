@@ -38,61 +38,10 @@ function DetailTablePage() {
       sendWsContacts.customMessage.includes('{USER}')
     ) {
       setIsSending(true);
-      const receivedMessagesDumy:   ShipmentOrdersCreateInput[]  = [
-        {
-        FirstName: "David",
-        LastName: "Ciro",
-        Email:"",
-        Phone:"3184666618",
-        FromCityCode:"",
-        BirthDate:"",
-        DocumentType:"",
-        DocumentId: "",
-        SexId:"",
-        Ubication:"",
-        Sidewalk:"",
-        Need: "",
-        ModifyUserId: "",
-      
-          },
-        {
-          
-          FirstName: "Edier",
-          LastName: "Hernádez",
-          Email:"",
-        Phone:"3206371091",
-        FromCityCode:"",
-        BirthDate:"",
-        DocumentType:"",
-        DocumentId: "",
-        SexId:"",
-        Ubication:"",
-        Sidewalk:"",
-        Need: "",
-        ModifyUserId: "",
-          },
-        {
-          
-          FirstName: "Ferney",
-          LastName: "Hernádez",
-          Email:"",
-        Phone:"3197014092",
-        FromCityCode:"",
-        BirthDate:"",
-        DocumentType:"",
-        DocumentId: "",
-        SexId:"",
-        Ubication:"",
-        Sidewalk:"",
-        Need: "",
-        ModifyUserId: "",
-          },
-      ];
 
-      const receivedMessages: ISendBulkMessage[] =
-        receivedMessagesDumy.map(
+      const receivedMessages: ISendBulkMessage[] = shiptmet.map(
         ({ FirstName, LastName, Phone }) => ({
-          phone: Phone,
+          phone: Phone ?? '',
           message: sendWsContacts.sendWsContacts
             ? sendWsContacts.customMessage
             : `${sendWsContacts.customMessage
@@ -112,7 +61,6 @@ function DetailTablePage() {
                 .replaceAll('{LOCATION}', `*${town}*`)}`,
         })
       );
-
 
       const message: ISendBulkMessageWithAttach = {
         content: receivedMessages,
@@ -176,7 +124,7 @@ function DetailTablePage() {
                         </label>
                       </div>
                     </th>
-                    <th className='text-center'>Nombres</th>
+                    <th className='text-center'>Nombre</th>
                     <th className='text-center'>Apellidos</th>
                     <th className='text-center'>Email</th>
                     <th className='text-center'>Teléfono</th>
@@ -212,7 +160,7 @@ function DetailTablePage() {
                       <td className='text-center'>{s.BirthDate}</td>
                       <td className='text-center'>{s.DocumentType}</td>
                       <td className='text-center'>{s.SexId}</td>
-                      <td className='text-center'>{s.Ubication}</td>
+                      <td className='text-center'>{s.ServicesId}</td>
                       <td className='text-center'>{s.Sidewalk}</td>
                       <td className='text-center'>{s.Need}</td>
                     </tr>
