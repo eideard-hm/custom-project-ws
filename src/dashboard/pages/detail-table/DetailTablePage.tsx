@@ -1,83 +1,16 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import toast from 'react-hot-toast';
-
-import { AuthContext, DashboardContext } from '../../../context';
-import {
-  getAllShipmentOrdersAsync,
-  sendMesssageBulkAsync,
-} from '../../services';
-import type {
-  ISendBulkMessage,
-  ISendBulkMessageWithAttach,
-  ShipmentOrdersResponse,
-} from '../../types';
+import { getAllShipmentOrdersAsync } from '../../services';
+import type { ShipmentOrdersResponse } from '../../types';
 
 function DetailTablePage() {
-  const [isSending, setIsSending] = useState(false);
-  const [sendWsContacts, setSendWsContacts] = useState({
-    customMessage: '',
-    sendWsContacts: false,
-  });
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
-  const { attachFile } = useContext(DashboardContext);
-  const {
-    userData: { fullName, town },
-  } = useContext(AuthContext);
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
       .then((shipments) => setShiptmet(shipments))
       .catch(console.error);
   }, []);
-
-  const handleSendBulkMessages = async () => {
-    if (
-      sendWsContacts.customMessage.includes('{user}') ||
-      sendWsContacts.customMessage.includes('{User}') ||
-      sendWsContacts.customMessage.includes('{USER}')
-    ) {
-      setIsSending(true);
-
-      const receivedMessages: ISendBulkMessage[] = shiptmet.map(
-        ({ FirstName, LastName, Phone }) => ({
-          phone: Phone ?? '',
-          message: sendWsContacts.sendWsContacts
-            ? sendWsContacts.customMessage
-            : `${sendWsContacts.customMessage
-                .replaceAll('{name}', `*${FirstName}*`)
-                .replaceAll('{NAME}', `*${FirstName}*`)
-                .replaceAll('{Name}', `*${FirstName}*`)
-                .replaceAll('Name', `*${FirstName}*`)
-                .replaceAll('{lastname}', `*${LastName}*`)
-                .replaceAll('{Lastname}', `*${LastName}*`)
-                .replaceAll('{LastName}', `*${LastName}*`)
-                .replaceAll('{LASTNAME}', `*${LastName}*`)
-                .replaceAll('{user}', `*${fullName}*`)
-                .replaceAll('{User}', `*${fullName}*`)
-                .replaceAll('{USER}', `*${fullName}*`)
-                .replaceAll('{location}', `*${town}*`)
-                .replaceAll('{Location}', `*${town}*`)
-                .replaceAll('{LOCATION}', `*${town}*`)}`,
-        })
-      );
-
-      const message: ISendBulkMessageWithAttach = {
-        content: receivedMessages,
-        attach: attachFile,
-        sendWsContacts: sendWsContacts.sendWsContacts,
-      };
-
-      const response = await sendMesssageBulkAsync(message);
-      setIsSending(false);
-      if (response.length > 0) {
-        toast.success('Mensajes enviados correctamente!');
-      }
-      return;
-    }
-
-    toast.error('Debe de agregar la convensión para reemplazar la información');
-  };
 
   return (
     <div className='row'>
@@ -173,45 +106,7 @@ function DetailTablePage() {
               </table>
             </div>
           </div>
-          <div className='card-footer'>
-            <hr />
-            <div className='row'>
-              <div className='form-group col-12'>
-                <label>Mensaje</label>
-                <textarea
-                  className='form-control'
-                  value={sendWsContacts.customMessage}
-                  onChange={(e) =>
-                    setSendWsContacts((prev) => ({
-                      ...prev,
-                      customMessage: e.target.value,
-                    }))
-                  }
-                  required
-                />
-              </div>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='send-ws-contacts'
-                  checked={sendWsContacts.sendWsContacts}
-                  onChange={(e) =>
-                    setSendWsContacts((prev) => ({
-                      ...prev,
-                      sendWsContacts: e.target.checked,
-                    }))
-                  }
-                />
-                <label
-                  className='form-check-label'
-                  htmlFor='send-ws-contacts'
-                >
-                  Enviar a mis <strong>contactos de WhatsApp.</strong>
-                </label>
-              </div>
-            </div>
-
+          {/* <div className='card-footer'>
             <div className='text-right'>
               <button
                 disabled={
@@ -226,7 +121,7 @@ function DetailTablePage() {
                 Envíar Mensajes
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -1,19 +1,36 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, type ChangeEvent } from 'react';
 
 import { useFormik } from 'formik';
 
+import toast from 'react-hot-toast';
 import { needs } from '../../../data';
+import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
-import { AttachedFile } from '../../components';
-import type { INaturalHoseByService, IService, ISex } from '../../types';
+import type { IUserDataMaestros } from '../../../types';
+import { AttachedFile, ConventionsReeplace } from '../../components';
 import {
+  getAllShipmentOrdersAsync,
   getLocations,
   retrieveNaturalHoses,
   retrieveSexs,
+  sendMesssageBulkAsync,
 } from '../../services';
-import type { IUserDataMaestros } from '../../../types';
+import type {
+  INaturalHoseByService,
+  ISendBulkMessage,
+  ISendBulkMessageWithAttach,
+  IService,
+  ISex,
+  ShipmentOrdersResponse,
+} from '../../types';
 
 function SendMessagePage() {
+  const [isSending, setIsSending] = useState(false);
+  const [sendWsContacts, setSendWsContacts] = useState({
+    customMessage: '',
+    sendWsContacts: false,
+  });
   const [selectedService, setSelectedService] = useState<IUserDataMaestros>({
     name: '',
     value: '',
@@ -21,6 +38,7 @@ function SendMessagePage() {
   const [, setSexs] = useState<ISex[]>([]);
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
+  const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
   const { dirty, handleChange, handleSubmit } = useFormik({
     initialValues: {},
     enableReinitialize: true,
@@ -28,18 +46,30 @@ function SendMessagePage() {
       console.log({ values });
     },
   });
+  const { attachFile } = useDashboardContext();
+  const {
+    userData: { fullName, town },
+  } = useAuthContext();
 
   useEffect(() => {
     initServices();
   }, []);
 
   const initServices = () => {
+    getAllShipmentOrders();
+
     getLocations()
       .then((location) => setPeopleLocation(location))
       .catch(console.error);
 
     retrieveSexs()
       .then((sex) => setSexs(sex))
+      .catch(console.error);
+  };
+
+  const getAllShipmentOrders = () => {
+    getAllShipmentOrdersAsync()
+      .then((shipments) => setShiptmet(shipments))
       .catch(console.error);
   };
 
@@ -57,6 +87,54 @@ function SendMessagePage() {
   const getNaturalHoses = async (serviceId: string) => {
     const naturalHouse = await retrieveNaturalHoses(serviceId);
     setNaturalHoses(naturalHouse);
+  };
+
+  const handleSendBulkMessages = async () => {
+    if (
+      sendWsContacts.customMessage.includes('{user}') ||
+      sendWsContacts.customMessage.includes('{User}') ||
+      sendWsContacts.customMessage.includes('{USER}')
+    ) {
+      setIsSending(true);
+
+      const receivedMessages: ISendBulkMessage[] = shiptmet.map(
+        ({ FirstName, LastName, Phone }) => ({
+          phone: Phone ?? '',
+          message: sendWsContacts.sendWsContacts
+            ? sendWsContacts.customMessage
+            : `${sendWsContacts.customMessage
+                .replaceAll('{name}', `*${FirstName}*`)
+                .replaceAll('{NAME}', `*${FirstName}*`)
+                .replaceAll('{Name}', `*${FirstName}*`)
+                .replaceAll('Name', `*${FirstName}*`)
+                .replaceAll('{lastname}', `*${LastName}*`)
+                .replaceAll('{Lastname}', `*${LastName}*`)
+                .replaceAll('{LastName}', `*${LastName}*`)
+                .replaceAll('{LASTNAME}', `*${LastName}*`)
+                .replaceAll('{user}', `*${fullName}*`)
+                .replaceAll('{User}', `*${fullName}*`)
+                .replaceAll('{USER}', `*${fullName}*`)
+                .replaceAll('{location}', `*${town}*`)
+                .replaceAll('{Location}', `*${town}*`)
+                .replaceAll('{LOCATION}', `*${town}*`)}`,
+        })
+      );
+
+      const message: ISendBulkMessageWithAttach = {
+        content: receivedMessages,
+        attach: attachFile,
+        sendWsContacts: sendWsContacts.sendWsContacts,
+      };
+
+      const response = await sendMesssageBulkAsync(message);
+      setIsSending(false);
+      if (response.length > 0) {
+        toast.success('Mensajes enviados correctamente!');
+      }
+      return;
+    }
+
+    toast.error('Debe de agregar la convensión para reemplazar la información');
   };
 
   return (
@@ -185,15 +263,61 @@ function SendMessagePage() {
                   </div>
                 )}
               </div>
+
+              <div className='col-12'>
+                <ConventionsReeplace />
+
+                <div className='form-group'>
+                  <label>Mensaje</label>
+                  <textarea
+                    className='form-control'
+                    value={sendWsContacts.customMessage}
+                    onChange={(e) =>
+                      setSendWsContacts((prev) => ({
+                        ...prev,
+                        customMessage: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+              </div>
+              <div className='form-check'>
+                <input
+                  className='form-check-input'
+                  type='checkbox'
+                  id='send-ws-contacts'
+                  checked={sendWsContacts.sendWsContacts}
+                  onChange={(e) =>
+                    setSendWsContacts((prev) => ({
+                      ...prev,
+                      sendWsContacts: e.target.checked,
+                    }))
+                  }
+                />
+                <label
+                  className='form-check-label'
+                  htmlFor='send-ws-contacts'
+                >
+                  Enviar a mis <strong>contactos de WhatsApp.</strong>
+                </label>
+              </div>
             </form>
           </section>
 
           <div className='card-footer text-right'>
             <AttachedFile />
             <button
-              className='btn btn-icon icon-left btn-success'
+              className={`btn btn-icon icon-left btn-success ${
+                isSending ? 'disabled btn-progress' : ''
+              }`}
               type='submit'
-              disabled={!dirty}
+              disabled={
+                !dirty ||
+                !sendWsContacts.customMessage ||
+                (shiptmet.length === 0 && !sendWsContacts.sendWsContacts)
+              }
+              onClick={handleSendBulkMessages}
             >
               <i className='fa-solid fa-paper-plane mr-2'></i>
               Envíar Mensaje
