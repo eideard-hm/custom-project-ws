@@ -1,17 +1,63 @@
+import { useEffect, useState, type ChangeEvent } from 'react';
+
 import { useFormik } from 'formik';
 
 import { needs } from '../../../data';
 import { Card } from '../../../shared/components';
 import { AttachedFile } from '../../components';
+import type { INaturalHoseByService, IService, ISex } from '../../types';
+import {
+  getLocations,
+  retrieveNaturalHoses,
+  retrieveSexs,
+} from '../../services';
+import type { IUserDataMaestros } from '../../../types';
 
 function SendMessagePage() {
-  const { dirty, handleChange, handleSubmit} = useFormik({
+  const [selectedService, setSelectedService] = useState<IUserDataMaestros>({
+    name: '',
+    value: '',
+  });
+  const [, setSexs] = useState<ISex[]>([]);
+  const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
+  const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
+  const { dirty, handleChange, handleSubmit } = useFormik({
     initialValues: {},
     enableReinitialize: true,
     onSubmit(values) {
       console.log({ values });
     },
   });
+
+  useEffect(() => {
+    initServices();
+  }, []);
+
+  const initServices = () => {
+    getLocations()
+      .then((location) => setPeopleLocation(location))
+      .catch(console.error);
+
+    retrieveSexs()
+      .then((sex) => setSexs(sex))
+      .catch(console.error);
+  };
+
+  const handlePeopleLocation = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (!e) return;
+
+    const index = e.target.selectedIndex;
+    const label = e.target[index].textContent ?? '';
+    const serviceId = e.target.value;
+
+    setSelectedService({ name: label, value: serviceId });
+    getNaturalHoses(serviceId);
+  };
+
+  const getNaturalHoses = async (serviceId: string) => {
+    const naturalHouse = await retrieveNaturalHoses(serviceId);
+    setNaturalHoses(naturalHouse);
+  };
 
   return (
     <section className='send-messages-page'>
@@ -28,7 +74,7 @@ function SendMessagePage() {
               <div className='col-6'>
                 <div className='form-group'>
                   <label>Ubicación: </label>
-                  <div className='custom-switches-stacked mt-2'>
+                  <div className='mt-3'>
                     <label className='custom-switch'>
                       <input
                         type='radio'
@@ -54,7 +100,26 @@ function SendMessagePage() {
                     </label>
                   </div>
                 </div>
+
                 <div className='form-group'>
+                  <label>Ubicación Persona</label>
+                  <select
+                    className='form-control'
+                    name='peopleLocation'
+                    onChange={handlePeopleLocation}
+                  >
+                    {peopleLocation.map(({ Id, TitleNameServices }) => (
+                      <option
+                        key={Id}
+                        value={Id}
+                      >
+                        {TitleNameServices}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* <div className='form-group'>
                   <label
                     htmlFor='sendAllSidewalks'
                     className='d-block'
@@ -115,7 +180,7 @@ function SendMessagePage() {
                       <span className='custom-switch-description'>Otro</span>
                     </label>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className='col-6'>
@@ -137,18 +202,25 @@ function SendMessagePage() {
                   </select>
                 </div>
 
-                <div className='form-group'>
-                  <label>Vereda</label>
-                  <select
-                    className='form-control'
-                    name='Sidewalk'
-                    onChange={handleChange}
-                  >
-                    <option value='Otanche'>Otanche</option>
-                    <option value='Las Quinchas'>Las Quinchas</option>
-                    <option value='Option 3'>Option 3</option>
-                  </select>
-                </div>
+                {selectedService.value && (
+                  <div className='form-group'>
+                    <label>{selectedService.name}</label>
+                    <select
+                      className='form-control'
+                      name={selectedService.name}
+                      onChange={handleChange}
+                    >
+                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
+                        <option
+                          key={Id}
+                          value={Id}
+                        >
+                          {TitleNaturalHose}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </form>
           </section>

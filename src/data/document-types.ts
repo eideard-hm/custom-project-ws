@@ -2,15 +2,27 @@ import type { IUserDataMaestros } from '../types';
 
 export const documentTypes: IUserDataMaestros[] = [
   {
-    name: 'Cédula de Ciudadanía',
-    value: 'C.C',
+    name: 'Cedula de ciudadanía',
+    value: 'CC',
   },
   {
-    name: 'Tarjeta de Identidad',
-    value: 'T.I',
+    name: 'Tarjeta de identidad',
+    value: 'TI',
+  },
+  {
+    name: 'Cédula digital',
+    value: 'CC DIG',
+  },
+  {
+    name: 'Cédula de Extranjería',
+    value: 'CE',
+  },
+  {
+    name: 'Registro civil',
+    value: 'RC',
   },
   {
     name: 'Pasaporte',
-    value: 'P.E',
+    value: 'PE',
   },
 ];

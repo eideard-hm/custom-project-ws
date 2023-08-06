@@ -141,6 +141,7 @@ export function Nabvar() {
               <div className='dropdown-divider'></div>
               <a
                 onClick={handleLogout}
+                href='#'
                 className='dropdown-item has-icon text-danger'
               >
                 <i className='fas fa-sign-out-alt'></i>

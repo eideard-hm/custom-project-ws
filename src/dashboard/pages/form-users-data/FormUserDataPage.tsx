@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
+
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 
 import { documentTypes, needs } from '../../../data';
-import { createShipmentOrders } from '../../services';
-import type { ShipmentOrdersCreateInput } from '../../types';
+import { createShipmentOrders, retrieveSexs } from '../../services';
+import type { ISex, ShipmentOrdersCreateInput } from '../../types';
 
 const initialState: ShipmentOrdersCreateInput = {
   FirstName: '',
@@ -22,6 +24,7 @@ const initialState: ShipmentOrdersCreateInput = {
 };
 
 function FormUserDataPage() {
+  const [sexs, setSexs] = useState<ISex[]>([]);
   const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
     initialValues: initialState,
     onSubmit: async (values, { resetForm }) => {
@@ -39,6 +42,14 @@ function FormUserDataPage() {
       toast.success(`Se creó el registro con el Id: ${Id}`);
     },
   });
+
+  useEffect(() => initServices(), []);
+
+  const initServices = () => {
+    retrieveSexs()
+      .then((sex) => setSexs(sex))
+      .catch(console.error);
+  };
 
   return (
     <div className='row'>
@@ -71,6 +82,7 @@ function FormUserDataPage() {
                     ))}
                   </select>
                 </div>
+
                 <div className='form-group'>
                   <label>Nombre:</label>
                   <input
@@ -82,78 +94,7 @@ function FormUserDataPage() {
                     value={values.FirstName}
                   />
                 </div>
-                <div className='form-group'>
-                  <label>Apellidos:</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    name='LastName'
-                    placeholder='Doe'
-                    onChange={handleChange}
-                    value={values.LastName}
-                  />
-                </div>
-                <div className='form-group'>
-                  <label>Email:</label>
-                  <input
-                    type='email'
-                    className='form-control'
-                    name='Email'
-                    placeholder='example@example.com'
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className='form-group'>
-                  <label>Genero: </label>
-                  <div className='custom-switches-stacked mt-2'>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='SexId'
-                        value='Hombre'
-                        className='custom-switch-input'
-                        defaultChecked={true}
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Hombre</span>
-                    </label>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='SexId'
-                        value='Mujer'
-                        className='custom-switch-input'
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Mujer</span>
-                    </label>
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='SexId'
-                        value='Otro'
-                        className='custom-switch-input'
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Otro</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className='col-6'>
-                <div className='form-group'>
-                  <label>Fecha Nacimiento:</label>
-                  <input
-                    type='date'
-                    className='form-control datepicker'
-                    name='BirthDate'
-                    onChange={handleChange}
-                    value={values.BirthDate}
-                  />
-                </div>
+
                 <div className='form-group'>
                   <label>Número Teléfono: </label>
                   <div className='input-group'>
@@ -170,9 +111,70 @@ function FormUserDataPage() {
                     />
                   </div>
                 </div>
+
+                <div className='form-group'>
+                  <label>Email:</label>
+                  <input
+                    type='email'
+                    className='form-control'
+                    name='Email'
+                    placeholder='example@example.com'
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className='form-group'>
+                  <label>Genero: </label>
+                  <div className='custom-switches-stacked mt-2'>
+                    {sexs.map(({ Id, TitleNaturalHose }) => (
+                      <label
+                        className='custom-switch'
+                        key={Id}
+                      >
+                        <input
+                          type='radio'
+                          name='SexId'
+                          value={Id}
+                          className='custom-switch-input'
+                          defaultChecked={true}
+                          onChange={handleChange}
+                        />
+                        <span className='custom-switch-indicator'></span>
+                        <span className='custom-switch-description'>
+                          {TitleNaturalHose}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className='col-6'>
+                <div className='form-group'>
+                  <label>Fecha Nacimiento:</label>
+                  <input
+                    type='date'
+                    className='form-control datepicker'
+                    name='BirthDate'
+                    onChange={handleChange}
+                    value={values.BirthDate}
+                  />
+                </div>
+
+                <div className='form-group'>
+                  <label>Apellidos:</label>
+                  <input
+                    type='text'
+                    className='form-control'
+                    name='LastName'
+                    placeholder='Doe'
+                    onChange={handleChange}
+                    value={values.LastName}
+                  />
+                </div>
+
                 <div className='form-group'>
                   <label>Ubicación: </label>
-                  <div className='custom-switches-stacked mt-2'>
+                  <div className='mt-3'>
                     <label className='custom-switch'>
                       <input
                         type='radio'
@@ -198,6 +200,7 @@ function FormUserDataPage() {
                     </label>
                   </div>
                 </div>
+
                 <div className='form-group'>
                   <label>Caracterización:</label>
                   <select
@@ -232,11 +235,12 @@ function FormUserDataPage() {
               </div>
               <div className='card-footer text-right'>
                 <button
-                  className='btn btn-primary mr-1'
+                  className='btn btn-icon icon-left btn-success'
                   type='submit'
                   disabled={!dirty}
                 >
-                  Submit
+                  <i className='fa-solid fa-floppy-disk mr-2'></i>
+                  Guardar
                 </button>
               </div>
             </form>
