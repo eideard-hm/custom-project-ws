@@ -49,7 +49,6 @@ function DetailTablePage() {
                     <th className='text-center'>Genero</th>
                     <th className='text-center'>Ubicación</th>
                     <th className='text-center'>Vereda</th>
-                    <th className='text-center'>Caracterización</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -70,7 +69,6 @@ function DetailTablePage() {
                           ({ TitleNaturalHose }) => TitleNaturalHose
                         ).join(',')}
                       </td>
-                      <td className='text-center'>{s.Need}</td>
                     </tr>
                   ))}
                 </tbody>
