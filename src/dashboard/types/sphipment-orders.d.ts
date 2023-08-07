@@ -29,15 +29,15 @@ export interface ShipmentOrdersResponse {
   Phone: string | null;
   BirthDate: string | null;
   DocumentType: string | null;
-  Need: string | null;
   Sex: ISex;
   Services: Services;
+  NaturalHose: INaturalHoseByService | null;
+  NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose: INaturalHoseByService | null;
 }
 
 export interface Services {
   Id: number;
   TitleNameServices: string;
-  NaturalHose: INaturalHoseByService[];
 }
 
 export interface IShipmentOrdersCreateInput extends ShipmentOrdersCreateInput {

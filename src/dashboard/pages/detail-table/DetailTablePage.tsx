@@ -65,9 +65,10 @@ function DetailTablePage() {
                         {s.Services.TitleNameServices}
                       </td>
                       <td className='text-center'>
-                        {s.Services.NaturalHose.map(
-                          ({ TitleNaturalHose }) => TitleNaturalHose
-                        ).join(',')}
+                        {s.NaturalHose?.TitleNaturalHose ??
+                          s
+                            .NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose
+                            ?.TitleNaturalHose}
                       </td>
                     </tr>
                   ))}
@@ -75,22 +76,6 @@ function DetailTablePage() {
               </table>
             </div>
           </div>
-          {/* <div className='card-footer'>
-            <div className='text-right'>
-              <button
-                disabled={
-                  !sendWsContacts.customMessage ||
-                  (shiptmet.length === 0 && !sendWsContacts.sendWsContacts)
-                }
-                className={`btn btn-primary mr-1 ${
-                  isSending ? 'disabled btn-progress' : ''
-                }`}
-                onClick={handleSendBulkMessages}
-              >
-                Envíar Mensajes
-              </button>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>

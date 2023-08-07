@@ -2,6 +2,7 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 
 import { useFormik } from 'formik';
+import { MultiSelect, type Option } from 'react-multi-select-component';
 
 import toast from 'react-hot-toast';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
@@ -26,6 +27,8 @@ import type {
   ShipmentOrdersResponse,
 } from '../../types';
 
+import './SendMessage.css';
+
 const initialValues: IInitialValues = {
   service: '',
   message: '',
@@ -45,6 +48,7 @@ function SendMessagePage() {
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
+  const [selected, setSelected] = useState<Option[]>([]);
   const { dirty, handleChange, handleSubmit, setFieldValue, values } =
     useFormik({
       initialValues,
@@ -123,12 +127,11 @@ function SendMessagePage() {
         );
       }
 
-      if (values.naturalHoses.length > 0) {
-        shipmentFilter = shipmentFilter.filter(
-          ({ Services: { NaturalHose } }) =>
-            NaturalHose.some(({ Id }) =>
-              values.naturalHoses.includes(String(Id))
-            )
+      if (!values.sendAllNaturalHoses && selected.length > 0) {
+        shipmentFilter = shipmentFilter.filter(({ NaturalHose }) =>
+          selected.some(({ value }) =>
+            equalsIgnoringCase(value, String(NaturalHose?.Id ?? ''))
+          )
         );
       }
 
@@ -167,8 +170,6 @@ function SendMessagePage() {
         attach: attachFile,
         sendWsContacts: values.sendWsContacts,
       };
-
-      console.log({ message, values });
 
       const response = await sendMesssageBulkAsync(message);
       setIsSending(false);
@@ -234,23 +235,17 @@ function SendMessagePage() {
                 {selectedService.value && (
                   <div className='form-group'>
                     <label>{selectedService.name} :</label>
-                    <select
+                    <MultiSelect
+                      value={selected}
                       disabled={values.sendAllNaturalHoses}
-                      className='form-control'
-                      name='naturalHoses'
-                      onChange={handleChange}
-                      multiple
-                      value={values.naturalHoses}
-                    >
-                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
-                        <option
-                          key={Id}
-                          value={Id}
-                        >
-                          {TitleNaturalHose}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setSelected}
+                      options={naturalHoses.map(({ Id, TitleNaturalHose }) => ({
+                        value: String(Id),
+                        label: TitleNaturalHose,
+                      }))}
+                      labelledBy='Select'
+                      className='dark'
+                    />
                   </div>
                 )}
               </div>
@@ -267,7 +262,7 @@ function SendMessagePage() {
                       handleChange(e);
                     }}
                   >
-                    <option value={0}>-- Seleccione un servicio --</option>
+                    <option value=''>-- Seleccione un servicio --</option>
                     {peopleLocation.map(({ Id, TitleNameServices }) => (
                       <option
                         key={Id}
