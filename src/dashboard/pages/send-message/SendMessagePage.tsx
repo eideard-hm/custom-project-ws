@@ -334,6 +334,7 @@ function SendMessagePage() {
                   />
                 </div>
               </div>
+              
               <div className='form-check'>
                 <input
                   className='form-check-input'

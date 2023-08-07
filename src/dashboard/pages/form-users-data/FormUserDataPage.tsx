@@ -81,8 +81,12 @@ function FormUserDataPage() {
     const label = e.target[index].textContent ?? '';
     const [serviceId, code] = e.target.value.split('-');
 
-    setSelectedService({ label, id: serviceId, code });
-    getNaturalHoses(serviceId);
+    if (Number(serviceId ?? 0) > 0) {
+      setSelectedService({ label, id: serviceId, code });
+      getNaturalHoses(serviceId);
+      return;
+    }
+    setSelectedService({ label: '', id: '', code: '' });
   };
 
   const getNaturalHoses = async (serviceId: string) => {
@@ -182,8 +186,12 @@ function FormUserDataPage() {
                     className='form-control'
                     name='ServicesId'
                     value={values.ServicesId}
-                    onChange={handlePeopleLocation}
+                    onChange={(e) => {
+                      handlePeopleLocation(e);
+                      handleChange(e);
+                    }}
                   >
+                    <option value={0}>-- Seleccione un servicio --</option>
                     {peopleLocation.map(({ Id, TitleNameServices, Type }) => (
                       <option
                         key={Id}
@@ -280,7 +288,7 @@ function FormUserDataPage() {
                 )}
               </div>
 
-              <div className='card-footer text-right'>
+              <div className='card-footer'>
                 <button
                   className={`btn btn-icon icon-left btn-success ${
                     isSending ? 'disabled btn-progress' : ''
