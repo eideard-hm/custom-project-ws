@@ -7,7 +7,6 @@ import { MultiSelect, type Option } from 'react-multi-select-component';
 import toast from 'react-hot-toast';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
-import type { IUserDataMaestros } from '../../../types';
 import { equalsIgnoringCase, isNullOrWhiteSpaces } from '../../../utils';
 import { AttachedFile, ConventionsReeplace } from '../../components';
 import {
@@ -20,36 +19,48 @@ import {
 import type {
   IInitialValues,
   INaturalHoseByService,
+  ISelectedServie,
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
   IService,
   ISex,
   ShipmentOrdersResponse,
 } from '../../types';
+import { UBI_SERVICE_CODE, OTR_SERVICE_CODE } from '../../../utils';
 
 import './SendMessage.css';
-import { UBI_SERVICE_CODE } from '../../../utils/services-codes';
 
 const initialValues: IInitialValues = {
   service: '',
   message: '',
   sendWsContacts: false,
   sex: '',
-  naturalHoses: [],
   sendAllNaturalHoses: true,
+  economicSector: '',
 };
 
 function SendMessagePage() {
   const [isSending, setIsSending] = useState(false);
-  const [selectedService, setSelectedService] = useState<IUserDataMaestros>({
-    name: '',
-    value: '',
+  const [selectedService, setSelectedService] = useState<ISelectedServie>({
+    label: '',
+    id: '',
+  });
+  const [selectedEcoSector, setSelectedEcoSector] = useState<ISelectedServie>({
+    label: '',
+    id: '',
   });
   const [sexs, setSexs] = useState<ISex[]>([]);
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
+  const [naturalHosesEcoSector, setNaturalHosesEcoSector] = useState<
+    INaturalHoseByService[]
+  >([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
+  const [economySectors, setEconomySectors] = useState<IService[]>([]);
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
   const [selected, setSelected] = useState<Option[]>([]);
+  const [optionsSelectedEconSector, setOptionsSelectedEconSector] = useState<
+    Option[]
+  >([]);
   const { dirty, handleChange, handleSubmit, setFieldValue, values } =
     useFormik({
       initialValues,
@@ -74,6 +85,10 @@ function SendMessagePage() {
       .then((location) => setPeopleLocation(location))
       .catch(console.error);
 
+    getLocations(OTR_SERVICE_CODE)
+      .then((sectors) => setEconomySectors(sectors))
+      .catch(console.error);
+
     retrieveSexs()
       .then((sex) => setSexs(sex))
       .catch(console.error);
@@ -85,25 +100,43 @@ function SendMessagePage() {
       .catch(console.error);
   };
 
-  const handlePeopleLocation = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handlePeopleLocation = async (
+    e: ChangeEvent<HTMLSelectElement>,
+    serviceCode: string
+  ) => {
     if (!e) return;
 
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
-    const serviceId = e.target.value;
+    const serviceId = (e.target.value ?? '').trim();
 
-    if (Number(serviceId ?? 0) > 0) {
-      getNaturalHoses(serviceId);
-      setSelectedService({ name: label, value: serviceId });
+    console.log({ serviceId });
+
+    if (serviceId) {
+      getNaturalHoses(serviceId, serviceCode);
+
+      if (serviceCode === UBI_SERVICE_CODE) {
+        setSelectedService({ label, id: serviceId });
+      } else {
+        setSelectedEcoSector({ label, id: serviceId });
+      }
       return;
     }
 
-    setSelectedService({ name: '', value: '' });
+    if (serviceCode === UBI_SERVICE_CODE) {
+      setSelectedService({ label: '', id: '' });
+    } else {
+      setSelectedEcoSector({ label: '', id: '' });
+    }
   };
 
-  const getNaturalHoses = async (serviceId: string) => {
+  const getNaturalHoses = async (serviceId: string, serviceCode: string) => {
     const naturalHouse = await retrieveNaturalHoses(serviceId);
-    setNaturalHoses(naturalHouse);
+    if (serviceCode === UBI_SERVICE_CODE) {
+      setNaturalHoses(naturalHouse);
+    } else {
+      setNaturalHosesEcoSector(naturalHouse);
+    }
   };
 
   const handleSendBulkMessages = async () => {
@@ -128,11 +161,37 @@ function SendMessagePage() {
         );
       }
 
+      if (!isNullOrWhiteSpaces(values.economicSector)) {
+        shipmentFilter = shipmentFilter.filter(
+          ({
+            Services_ShipmentOrders_ServiceActivityIdToServices: econActSer,
+          }) =>
+            equalsIgnoringCase(
+              values.economicSector,
+              String(econActSer?.Id ?? '')
+            )
+        );
+      }
+
       if (!values.sendAllNaturalHoses && selected.length > 0) {
         shipmentFilter = shipmentFilter.filter(({ NaturalHose }) =>
           selected.some(({ value }) =>
             equalsIgnoringCase(value, String(NaturalHose?.Id ?? ''))
           )
+        );
+      }
+
+      if (
+        optionsSelectedEconSector.length > 0 &&
+        !isNullOrWhiteSpaces(optionsSelectedEconSector[0]?.value ?? '')
+      ) {
+        shipmentFilter = shipmentFilter.filter(
+          ({
+            NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose: econAct,
+          }) =>
+            optionsSelectedEconSector.some(({ value }) =>
+              equalsIgnoringCase(value, String(econAct?.Id ?? ''))
+            )
         );
       }
 
@@ -233,9 +292,9 @@ function SendMessagePage() {
                   </div>
                 </div>
 
-                {selectedService.value && (
+                {selectedService.id && (
                   <div className='form-group'>
-                    <label>{selectedService.name} :</label>
+                    <label>{selectedService.label} :</label>
                     <MultiSelect
                       value={selected}
                       disabled={values.sendAllNaturalHoses}
@@ -249,6 +308,30 @@ function SendMessagePage() {
                     />
                   </div>
                 )}
+
+                <div className='form-group'>
+                  <label>Actividad Económica :</label>
+                  <select
+                    className='form-control'
+                    name='economicSector'
+                    onChange={async (e) => {
+                      handleChange(e);
+                      await handlePeopleLocation(e, OTR_SERVICE_CODE);
+                    }}
+                  >
+                    <option value=''>
+                      -- Seleccione un Actividad Económica --
+                    </option>
+                    {economySectors.map(({ Id, TitleNameServices }) => (
+                      <option
+                        key={Id}
+                        value={Id}
+                      >
+                        {TitleNameServices}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div className='col-6'>
@@ -258,9 +341,9 @@ function SendMessagePage() {
                     className='form-control'
                     name='service'
                     value={values.service}
-                    onChange={(e) => {
-                      handlePeopleLocation(e);
+                    onChange={async (e) => {
                       handleChange(e);
+                      await handlePeopleLocation(e, UBI_SERVICE_CODE);
                     }}
                   >
                     <option value=''>-- Seleccione un servicio --</option>
@@ -275,8 +358,11 @@ function SendMessagePage() {
                   </select>
                 </div>
 
-                {selectedService.value && (
-                  <div className='form-group'>
+                {selectedService.id && (
+                  <div
+                    className='form-group'
+                    style={{ marginTop: '2.5rem' }}
+                  >
                     <label
                       htmlFor='sendAllNaturalHoses'
                       className='d-block'
@@ -301,9 +387,27 @@ function SendMessagePage() {
                         className='form-check-label'
                         htmlFor='sendAllNaturalHoses'
                       >
-                        ¿ Envíar a todos/as {selectedService.name} ?
+                        ¿ Envíar a todos/as {selectedService.label} ?
                       </label>
                     </div>
+                  </div>
+                )}
+
+                {selectedEcoSector.id && (
+                  <div className='form-group'>
+                    <label>{selectedEcoSector.label} :</label>
+                    <MultiSelect
+                      value={optionsSelectedEconSector}
+                      onChange={setOptionsSelectedEconSector}
+                      options={naturalHosesEcoSector.map(
+                        ({ Id, TitleNaturalHose }) => ({
+                          value: String(Id),
+                          label: TitleNaturalHose,
+                        })
+                      )}
+                      labelledBy='Select'
+                      className='dark'
+                    />
                   </div>
                 )}
               </div>

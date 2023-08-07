@@ -32,6 +32,6 @@ export interface IInitialValues {
   message: string;
   sendWsContacts: boolean;
   sex: string;
-  naturalHoses: string[];
   sendAllNaturalHoses: boolean;
+  economicSector: string
 }

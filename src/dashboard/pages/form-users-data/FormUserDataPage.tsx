@@ -61,7 +61,7 @@ function FormUserDataPage() {
       }
 
       setIsSending(true);
-      const { Id } = await createShipmentOrders({...values});
+      const { Id } = await createShipmentOrders({ ...values });
       if (Id === 0) {
         toast.error(
           'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
@@ -99,9 +99,9 @@ function FormUserDataPage() {
 
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
-    const serviceId = e.target.value;
+    const serviceId = (e.target.value ?? '').trim();
 
-    if (Number(serviceId ?? 0) > 0) {
+    if (serviceId) {
       getNaturalHoses(serviceId, serviceCode);
 
       if (serviceCode === UBI_SERVICE_CODE) {
@@ -111,7 +111,12 @@ function FormUserDataPage() {
       }
       return;
     }
-    setSelectedService({ label: '', id: '' });
+
+    if (serviceCode === UBI_SERVICE_CODE) {
+      setSelectedService({ label: '', id: '' });
+    } else {
+      setSelectedEcoSector({ label: '', id: '' });
+    }
   };
 
   const getNaturalHoses = async (serviceId: string, serviceCode: string) => {
