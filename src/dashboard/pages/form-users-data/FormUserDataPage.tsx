@@ -22,7 +22,7 @@ import type {
 const initialState: IShipmentOrdersCreateInput = {
   FirstName: '',
   LastName: '',
-  SexId: 1,
+  SexId: '2',
   Sidewalk: '',
   BirthDate: '',
   DocumentType: 'CC',
@@ -191,8 +191,8 @@ function FormUserDataPage() {
                           name='SexId'
                           value={Id}
                           className='custom-switch-input'
-                          defaultChecked={true}
                           onChange={handleChange}
+                          checked={String(Id) === values.SexId}
                         />
                         <span className='custom-switch-indicator'></span>
                         <span className='custom-switch-description'>

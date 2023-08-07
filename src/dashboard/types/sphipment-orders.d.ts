@@ -10,7 +10,7 @@ export interface ShipmentOrdersCreateInput {
   BirthDate?: string | undefined;
   DocumentType?: string | undefined;
   DocumentId?: string | undefined;
-  SexId: number;
+  SexId: number | string;
   ServicesId: number | string;
   Sidewalk: string;
   Need?: string | null;
