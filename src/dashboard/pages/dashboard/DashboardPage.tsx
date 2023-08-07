@@ -68,9 +68,9 @@ function DashboardPage() {
     setLoginInfo(loginIfo);
     setAuth({ isLoggin: loginIfo.loginSuccess });
 
-    if (loginIfo.userImage) {
-      setUserData({ ...userData, userImage: loginIfo.userImage });
-    }
+    // if (loginIfo.userImage) {
+    //   setUserData({ ...userData, userImage: loginIfo.userImage });
+    // }
   };
 
   return (
