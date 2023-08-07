@@ -9,6 +9,8 @@ export function UserImage() {
   return userImage ? (
     <img
       alt={`Imagen de perfil ${fullName}`}
+      height={30}
+      width={30}
       src={userImage}
       className='user-img-radious-style'
     />
