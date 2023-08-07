@@ -130,14 +130,14 @@ function SendMessagePage() {
         );
       }
 
-      if (values.naturalHoses.length > 0) {
-        shipmentFilter = shipmentFilter.filter(
-          ({ Services: { NaturalHose } }) =>
-            NaturalHose.some(({ Id }) =>
-              values.naturalHoses.includes(String(Id))
-            )
-        );
-      }
+      // if (values.naturalHoses.length > 0) {
+      //   shipmentFilter = shipmentFilter.filter(
+      //     ({ Services: { NaturalHose } }) =>
+      //       NaturalHose.some(({ Id }) =>
+      //         values.naturalHoses.includes(String(Id))
+      //       )
+      //   );
+      // }
 
       if (shipmentFilter.length === 0) {
         toast.error(

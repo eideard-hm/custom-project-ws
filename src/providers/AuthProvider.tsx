@@ -25,7 +25,7 @@ export function AuthProvider({ children }: Props) {
   const setCurrentStatusAuth = (status: IAuth) => setAuth(status);
 
   const updateUserData = (userDataInput: IUserData) =>
-    setUserData({...userDataInput});
+    setUserData(userDataInput);
 
   return (
     <AuthContext.Provider
