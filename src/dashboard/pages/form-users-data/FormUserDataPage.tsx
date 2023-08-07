@@ -65,6 +65,7 @@ function FormUserDataPage() {
             ? Number(values.naturalHose)
             : null;
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { serviceCode, naturalHose, ...objectValues } = values;
 
         setIsSending(true);
