@@ -6,16 +6,16 @@ export interface ShipmentOrdersCreateInput {
   LastName: string;
   Email?: string | undefined;
   Phone?: string | undefined;
-  HouseId?: number | undefined;
+  HouseId?: number | null;
   BirthDate?: string | undefined;
   DocumentType?: string | undefined;
   DocumentId?: string | undefined;
   SexId: number;
-  ServicesId: number;
+  ServicesId: number | string;
   Sidewalk: string;
-  Need?: string | undefined;
+  Need?: string | null;
   ModifyUserId?: string;
-  EconomicActivity?: number | undefined;
+  EconomicActivity?: number | null;
 }
 
 export type ShipmentOrdersCreateResponse = {
@@ -38,4 +38,9 @@ export interface Services {
   Id: number;
   TitleNameServices: string;
   NaturalHose: INaturalHoseByService[];
+}
+
+export interface IShipmentOrdersCreateInput extends ShipmentOrdersCreateInput {
+  serviceCode: string;
+  naturalHose: string | undefined;
 }

@@ -24,5 +24,14 @@ export interface ISendBulkMessageWithAttach {
 
 export interface ISendBulkMessage {
   phone: string;
-  message: string
+  message: string;
+}
+
+export interface IInitialValues {
+  service: string;
+  message: string;
+  sendWsContacts: boolean;
+  sex: string;
+  naturalHoses: string[];
+  sendAllNaturalHoses: boolean;
 }

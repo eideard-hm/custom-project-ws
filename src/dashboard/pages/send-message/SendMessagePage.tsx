@@ -4,7 +4,6 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { useFormik } from 'formik';
 
 import toast from 'react-hot-toast';
-import { needs } from '../../../data';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
 import type { IUserDataMaestros } from '../../../types';
@@ -18,6 +17,7 @@ import {
   sendMesssageBulkAsync,
 } from '../../services';
 import type {
+  IInitialValues,
   INaturalHoseByService,
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
@@ -26,13 +26,12 @@ import type {
   ShipmentOrdersResponse,
 } from '../../types';
 
-const initialValues = {
-  need: '',
+const initialValues: IInitialValues = {
   service: '',
   message: '',
   sendWsContacts: false,
   sex: '',
-  naturalHoses: [''],
+  naturalHoses: [],
   sendAllNaturalHoses: true,
 };
 
@@ -112,12 +111,6 @@ function SendMessagePage() {
       let shipmentFilter = [...shiptmet];
 
       // filter shipment
-      if (!isNullOrWhiteSpaces(values.need)) {
-        shipmentFilter = shipmentFilter.filter(({ Need }) =>
-          equalsIgnoringCase(values.need, Need ?? '')
-        );
-      }
-
       if (!isNullOrWhiteSpaces(values.service)) {
         shipmentFilter = shipmentFilter.filter(({ Services: { Id } }) =>
           equalsIgnoringCase(values.service, String(Id))
@@ -130,14 +123,14 @@ function SendMessagePage() {
         );
       }
 
-      // if (values.naturalHoses.length > 0) {
-      //   shipmentFilter = shipmentFilter.filter(
-      //     ({ Services: { NaturalHose } }) =>
-      //       NaturalHose.some(({ Id }) =>
-      //         values.naturalHoses.includes(String(Id))
-      //       )
-      //   );
-      // }
+      if (values.naturalHoses.length > 0) {
+        shipmentFilter = shipmentFilter.filter(
+          ({ Services: { NaturalHose } }) =>
+            NaturalHose.some(({ Id }) =>
+              values.naturalHoses.includes(String(Id))
+            )
+        );
+      }
 
       if (shipmentFilter.length === 0) {
         toast.error(
@@ -203,53 +196,6 @@ function SendMessagePage() {
             >
               <div className='col-6'>
                 <div className='form-group'>
-                  <label>Caracterización:</label>
-                  <select
-                    className='form-control'
-                    name='need'
-                    value={values.need}
-                    onChange={handleChange}
-                  >
-                    <option value=''>
-                      -- Seleccione una Caracterización --
-                    </option>
-                    {needs.map(({ name, value }, i) => (
-                      <option
-                        key={i}
-                        value={value}
-                      >
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className='form-group'>
-                  <label>Ubicación Persona</label>
-                  <select
-                    className='form-control'
-                    name='service'
-                    value={values.service}
-                    onChange={(e) => {
-                      handlePeopleLocation(e);
-                      handleChange(e);
-                    }}
-                  >
-                    <option value={0}>-- Seleccione un servicio --</option>
-                    {peopleLocation.map(({ Id, TitleNameServices }) => (
-                      <option
-                        key={Id}
-                        value={Id}
-                      >
-                        {TitleNameServices}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className='col-6'>
-                <div className='form-group'>
                   <label>Genero: </label>
                   <div className='mt-3'>
                     {sexs.map(({ Id, TitleNaturalHose }) => (
@@ -286,60 +232,81 @@ function SendMessagePage() {
                 </div>
 
                 {selectedService.value && (
-                  <div className='row'>
-                    <div className='col-8'>
-                      <div className='form-group'>
-                        <label>{selectedService.name} :</label>
-                        <select
-                          disabled={values.sendAllNaturalHoses}
-                          className='form-control'
-                          name='naturalHoses'
-                          onChange={handleChange}
-                          multiple
-                          value={values.naturalHoses}
+                  <div className='form-group'>
+                    <label>{selectedService.name} :</label>
+                    <select
+                      disabled={values.sendAllNaturalHoses}
+                      className='form-control'
+                      name='naturalHoses'
+                      onChange={handleChange}
+                      multiple
+                      value={values.naturalHoses}
+                    >
+                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
+                        <option
+                          key={Id}
+                          value={Id}
                         >
-                          {naturalHoses.map(({ Id, TitleNaturalHose }) => (
-                            <option
-                              key={Id}
-                              value={Id}
-                            >
-                              {TitleNaturalHose}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
+                          {TitleNaturalHose}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
 
-                    <div className='col-4'>
-                      <div className='form-group'>
-                        <label
-                          htmlFor='sendAllNaturalHoses'
-                          className='d-block'
-                        >
-                          Receptores
-                        </label>
-                        <div className='form-check'>
-                          <input
-                            className='form-check-input'
-                            type='checkbox'
-                            id='sendAllNaturalHoses'
-                            name='sendAllNaturalHoses'
-                            defaultChecked={values.sendAllNaturalHoses}
-                            onChange={(e) =>
-                              setFieldValue(
-                                'sendAllNaturalHoses',
-                                e.target.checked
-                              )
-                            }
-                          />
-                          <label
-                            className='form-check-label'
-                            htmlFor='sendAllNaturalHoses'
-                          >
-                            ¿ Envíar a todos/as {selectedService.name} ?
-                          </label>
-                        </div>
-                      </div>
+              <div className='col-6'>
+                <div className='form-group'>
+                  <label>Ubicación Persona</label>
+                  <select
+                    className='form-control'
+                    name='service'
+                    value={values.service}
+                    onChange={(e) => {
+                      handlePeopleLocation(e);
+                      handleChange(e);
+                    }}
+                  >
+                    <option value={0}>-- Seleccione un servicio --</option>
+                    {peopleLocation.map(({ Id, TitleNameServices }) => (
+                      <option
+                        key={Id}
+                        value={Id}
+                      >
+                        {TitleNameServices}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {selectedService.value && (
+                  <div className='form-group'>
+                    <label
+                      htmlFor='sendAllNaturalHoses'
+                      className='d-block'
+                    >
+                      Receptores
+                    </label>
+                    <div className='form-check'>
+                      <input
+                        className='form-check-input'
+                        type='checkbox'
+                        id='sendAllNaturalHoses'
+                        name='sendAllNaturalHoses'
+                        defaultChecked={values.sendAllNaturalHoses}
+                        onChange={async (e) =>
+                          await setFieldValue(
+                            'sendAllNaturalHoses',
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <label
+                        className='form-check-label'
+                        htmlFor='sendAllNaturalHoses'
+                      >
+                        ¿ Envíar a todos/as {selectedService.name} ?
+                      </label>
                     </div>
                   </div>
                 )}

@@ -1,6 +1,6 @@
 export interface IService {
   Id: string;
-  Type: string | null;
+  Type: string | undefined;
   TitleNameServices: string;
 }
 

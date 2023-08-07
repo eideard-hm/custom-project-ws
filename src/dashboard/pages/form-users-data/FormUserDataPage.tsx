@@ -3,8 +3,8 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 
-import { documentTypes, needs } from '../../../data';
-import { UBI_SERVICE_CODE } from '../../../utils';
+import { documentTypes } from '../../../data';
+import { OTR_SERVICE_CODE, UBI_SERVICE_CODE } from '../../../utils';
 import {
   createShipmentOrders,
   getLocations,
@@ -16,10 +16,10 @@ import type {
   ISelectedServie,
   IService,
   ISex,
-  ShipmentOrdersCreateInput,
+  IShipmentOrdersCreateInput,
 } from '../../types';
 
-const initialState: ShipmentOrdersCreateInput = {
+const initialState: IShipmentOrdersCreateInput = {
   FirstName: '',
   LastName: '',
   SexId: 1,
@@ -27,9 +27,12 @@ const initialState: ShipmentOrdersCreateInput = {
   BirthDate: '',
   DocumentType: 'CC',
   Email: '',
-  Need: '',
+  Need: null,
   Phone: '',
-  ServicesId: 26,
+  ServicesId: '',
+  EconomicActivity: null,
+  serviceCode: '',
+  naturalHose: '',
 };
 
 function FormUserDataPage() {
@@ -42,25 +45,42 @@ function FormUserDataPage() {
   const [sexs, setSexs] = useState<ISex[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
-  const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
-    initialValues: initialState,
-    onSubmit: async (values, { resetForm }) => {
-      if (!isValid) return;
+  const { dirty, handleSubmit, handleChange, setFieldValue, values, isValid } =
+    useFormik({
+      initialValues: initialState,
+      onSubmit: async (values, { resetForm }) => {
+        if (!isValid || !values.ServicesId) {
+          toast.error(
+            'Debe de llenar los campos del formulario correctamente!'
+          );
+          return;
+        }
 
-      setIsSending(true);
-      const { Id } = await createShipmentOrders({ ...values });
-      if (Id === 0) {
-        toast.error(
-          'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
-        );
-      } else {
-        resetForm();
-        toast.success(`Se creó el registro con el Id: ${Id}`);
-      }
+        values.EconomicActivity =
+          values.serviceCode && values.serviceCode === OTR_SERVICE_CODE
+            ? Number(values.naturalHose)
+            : null;
+        values.HouseId =
+          values.serviceCode && values.serviceCode === UBI_SERVICE_CODE
+            ? Number(values.naturalHose)
+            : null;
 
-      setIsSending(false);
-    },
-  });
+        const { serviceCode, naturalHose, ...objectValues } = values;
+
+        setIsSending(true);
+        const { Id } = await createShipmentOrders(objectValues);
+        if (Id === 0) {
+          toast.error(
+            'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
+          );
+        } else {
+          resetForm();
+          toast.success(`Se creó el registro con el Id: ${Id}`);
+        }
+
+        setIsSending(false);
+      },
+    });
 
   useEffect(() => initServices(), []);
 
@@ -74,12 +94,14 @@ function FormUserDataPage() {
       .catch(console.error);
   };
 
-  const handlePeopleLocation = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handlePeopleLocation = async (e: ChangeEvent<HTMLSelectElement>) => {
     if (!e) return;
 
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
     const [serviceId, code] = e.target.value.split('-');
+    const servicesCode = e.target[index].getAttribute('data-type');
+    await setFieldValue('serviceCode', servicesCode);
 
     if (Number(serviceId ?? 0) > 0) {
       setSelectedService({ label, id: serviceId, code });
@@ -180,28 +202,29 @@ function FormUserDataPage() {
                   </div>
                 </div>
 
-                <div className='form-group'>
-                  <label>Ubicación Persona:</label>
-                  <select
-                    className='form-control'
-                    name='ServicesId'
-                    value={values.ServicesId}
-                    onChange={(e) => {
-                      handlePeopleLocation(e);
-                      handleChange(e);
-                    }}
-                  >
-                    <option value={0}>-- Seleccione un servicio --</option>
-                    {peopleLocation.map(({ Id, TitleNameServices, Type }) => (
-                      <option
-                        key={Id}
-                        value={`${Id}-${Type}`}
-                      >
-                        {TitleNameServices}
+                {selectedService.id && (
+                  <div className='form-group'>
+                    <label>{selectedService.label}:</label>
+                    <select
+                      className='form-control'
+                      name='naturalHose'
+                      onChange={handleChange}
+                      value={values.naturalHose}
+                    >
+                      <option value=''>
+                        -- Seleccione un/a {selectedService.label} --
                       </option>
-                    ))}
-                  </select>
-                </div>
+                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
+                        <option
+                          key={Id}
+                          value={Id}
+                        >
+                          {TitleNaturalHose}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
               <div className='col-6'>
                 <div className='form-group'>
@@ -240,52 +263,34 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Caracterización:</label>
+                  <label>
+                    Ubicación Persona <span className='mandatory'>*</span> :
+                  </label>
                   <select
                     className='form-control'
-                    name='Need'
-                    onChange={handleChange}
-                    value={values.Need}
+                    name='ServicesId'
+                    onChange={async (e) => {
+                      handleChange(e);
+                      await handlePeopleLocation(e);
+                    }}
                   >
-                    {needs.map(({ name, value }, i) => (
+                    <option
+                      value=''
+                      data-type=''
+                    >
+                      -- Seleccione un servicio --
+                    </option>
+                    {peopleLocation.map(({ Id, TitleNameServices, Type }) => (
                       <option
-                        key={i}
-                        value={value}
+                        key={Id}
+                        value={Id}
+                        data-type={Type}
                       >
-                        {name}
+                        {TitleNameServices}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                {selectedService.id && (
-                  <div className='form-group'>
-                    <label>{selectedService.label}:</label>
-                    <select
-                      className='form-control'
-                      name={
-                        selectedService.code === UBI_SERVICE_CODE
-                          ? 'HouseId'
-                          : 'EconomicActivity'
-                      }
-                      onChange={handleChange}
-                      value={
-                        selectedService.code === UBI_SERVICE_CODE
-                          ? values.HouseId
-                          : values.EconomicActivity
-                      }
-                    >
-                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
-                        <option
-                          key={Id}
-                          value={Id}
-                        >
-                          {TitleNaturalHose}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
               </div>
 
               <div className='card-footer'>
