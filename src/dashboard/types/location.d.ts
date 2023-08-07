@@ -7,5 +7,4 @@ export interface IService {
 export interface ISelectedServie {
   id: string;
   label: string;
-  code: string;
 }

@@ -28,6 +28,7 @@ import type {
 } from '../../types';
 
 import './SendMessage.css';
+import { UBI_SERVICE_CODE } from '../../../utils/services-codes';
 
 const initialValues: IInitialValues = {
   service: '',
@@ -69,7 +70,7 @@ function SendMessagePage() {
   const initServices = () => {
     getAllShipmentOrders();
 
-    getLocations()
+    getLocations(UBI_SERVICE_CODE)
       .then((location) => setPeopleLocation(location))
       .catch(console.error);
 

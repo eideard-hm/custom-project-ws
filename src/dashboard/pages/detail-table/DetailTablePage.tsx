@@ -48,7 +48,9 @@ function DetailTablePage() {
                     <th className='text-center'>Tipo Documento</th>
                     <th className='text-center'>Genero</th>
                     <th className='text-center'>Ubicación</th>
-                    <th className='text-center'>Vereda</th>
+                    <th className='text-center'>Dirección</th>
+                    <th className='text-center'>Actividad Económica</th>
+                    <th className='text-center'>Nicho</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -58,17 +60,29 @@ function DetailTablePage() {
                       <td className='text-center'>{s.LastName}</td>
                       <td className='text-center'>{s.Email}</td>
                       <td className='text-center'>{s.Phone}</td>
-                      <td className='text-center'>{s.BirthDate}</td>
+                      <td className='text-center'>
+                        {new Date(s.BirthDate ?? '').toLocaleDateString()}
+                      </td>
                       <td className='text-center'>{s.DocumentType}</td>
                       <td className='text-center'>{s.Sex.TitleNaturalHose}</td>
                       <td className='text-center'>
                         {s.Services.TitleNameServices}
                       </td>
                       <td className='text-center'>
-                        {s.NaturalHose?.TitleNaturalHose ??
+                        {s.NaturalHose?.TitleNaturalHose}
+                      </td>
+                      <td className='text-center'>
+                        {
+                          s.Services_ShipmentOrders_ServiceActivityIdToServices
+                            ?.TitleNameServices
+                        }
+                      </td>
+                      <td className='text-center'>
+                        {
                           s
                             .NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose
-                            ?.TitleNaturalHose}
+                            ?.TitleNaturalHose
+                        }
                       </td>
                     </tr>
                   ))}

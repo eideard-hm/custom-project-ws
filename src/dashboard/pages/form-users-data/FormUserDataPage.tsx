@@ -16,10 +16,10 @@ import type {
   ISelectedServie,
   IService,
   ISex,
-  IShipmentOrdersCreateInput,
+  ShipmentOrdersCreateInput,
 } from '../../types';
 
-const initialState: IShipmentOrdersCreateInput = {
+const initialState: ShipmentOrdersCreateInput = {
   FirstName: '',
   LastName: '',
   SexId: '2',
@@ -30,64 +30,60 @@ const initialState: IShipmentOrdersCreateInput = {
   Need: null,
   Phone: '',
   ServicesId: '',
-  EconomicActivity: null,
-  serviceCode: '',
-  naturalHose: '',
+  EconomicActivity: undefined,
+  HouseId: undefined,
+  ServiceActivityId: '',
 };
 
 function FormUserDataPage() {
   const [isSending, setIsSending] = useState(false);
   const [selectedService, setSelectedService] = useState<ISelectedServie>({
-    code: '',
-    id: '',
     label: '',
+    id: '',
+  });
+  const [selectedEcoSector, setSelectedEcoSector] = useState<ISelectedServie>({
+    label: '',
+    id: '',
   });
   const [sexs, setSexs] = useState<ISex[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
+  const [economySectors, setEconomySectors] = useState<IService[]>([]);
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
-  const { dirty, handleSubmit, handleChange, setFieldValue, values, isValid } =
-    useFormik({
-      initialValues: initialState,
-      onSubmit: async (values, { resetForm }) => {
-        if (!isValid || !values.ServicesId) {
-          toast.error(
-            'Debe de llenar los campos del formulario correctamente!'
-          );
-          return;
-        }
+  const [naturalHosesEcoSector, setNaturalHosesEcoSector] = useState<
+    INaturalHoseByService[]
+  >([]);
+  const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
+    initialValues: initialState,
+    onSubmit: async (values, { resetForm }) => {
+      if (!isValid || !values.ServicesId) {
+        toast.error('Debe de llenar los campos del formulario correctamente!');
+        return;
+      }
 
-        values.EconomicActivity =
-          values.serviceCode && values.serviceCode === OTR_SERVICE_CODE
-            ? Number(values.naturalHose)
-            : null;
-        values.HouseId =
-          values.serviceCode && values.serviceCode === UBI_SERVICE_CODE
-            ? Number(values.naturalHose)
-            : null;
+      setIsSending(true);
+      const { Id } = await createShipmentOrders({...values});
+      if (Id === 0) {
+        toast.error(
+          'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
+        );
+      } else {
+        resetForm();
+        toast.success(`Se creó el registro con el Id: ${Id}`);
+      }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { serviceCode, naturalHose, ...objectValues } = values;
-
-        setIsSending(true);
-        const { Id } = await createShipmentOrders(objectValues);
-        if (Id === 0) {
-          toast.error(
-            'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
-          );
-        } else {
-          resetForm();
-          toast.success(`Se creó el registro con el Id: ${Id}`);
-        }
-
-        setIsSending(false);
-      },
-    });
+      setIsSending(false);
+    },
+  });
 
   useEffect(() => initServices(), []);
 
   const initServices = () => {
-    getLocations()
+    getLocations(UBI_SERVICE_CODE)
       .then((location) => setPeopleLocation(location))
+      .catch(console.error);
+
+    getLocations(OTR_SERVICE_CODE)
+      .then((sectors) => setEconomySectors(sectors))
       .catch(console.error);
 
     retrieveSexs()
@@ -95,26 +91,36 @@ function FormUserDataPage() {
       .catch(console.error);
   };
 
-  const handlePeopleLocation = async (e: ChangeEvent<HTMLSelectElement>) => {
+  const handlePeopleLocation = async (
+    e: ChangeEvent<HTMLSelectElement>,
+    serviceCode: string
+  ) => {
     if (!e) return;
 
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
-    const [serviceId, code] = e.target.value.split('-');
-    const servicesCode = e.target[index].getAttribute('data-type');
-    await setFieldValue('serviceCode', servicesCode);
+    const serviceId = e.target.value;
 
     if (Number(serviceId ?? 0) > 0) {
-      setSelectedService({ label, id: serviceId, code });
-      getNaturalHoses(serviceId);
+      getNaturalHoses(serviceId, serviceCode);
+
+      if (serviceCode === UBI_SERVICE_CODE) {
+        setSelectedService({ label, id: serviceId });
+      } else {
+        setSelectedEcoSector({ label, id: serviceId });
+      }
       return;
     }
-    setSelectedService({ label: '', id: '', code: '' });
+    setSelectedService({ label: '', id: '' });
   };
 
-  const getNaturalHoses = async (serviceId: string) => {
+  const getNaturalHoses = async (serviceId: string, serviceCode: string) => {
     const naturalHouse = await retrieveNaturalHoses(serviceId);
-    setNaturalHoses(naturalHouse);
+    if (serviceCode === UBI_SERVICE_CODE) {
+      setNaturalHoses(naturalHouse);
+    } else {
+      setNaturalHosesEcoSector(naturalHouse);
+    }
   };
 
   return (
@@ -179,6 +185,54 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
+                  <label>
+                    Ubicación Persona <span className='mandatory'>*</span> :
+                  </label>
+                  <select
+                    className='form-control'
+                    name='ServicesId'
+                    onChange={async (e) => {
+                      handleChange(e);
+                      await handlePeopleLocation(e, UBI_SERVICE_CODE);
+                    }}
+                  >
+                    <option value=''>-- Seleccione un servicio --</option>
+                    {peopleLocation.map(({ Id, TitleNameServices }) => (
+                      <option
+                        key={Id}
+                        value={Id}
+                      >
+                        {TitleNameServices}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className='form-group'>
+                  <label>Actividad Económica :</label>
+                  <select
+                    className='form-control'
+                    name='ServiceActivityId'
+                    onChange={async (e) => {
+                      handleChange(e);
+                      await handlePeopleLocation(e, OTR_SERVICE_CODE);
+                    }}
+                  >
+                    <option value=''>
+                      -- Seleccione un Actividad Económica --
+                    </option>
+                    {economySectors.map(({ Id, TitleNameServices }) => (
+                      <option
+                        key={Id}
+                        value={Id}
+                      >
+                        {TitleNameServices}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className='form-group'>
                   <label>Genero: </label>
                   <div className='mt-3'>
                     {sexs.map(({ Id, TitleNaturalHose }) => (
@@ -202,30 +256,6 @@ function FormUserDataPage() {
                     ))}
                   </div>
                 </div>
-
-                {selectedService.id && (
-                  <div className='form-group'>
-                    <label>{selectedService.label}:</label>
-                    <select
-                      className='form-control'
-                      name='naturalHose'
-                      onChange={handleChange}
-                      value={values.naturalHose}
-                    >
-                      <option value=''>
-                        -- Seleccione un/a {selectedService.label} --
-                      </option>
-                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
-                        <option
-                          key={Id}
-                          value={Id}
-                        >
-                          {TitleNaturalHose}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
               </div>
               <div className='col-6'>
                 <div className='form-group'>
@@ -263,35 +293,53 @@ function FormUserDataPage() {
                   />
                 </div>
 
-                <div className='form-group'>
-                  <label>
-                    Ubicación Persona <span className='mandatory'>*</span> :
-                  </label>
-                  <select
-                    className='form-control'
-                    name='ServicesId'
-                    onChange={async (e) => {
-                      handleChange(e);
-                      await handlePeopleLocation(e);
-                    }}
-                  >
-                    <option
-                      value=''
-                      data-type=''
+                {selectedService.id && (
+                  <div className='form-group'>
+                    <label>{selectedService.label}:</label>
+                    <select
+                      className='form-control'
+                      name='HouseId'
+                      onChange={handleChange}
+                      value={values.HouseId}
                     >
-                      -- Seleccione un servicio --
-                    </option>
-                    {peopleLocation.map(({ Id, TitleNameServices, Type }) => (
-                      <option
-                        key={Id}
-                        value={Id}
-                        data-type={Type}
-                      >
-                        {TitleNameServices}
+                      <option value=''>
+                        -- Seleccione un/a {selectedService.label} --
                       </option>
-                    ))}
-                  </select>
-                </div>
+                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
+                        <option
+                          key={Id}
+                          value={Id}
+                        >
+                          {TitleNaturalHose}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {selectedEcoSector.id && (
+                  <div className='form-group'>
+                    <label>{selectedEcoSector.label}:</label>
+                    <select
+                      className='form-control'
+                      name='EconomicActivity'
+                      onChange={handleChange}
+                      value={values.EconomicActivity}
+                    >
+                      <option value=''>
+                        -- Seleccione un/a {selectedEcoSector.label} --
+                      </option>
+                      {naturalHosesEcoSector.map(({ Id, TitleNaturalHose }) => (
+                        <option
+                          key={Id}
+                          value={Id}
+                        >
+                          {TitleNaturalHose}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div className='card-footer'>

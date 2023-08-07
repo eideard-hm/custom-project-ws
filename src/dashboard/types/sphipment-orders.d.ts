@@ -6,7 +6,7 @@ export interface ShipmentOrdersCreateInput {
   LastName: string;
   Email?: string | undefined;
   Phone?: string | undefined;
-  HouseId?: number | null;
+  HouseId?: string | undefined;
   BirthDate?: string | undefined;
   DocumentType?: string | undefined;
   DocumentId?: string | undefined;
@@ -15,7 +15,8 @@ export interface ShipmentOrdersCreateInput {
   Sidewalk: string;
   Need?: string | null;
   ModifyUserId?: string;
-  EconomicActivity?: number | null;
+  EconomicActivity?: string | undefined;
+  ServiceActivityId?: string | undefined;
 }
 
 export type ShipmentOrdersCreateResponse = {
@@ -33,14 +34,10 @@ export interface ShipmentOrdersResponse {
   Services: Services;
   NaturalHose: INaturalHoseByService | null;
   NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose: INaturalHoseByService | null;
+  Services_ShipmentOrders_ServiceActivityIdToServices: Services | null;
 }
 
 export interface Services {
   Id: number;
   TitleNameServices: string;
-}
-
-export interface IShipmentOrdersCreateInput extends ShipmentOrdersCreateInput {
-  serviceCode: string;
-  naturalHose: string | undefined;
 }
