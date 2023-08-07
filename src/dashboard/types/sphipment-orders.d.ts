@@ -1,4 +1,5 @@
 import type { INaturalHoseByService } from './natural-hose';
+import type { ISex } from './sex';
 
 export interface ShipmentOrdersCreateInput {
   FirstName: string;
@@ -29,7 +30,7 @@ export interface ShipmentOrdersResponse {
   BirthDate: string | null;
   DocumentType: string | null;
   Need: string | null;
-  Sex: Sex;
+  Sex: ISex;
   Services: Services;
 }
 
@@ -37,8 +38,4 @@ export interface Services {
   Id: number;
   TitleNameServices: string;
   NaturalHose: INaturalHoseByService[];
-}
-
-export interface Sex {
-  TitleNaturalHose: string;
 }

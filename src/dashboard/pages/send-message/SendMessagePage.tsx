@@ -28,9 +28,10 @@ import type {
 
 const initialValues = {
   need: '',
-  service: '0',
+  service: '',
   message: '',
   sendWsContacts: false,
+  sex: '',
 };
 
 function SendMessagePage() {
@@ -39,7 +40,7 @@ function SendMessagePage() {
     name: '',
     value: '',
   });
-  const [, setSexs] = useState<ISex[]>([]);
+  const [sexs, setSexs] = useState<ISex[]>([]);
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
@@ -115,9 +116,23 @@ function SendMessagePage() {
       }
 
       if (!isNullOrWhiteSpaces(values.service)) {
-        shipmentFilter = shipmentFilter.filter(
-          ({ Services: { Id } }) => Number(values.service) === Id
+        shipmentFilter = shipmentFilter.filter(({ Services: { Id } }) =>
+          equalsIgnoringCase(values.service, String(Id))
         );
+      }
+
+      if (!isNullOrWhiteSpaces(values.sex)) {
+        shipmentFilter = shipmentFilter.filter(({ Sex: { Id } }) =>
+          equalsIgnoringCase(values.sex, String(Id))
+        );
+      }
+
+      if (shipmentFilter.length === 0) {
+        toast.error(
+          'No se encontrarón receptores asociados a los criteríos de busqueda.'
+        );
+        setIsSending(false);
+        return;
       }
 
       const receivedMessages: ISendBulkMessage[] = shipmentFilter
@@ -148,6 +163,8 @@ function SendMessagePage() {
         sendWsContacts: values.sendWsContacts,
       };
 
+      console.log({ message, values });
+
       const response = await sendMesssageBulkAsync(message);
       setIsSending(false);
       if (response.length > 0) {
@@ -172,7 +189,7 @@ function SendMessagePage() {
               onSubmit={handleSubmit}
               className='row'
             >
-              <div className='col-12'>
+              <div className='col-6'>
                 <div className='form-group'>
                   <label>Caracterización:</label>
                   <select
@@ -194,9 +211,7 @@ function SendMessagePage() {
                     ))}
                   </select>
                 </div>
-              </div>
 
-              <div className='col-6'>
                 <div className='form-group'>
                   <label>Ubicación Persona</label>
                   <select
@@ -248,6 +263,42 @@ function SendMessagePage() {
               </div>
 
               <div className='col-6'>
+                <div className='form-group'>
+                  <label>Genero: </label>
+                  <div className='mt-3'>
+                    {sexs.map(({ Id, TitleNaturalHose }) => (
+                      <label
+                        className='custom-switch'
+                        key={Id}
+                      >
+                        <input
+                          type='radio'
+                          name='sex'
+                          value={Id}
+                          className='custom-switch-input'
+                          onChange={handleChange}
+                        />
+                        <span className='custom-switch-indicator'></span>
+                        <span className='custom-switch-description'>
+                          {TitleNaturalHose}
+                        </span>
+                      </label>
+                    ))}
+                    <label className='custom-switch'>
+                      <input
+                        type='radio'
+                        name='sex'
+                        value=''
+                        className='custom-switch-input'
+                        defaultChecked={true}
+                        onChange={handleChange}
+                      />
+                      <span className='custom-switch-indicator'></span>
+                      <span className='custom-switch-description'>Todos</span>
+                    </label>
+                  </div>
+                </div>
+
                 {selectedService.value && (
                   <div className='form-group'>
                     <label>{selectedService.name}</label>
