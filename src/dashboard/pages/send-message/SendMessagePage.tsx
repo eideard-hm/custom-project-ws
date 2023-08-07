@@ -32,6 +32,8 @@ const initialValues = {
   message: '',
   sendWsContacts: false,
   sex: '',
+  naturalHoses: [''],
+  sendAllNaturalHoses: true,
 };
 
 function SendMessagePage() {
@@ -44,13 +46,14 @@ function SendMessagePage() {
   const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
-  const { dirty, handleChange, handleSubmit, values } = useFormik({
-    initialValues,
-    enableReinitialize: true,
-    onSubmit(values) {
-      console.log({ values });
-    },
-  });
+  const { dirty, handleChange, handleSubmit, setFieldValue, values } =
+    useFormik({
+      initialValues,
+      enableReinitialize: true,
+      onSubmit(values) {
+        console.log({ values });
+      },
+    });
   const { attachFile } = useDashboardContext();
   const {
     userData: { fullName, town },
@@ -124,6 +127,15 @@ function SendMessagePage() {
       if (!isNullOrWhiteSpaces(values.sex)) {
         shipmentFilter = shipmentFilter.filter(({ Sex: { Id } }) =>
           equalsIgnoringCase(values.sex, String(Id))
+        );
+      }
+
+      if (values.naturalHoses.length > 0) {
+        shipmentFilter = shipmentFilter.filter(
+          ({ Services: { NaturalHose } }) =>
+            NaturalHose.some(({ Id }) =>
+              values.naturalHoses.includes(String(Id))
+            )
         );
       }
 
@@ -234,32 +246,6 @@ function SendMessagePage() {
                     ))}
                   </select>
                 </div>
-
-                {/* <div className='form-group'>
-                  <label
-                    htmlFor='sendAllSidewalks'
-                    className='d-block'
-                  >
-                    Receptores
-                  </label>
-                  <div className='form-check'>
-                    <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='sendAllSidewalks'
-                      name='sendAllSidewalks'
-                      defaultChecked
-                    />
-                    <label
-                      className='form-check-label'
-                      htmlFor='sendAllSidewalks'
-                    >
-                      ¿ Envío a todas las Veredas ?
-                    </label>
-                  </div>
-                </div>
-                
-                </div> */}
               </div>
 
               <div className='col-6'>
@@ -300,22 +286,61 @@ function SendMessagePage() {
                 </div>
 
                 {selectedService.value && (
-                  <div className='form-group'>
-                    <label>{selectedService.name}</label>
-                    <select
-                      className='form-control'
-                      name={selectedService.name}
-                      onChange={handleChange}
-                    >
-                      {naturalHoses.map(({ Id, TitleNaturalHose }) => (
-                        <option
-                          key={Id}
-                          value={Id}
+                  <div className='row'>
+                    <div className='col-8'>
+                      <div className='form-group'>
+                        <label>{selectedService.name} :</label>
+                        <select
+                          disabled={values.sendAllNaturalHoses}
+                          className='form-control'
+                          name='naturalHoses'
+                          onChange={handleChange}
+                          multiple
+                          value={values.naturalHoses}
                         >
-                          {TitleNaturalHose}
-                        </option>
-                      ))}
-                    </select>
+                          {naturalHoses.map(({ Id, TitleNaturalHose }) => (
+                            <option
+                              key={Id}
+                              value={Id}
+                            >
+                              {TitleNaturalHose}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className='col-4'>
+                      <div className='form-group'>
+                        <label
+                          htmlFor='sendAllNaturalHoses'
+                          className='d-block'
+                        >
+                          Receptores
+                        </label>
+                        <div className='form-check'>
+                          <input
+                            className='form-check-input'
+                            type='checkbox'
+                            id='sendAllNaturalHoses'
+                            name='sendAllNaturalHoses'
+                            defaultChecked={values.sendAllNaturalHoses}
+                            onChange={(e) =>
+                              setFieldValue(
+                                'sendAllNaturalHoses',
+                                e.target.checked
+                              )
+                            }
+                          />
+                          <label
+                            className='form-check-label'
+                            htmlFor='sendAllNaturalHoses'
+                          >
+                            ¿ Envíar a todos/as {selectedService.name} ?
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -334,7 +359,7 @@ function SendMessagePage() {
                   />
                 </div>
               </div>
-              
+
               <div className='form-check'>
                 <input
                   className='form-check-input'
