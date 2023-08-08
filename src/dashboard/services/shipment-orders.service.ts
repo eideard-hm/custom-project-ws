@@ -2,13 +2,12 @@ import type { IUserDataLogin } from '../../auth/types';
 import { API_URL } from '../../config';
 import { getSessionStorageOrNavigate } from '../../services';
 import type {
-  ShipmentOrdersCreateInput,
-  ShipmentOrdersCreateResponse,
-  ShipmentOrdersResponse,
+  IShipmentOrdersCreateInput, ShipmentOrdersCreateResponse,
+  ShipmentOrdersResponse
 } from '../types';
 
 export const createShipmentOrders = async (
-  body: ShipmentOrdersCreateInput
+  body: IShipmentOrdersCreateInput
 ): Promise<ShipmentOrdersCreateResponse> => {
   try {
     const userInfo = getSessionStorageOrNavigate();

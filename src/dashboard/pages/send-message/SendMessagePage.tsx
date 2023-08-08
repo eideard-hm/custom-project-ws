@@ -110,8 +110,6 @@ function SendMessagePage() {
     const label = e.target[index].textContent ?? '';
     const serviceId = (e.target.value ?? '').trim();
 
-    console.log({ serviceId });
-
     if (serviceId) {
       getNaturalHoses(serviceId, serviceCode);
 

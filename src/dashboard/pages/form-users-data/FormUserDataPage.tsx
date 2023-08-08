@@ -16,6 +16,7 @@ import type {
   ISelectedServie,
   IService,
   ISex,
+  IShipmentOrdersCreateInput,
   ShipmentOrdersCreateInput,
 } from '../../types';
 
@@ -24,7 +25,7 @@ const initialState: ShipmentOrdersCreateInput = {
   LastName: '',
   SexId: '2',
   Sidewalk: '',
-  BirthDate: '',
+  BirthDate: undefined,
   DocumentType: 'CC',
   Email: '',
   Need: null,
@@ -32,7 +33,7 @@ const initialState: ShipmentOrdersCreateInput = {
   ServicesId: '',
   EconomicActivity: undefined,
   HouseId: undefined,
-  ServiceActivityId: '',
+  ServiceActivityId: undefined,
 };
 
 function FormUserDataPage() {
@@ -55,13 +56,34 @@ function FormUserDataPage() {
   const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
     initialValues: initialState,
     onSubmit: async (values, { resetForm }) => {
-      if (!isValid || !values.ServicesId) {
+      if (
+        !isValid ||
+        !values.ServicesId ||
+        !values.FirstName ||
+        !values.LastName ||
+        !values.SexId ||
+        !values.ServicesId
+      ) {
         toast.error('Debe de llenar los campos del formulario correctamente!');
         return;
       }
 
       setIsSending(true);
-      const { Id } = await createShipmentOrders({ ...values });
+      const valuesToSend: IShipmentOrdersCreateInput = { ...values };
+      valuesToSend.DocumentType = values.DocumentType
+        ? values.DocumentType
+        : null;
+      valuesToSend.BirthDate = values.BirthDate ? values.BirthDate : null;
+      valuesToSend.Email = values.Email ? values.Email : null;
+      valuesToSend.HouseId = values.HouseId ? values.HouseId : null;
+      valuesToSend.EconomicActivity = values.EconomicActivity
+        ? values.EconomicActivity
+        : null;
+      valuesToSend.ServiceActivityId = values.ServiceActivityId
+        ? values.ServiceActivityId
+        : null;
+
+      const { Id } = await createShipmentOrders({ ...valuesToSend });
       if (Id === 0) {
         toast.error(
           'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
@@ -161,7 +183,9 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Nombre:</label>
+                  <label>
+                    Nombre <span className='mandatory'>*</span> :
+                  </label>
                   <input
                     type='text'
                     className='form-control'
@@ -173,7 +197,9 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Número Teléfono: </label>
+                  <label>
+                    Número Teléfono <span className='mandatory'>*</span>:{' '}
+                  </label>
                   <div className='input-group'>
                     <div className='input-group-prepend'>
                       <div className='input-group-text'>57</div>
@@ -196,6 +222,7 @@ function FormUserDataPage() {
                   <select
                     className='form-control'
                     name='ServicesId'
+                    value={values.ServicesId}
                     onChange={async (e) => {
                       handleChange(e);
                       await handlePeopleLocation(e, UBI_SERVICE_CODE);
@@ -238,7 +265,9 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Genero: </label>
+                  <label>
+                    Genero <span className='mandatory'>*</span> :
+                  </label>
                   <div className='mt-3'>
                     {sexs.map(({ Id, TitleNaturalHose }) => (
                       <label
@@ -275,7 +304,9 @@ function FormUserDataPage() {
                 </div>
 
                 <div className='form-group'>
-                  <label>Apellidos:</label>
+                  <label>
+                    Apellidos <span className='mandatory'>*</span> :
+                  </label>
                   <input
                     type='text'
                     className='form-control'

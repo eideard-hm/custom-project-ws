@@ -41,3 +41,21 @@ export interface Services {
   Id: number;
   TitleNameServices: string;
 }
+
+export interface IShipmentOrdersCreateInput {
+  FirstName: string;
+  LastName: string;
+  Email?: string | null;
+  Phone?: string | null;
+  HouseId?: string | null;
+  BirthDate?: string | null;
+  DocumentType?: string | null;
+  DocumentId?: string | null;
+  SexId: number | string;
+  ServicesId: number | string;
+  Sidewalk: string;
+  Need?: string | null;
+  ModifyUserId?: string;
+  EconomicActivity?: string | null;
+  ServiceActivityId?: string | null;
+}

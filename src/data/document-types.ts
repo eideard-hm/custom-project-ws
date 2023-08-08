@@ -11,7 +11,7 @@ export const documentTypes: IUserDataMaestros[] = [
   },
   {
     name: 'Cédula digital',
-    value: 'CC DIG',
+    value: 'CD',
   },
   {
     name: 'Cédula de Extranjería',
