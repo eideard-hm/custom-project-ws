@@ -465,7 +465,7 @@ function SendMessagePage() {
         </div>
       </Card>
 
-      {values.message && (
+      {/* {values.message && (
         <Card>
           <div className='col-12'>
             <div className='card-header'>
@@ -475,7 +475,7 @@ function SendMessagePage() {
             <section className='card-body'>{values.message}</section>
           </div>
         </Card>
-      )}
+      )} */}
     </section>
   );
 }
