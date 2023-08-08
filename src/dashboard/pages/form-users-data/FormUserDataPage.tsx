@@ -25,15 +25,15 @@ const initialState: ShipmentOrdersCreateInput = {
   LastName: '',
   SexId: '2',
   Sidewalk: '',
-  BirthDate: undefined,
+  BirthDate: '',
   DocumentType: 'CC',
   Email: '',
   Need: null,
   Phone: '',
   ServicesId: '',
-  EconomicActivity: undefined,
-  HouseId: undefined,
-  ServiceActivityId: undefined,
+  EconomicActivity: '',
+  HouseId: '',
+  ServiceActivityId: '',
 };
 
 function FormUserDataPage() {
@@ -70,17 +70,19 @@ function FormUserDataPage() {
 
       setIsSending(true);
       const valuesToSend: IShipmentOrdersCreateInput = { ...values };
-      valuesToSend.DocumentType = values.DocumentType
-        ? values.DocumentType
+      valuesToSend.DocumentType = valuesToSend.DocumentType
+        ? valuesToSend.DocumentType
         : null;
-      valuesToSend.BirthDate = values.BirthDate ? values.BirthDate : null;
-      valuesToSend.Email = values.Email ? values.Email : null;
-      valuesToSend.HouseId = values.HouseId ? values.HouseId : null;
-      valuesToSend.EconomicActivity = values.EconomicActivity
-        ? values.EconomicActivity
+      valuesToSend.BirthDate = valuesToSend.BirthDate
+        ? valuesToSend.BirthDate
         : null;
-      valuesToSend.ServiceActivityId = values.ServiceActivityId
-        ? values.ServiceActivityId
+      valuesToSend.Email = valuesToSend.Email ? valuesToSend.Email : null;
+      valuesToSend.HouseId = valuesToSend.HouseId ? valuesToSend.HouseId : null;
+      valuesToSend.EconomicActivity = valuesToSend.EconomicActivity
+        ? valuesToSend.EconomicActivity
+        : null;
+      valuesToSend.ServiceActivityId = valuesToSend.ServiceActivityId
+        ? valuesToSend.ServiceActivityId
         : null;
 
       const { Id } = await createShipmentOrders({ ...valuesToSend });
