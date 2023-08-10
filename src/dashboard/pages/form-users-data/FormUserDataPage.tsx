@@ -213,6 +213,8 @@ function FormUserDataPage() {
                       placeholder='3XXXXXXXXX'
                       onChange={handleChange}
                       value={values.Phone}
+                      maxLength={10}
+                      minLength={10}
                     />
                   </div>
                 </div>
