@@ -41,7 +41,6 @@ function DetailTablePage() {
                 <thead>
                   <tr>
                     <th className='text-center'>Nombre</th>
-                    <th className='text-center'>Apellidos</th>
                     <th className='text-center'>Email</th>
                     <th className='text-center'>Teléfono</th>
                     <th className='text-center'>Fecha Nacimiento</th>
@@ -56,12 +55,13 @@ function DetailTablePage() {
                 <tbody>
                   {shiptmet.map((s, i) => (
                     <tr key={i}>
-                      <td className='text-center'>{s.FirstName}</td>
-                      <td className='text-center'>{s.LastName}</td>
+                      <td className='text-center'>{s.FullName}</td>
                       <td className='text-center'>{s.Email}</td>
                       <td className='text-center'>{s.Phone}</td>
                       <td className='text-center'>
-                        {new Date(s.BirthDate ?? '').toLocaleDateString()}
+                        {s.BirthDate
+                          ? new Date(s.BirthDate).toLocaleDateString()
+                          : ''}
                       </td>
                       <td className='text-center'>{s.DocumentType}</td>
                       <td className='text-center'>{s.Sex.TitleNaturalHose}</td>
