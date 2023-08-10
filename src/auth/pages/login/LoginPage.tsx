@@ -68,10 +68,9 @@ export default function LoginPage() {
           <div className='form-holder'>
             <div className='form-content'>
               <div className='form-items'>
-                <h3>Get more things done with Loggin platform.</h3>
+                <h3>Iniciar sesión.</h3>
                 <p>
-                  Access to the most powerfull tool in the entire design and web
-                  industry.
+                  Bienvenido/a es un placer tenerlos en linea.
                 </p>
                 <form onSubmit={handleSubmit}>
                   <input
