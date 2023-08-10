@@ -70,25 +70,20 @@ function FormUserDataPage() {
 
       setIsSending(true);
       const valuesToSend: IShipmentOrdersCreateInput = { ...values };
-      valuesToSend.DocumentType = valuesToSend.DocumentType
-        ? valuesToSend.DocumentType
-        : null;
-      valuesToSend.BirthDate = valuesToSend.BirthDate
-        ? valuesToSend.BirthDate
-        : null;
-      valuesToSend.Email = valuesToSend.Email ? valuesToSend.Email : null;
-      valuesToSend.HouseId = valuesToSend.HouseId ? valuesToSend.HouseId : null;
-      valuesToSend.EconomicActivity = valuesToSend.EconomicActivity
-        ? valuesToSend.EconomicActivity
-        : null;
-      valuesToSend.ServiceActivityId = valuesToSend.ServiceActivityId
-        ? valuesToSend.ServiceActivityId
-        : null;
+      valuesToSend.DocumentType = valuesToSend.DocumentType || null;
+      valuesToSend.BirthDate = valuesToSend.BirthDate || null;
+      valuesToSend.Email = valuesToSend.Email || null;
+      valuesToSend.HouseId = valuesToSend.HouseId || null;
+      valuesToSend.EconomicActivity = valuesToSend.EconomicActivity || null;
+      valuesToSend.ServiceActivityId = valuesToSend.ServiceActivityId || null;
 
       const { Id } = await createShipmentOrders({ ...valuesToSend });
       if (Id === 0) {
         toast.error(
           'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
+        );
+        toast.error(
+          'Verifique que el número de teléfono ingresado no exista. Intente nuevamente.'
         );
       } else {
         resetForm();

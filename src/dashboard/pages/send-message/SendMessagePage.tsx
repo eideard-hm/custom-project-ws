@@ -138,10 +138,10 @@ function SendMessagePage() {
   };
 
   const handleSendBulkMessages = async () => {
+    const messageConvertLower = values.message.toLocaleLowerCase();
     if (
-      values.message.includes('{user}') ||
-      values.message.includes('{User}') ||
-      values.message.includes('{USER}')
+      messageConvertLower.includes('{user}') &&
+      messageConvertLower.includes('{location}')
     ) {
       setIsSending(true);
       let shipmentFilter = [...shiptmet];
@@ -203,24 +203,14 @@ function SendMessagePage() {
 
       const receivedMessages: ISendBulkMessage[] = shipmentFilter
         .filter(({ Phone }) => Phone)
-        .map(({ FirstName, LastName, Phone }) => ({
+        .map(({ FullName: receiver, Phone }) => ({
           phone: Phone ?? '',
           message: values.sendWsContacts
             ? values.message
             : `${values.message
-                .replaceAll('{name}', `*${FirstName}*`)
-                .replaceAll('{NAME}', `*${FirstName}*`)
-                .replaceAll('{Name}', `*${FirstName}*`)
-                .replaceAll('{lastname}', `*${LastName}*`)
-                .replaceAll('{Lastname}', `*${LastName}*`)
-                .replaceAll('{LastName}', `*${LastName}*`)
-                .replaceAll('{LASTNAME}', `*${LastName}*`)
-                .replaceAll('{user}', `*${fullName}*`)
-                .replaceAll('{User}', `*${fullName}*`)
-                .replaceAll('{USER}', `*${fullName}*`)
-                .replaceAll('{location}', `*${town}*`)
-                .replaceAll('{Location}', `*${town}*`)
-                .replaceAll('{LOCATION}', `*${town}*`)}`,
+                .replace(/{name}/gi, `*${receiver}*`)
+                .replace(/{user}/gi, `*${fullName}*`)
+                .replace(/{location}/gi, `*${town}*`)}`,
         }));
 
       const message: ISendBulkMessageWithAttach = {
@@ -453,7 +443,7 @@ function SendMessagePage() {
               type='submit'
               disabled={
                 !dirty ||
-                !values.message ||
+                !(values.message ?? '').trim() ||
                 (shiptmet.length === 0 && !values.sendWsContacts)
               }
               onClick={handleSendBulkMessages}

@@ -24,8 +24,7 @@ export type ShipmentOrdersCreateResponse = {
 };
 
 export interface ShipmentOrdersResponse {
-  FirstName: string;
-  LastName: string;
+  FullName: string;
   Email: string | null;
   Phone: string | null;
   BirthDate: string | null;
