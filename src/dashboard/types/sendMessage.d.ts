@@ -20,6 +20,7 @@ export interface ISendBulkMessageWithAttach {
   content: ISendBulkMessage[];
   attach: IAttachFile;
   sendWsContacts: boolean;
+  userId?: string;
 }
 
 export interface ISendBulkMessage {
@@ -33,5 +34,5 @@ export interface IInitialValues {
   sendWsContacts: boolean;
   sex: string;
   sendAllNaturalHoses: boolean;
-  economicSector: string
+  economicSector: string;
 }
