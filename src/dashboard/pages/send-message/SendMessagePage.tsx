@@ -208,9 +208,9 @@ function SendMessagePage() {
           message: values.sendWsContacts
             ? values.message
             : `${values.message
-                .replace(/{name}/gi, `*${receiver}*`)
-                .replace(/{user}/gi, `*${fullName}*`)
-                .replace(/{location}/gi, `*${town}*`)}`,
+                .replace(/{name}/gi, `*${receiver.trim()}*`)
+                .replace(/{user}/gi, `*${fullName.trim()}*`)
+                .replace(/{location}/gi, `*${town.trim()}*`)}`,
         }));
 
       const message: ISendBulkMessageWithAttach = {
