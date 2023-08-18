@@ -1,5 +1,11 @@
+import type { IUserDataLogin } from '../../auth/types';
 import { WHATSAAP_API_URL } from '../../config';
-import type { ISendBulkMessageWithAttach, ISendMessageLead, ISendMessageResponse } from '../types';
+import { getSessionStorageOrNavigate } from '../../services';
+import type {
+  ISendBulkMessageWithAttach,
+  ISendMessageLead,
+  ISendMessageResponse,
+} from '../types';
 
 export const sendMesssageLead = async (
   message: ISendMessageLead
@@ -20,11 +26,14 @@ export const sendMesssageLead = async (
   }
 };
 
-
 export const sendMesssageBulkAsync = async (
   message: ISendBulkMessageWithAttach
 ): Promise<ISendMessageResponse[]> => {
   try {
+    const userInfo = getSessionStorageOrNavigate();
+    const { userId }: IUserDataLogin = JSON.parse(userInfo);
+
+    message.userId = userId;
     const response = await fetch(`${WHATSAAP_API_URL}/lead`, {
       method: 'POST',
       body: JSON.stringify(message),
