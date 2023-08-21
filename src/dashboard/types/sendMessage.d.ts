@@ -1,3 +1,5 @@
+import type { Option } from 'react-multi-select-component';
+
 import type { IAttachFile } from '../../types';
 
 export interface ISendMessageLead {
@@ -35,4 +37,5 @@ export interface IInitialValues {
   sex: string;
   sendAllNaturalHoses: boolean;
   economicSector: string;
+  peopleSend: Option[];
 }

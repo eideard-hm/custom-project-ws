@@ -1,13 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 
 import { useFormik } from 'formik';
+import toast from 'react-hot-toast';
 import { MultiSelect, type Option } from 'react-multi-select-component';
 
-import toast from 'react-hot-toast';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
-import { equalsIgnoringCase, isNullOrWhiteSpaces } from '../../../utils';
+import {
+  equalsIgnoringCase,
+  isNullOrWhiteSpaces,
+  OTR_SERVICE_CODE,
+  UBI_SERVICE_CODE,
+} from '../../../utils';
 import { AttachedFile, ConventionsReeplace } from '../../components';
 import {
   getAllShipmentOrdersAsync,
@@ -26,9 +32,6 @@ import type {
   ISex,
   ShipmentOrdersResponse,
 } from '../../types';
-import { UBI_SERVICE_CODE, OTR_SERVICE_CODE } from '../../../utils';
-
-import './SendMessage.css';
 
 const initialValues: IInitialValues = {
   service: '',
@@ -37,10 +40,10 @@ const initialValues: IInitialValues = {
   sex: '',
   sendAllNaturalHoses: true,
   economicSector: '',
+  peopleSend: [],
 };
 
 function SendMessagePage() {
-  const [isSending, setIsSending] = useState(false);
   const [selectedService, setSelectedService] = useState<ISelectedServie>({
     label: '',
     id: '',
@@ -56,19 +59,27 @@ function SendMessagePage() {
   >([]);
   const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
   const [economySectors, setEconomySectors] = useState<IService[]>([]);
-  const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
   const [selected, setSelected] = useState<Option[]>([]);
+  const [peopleSendOptions, setPeopleSendOptions] = useState<Option[]>([]);
   const [optionsSelectedEconSector, setOptionsSelectedEconSector] = useState<
     Option[]
   >([]);
-  const { dirty, handleChange, handleSubmit, setFieldValue, values } =
-    useFormik({
-      initialValues,
-      enableReinitialize: true,
-      onSubmit(values) {
-        console.log({ values });
-      },
-    });
+  const shiptmet = useRef<ShipmentOrdersResponse[]>([]);
+  const {
+    dirty,
+    handleChange,
+    setFieldValue,
+    values,
+    isSubmitting,
+    setSubmitting,
+    resetForm,
+  } = useFormik({
+    initialValues,
+    enableReinitialize: true,
+    onSubmit(values) {
+      console.log({ values });
+    },
+  });
   const { attachFile } = useDashboardContext();
   const {
     userData: { fullName, town },
@@ -96,7 +107,16 @@ function SendMessagePage() {
 
   const getAllShipmentOrders = () => {
     getAllShipmentOrdersAsync()
-      .then((shipments) => setShiptmet(shipments))
+      .then((shipments) => {
+        shiptmet.current = [...shipments];
+        setPeopleSendOptions(
+          shipments.map(({ FullName, Id }) => ({
+            label: FullName,
+            value: Id,
+            key: Id.toString(),
+          }))
+        );
+      })
       .catch(console.error);
   };
 
@@ -143,24 +163,31 @@ function SendMessagePage() {
       messageConvertLower.includes('{user}') &&
       messageConvertLower.includes('{location}')
     ) {
-      setIsSending(true);
-      let shipmentFilter = [...shiptmet];
+      setSubmitting(true);
+      let filteredShiptments = [...shiptmet.current];
 
-      // filter shipment
+      if (values.peopleSend.length > 0) {
+        filteredShiptments = filteredShiptments.filter(({ Id }) =>
+          values.peopleSend.some(({ value }) =>
+            equalsIgnoringCase(Id.toString(), value)
+          )
+        );
+      }
+
       if (!isNullOrWhiteSpaces(values.service)) {
-        shipmentFilter = shipmentFilter.filter(({ Services: { Id } }) =>
+        filteredShiptments = filteredShiptments.filter(({ Services: { Id } }) =>
           equalsIgnoringCase(values.service, String(Id))
         );
       }
 
       if (!isNullOrWhiteSpaces(values.sex)) {
-        shipmentFilter = shipmentFilter.filter(({ Sex: { Id } }) =>
+        filteredShiptments = filteredShiptments.filter(({ Sex: { Id } }) =>
           equalsIgnoringCase(values.sex, String(Id))
         );
       }
 
       if (!isNullOrWhiteSpaces(values.economicSector)) {
-        shipmentFilter = shipmentFilter.filter(
+        filteredShiptments = filteredShiptments.filter(
           ({
             Services_ShipmentOrders_ServiceActivityIdToServices: econActSer,
           }) =>
@@ -172,7 +199,7 @@ function SendMessagePage() {
       }
 
       if (!values.sendAllNaturalHoses && selected.length > 0) {
-        shipmentFilter = shipmentFilter.filter(({ NaturalHose }) =>
+        filteredShiptments = filteredShiptments.filter(({ NaturalHose }) =>
           selected.some(({ value }) =>
             equalsIgnoringCase(value, String(NaturalHose?.Id ?? ''))
           )
@@ -183,7 +210,7 @@ function SendMessagePage() {
         optionsSelectedEconSector.length > 0 &&
         !isNullOrWhiteSpaces(optionsSelectedEconSector[0]?.value ?? '')
       ) {
-        shipmentFilter = shipmentFilter.filter(
+        filteredShiptments = filteredShiptments.filter(
           ({
             NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose: econAct,
           }) =>
@@ -193,15 +220,15 @@ function SendMessagePage() {
         );
       }
 
-      if (shipmentFilter.length === 0) {
+      if (filteredShiptments.length === 0) {
         toast.error(
           'No se encontrarón receptores asociados a los criteríos de busqueda.'
         );
-        setIsSending(false);
+        setSubmitting(false);
         return;
       }
 
-      const receivedMessages: ISendBulkMessage[] = shipmentFilter
+      const receivedMessages: ISendBulkMessage[] = filteredShiptments
         .filter(({ Phone }) => Phone)
         .map(({ FullName: receiver, Phone }) => ({
           phone: Phone ?? '',
@@ -213,6 +240,8 @@ function SendMessagePage() {
                 .replace(/{location}/gi, `*${town.trim()}*`)}`,
         }));
 
+      console.log({ filteredShiptments, receivedMessages });
+
       const message: ISendBulkMessageWithAttach = {
         content: receivedMessages,
         attach: attachFile,
@@ -220,14 +249,17 @@ function SendMessagePage() {
       };
 
       const response = await sendMesssageBulkAsync(message);
-      setIsSending(false);
+      setSubmitting(false);
       if (response.length > 0) {
+        resetForm();
         toast.success('Mensajes enviados correctamente!');
       }
       return;
     }
 
-    toast.error('Debe de agregar la convensión para reemplazar la información');
+    toast.error(
+      'Debe de agregar la convensión para reemplazar la información.'
+    );
   };
 
   return (
@@ -239,11 +271,8 @@ function SendMessagePage() {
             <h4>Envio Mensajes</h4>
           </div>
           <section className='card-body'>
-            <form
-              onSubmit={handleSubmit}
-              className='row'
-            >
-              <div className='col-6'>
+            <form className='row'>
+              <div className='col-sm-12 col-md-6'>
                 <div className='form-group'>
                   <label>Genero: </label>
                   <div className='mt-3'>
@@ -322,9 +351,9 @@ function SendMessagePage() {
                 </div>
               </div>
 
-              <div className='col-6'>
+              <div className='col-sm-12 col-md-6'>
                 <div className='form-group'>
-                  <label>Ubicación Persona</label>
+                  <label>Ubicación Persona: </label>
                   <select
                     className='form-control'
                     name='service'
@@ -349,7 +378,7 @@ function SendMessagePage() {
                 {selectedService.id && (
                   <div
                     className='form-group'
-                    style={{ marginTop: '2.5rem' }}
+                    style={{ marginTop: '4.5rem' }}
                   >
                     <label
                       htmlFor='sendAllNaturalHoses'
@@ -402,6 +431,23 @@ function SendMessagePage() {
 
               <div className='col-12'>
                 <div className='form-group'>
+                  <label>Personas a Envíar:</label>
+                  <div className='form-group'>
+                    <MultiSelect
+                      value={values.peopleSend}
+                      options={peopleSendOptions}
+                      onChange={async (e: Option[]) =>
+                        await setFieldValue('peopleSend', e)
+                      }
+                      labelledBy='Select'
+                      className='dark'
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className='col-12'>
+                <div className='form-group'>
                   <label>
                     Mensaje
                     <span className='mandatory'> *</span> :
@@ -438,13 +484,13 @@ function SendMessagePage() {
             <AttachedFile />
             <button
               className={`btn btn-icon icon-left btn-success ${
-                isSending ? 'disabled btn-progress' : ''
+                isSubmitting ? 'disabled btn-progress' : ''
               }`}
               type='submit'
               disabled={
                 !dirty ||
-                !(values.message ?? '').trim() ||
-                (shiptmet.length === 0 && !values.sendWsContacts)
+                !values.message.trim() ||
+                (shiptmet.current.length === 0 && !values.sendWsContacts)
               }
               onClick={handleSendBulkMessages}
             >
@@ -454,18 +500,6 @@ function SendMessagePage() {
           </div>
         </div>
       </Card>
-
-      {/* {values.message && (
-        <Card>
-          <div className='col-12'>
-            <div className='card-header'>
-              <h4>Mensaje a Envíar</h4>
-            </div>
-
-            <section className='card-body'>{values.message}</section>
-          </div>
-        </Card>
-      )} */}
     </section>
   );
 }

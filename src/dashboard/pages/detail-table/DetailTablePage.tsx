@@ -5,12 +5,21 @@ import type { ShipmentOrdersResponse } from '../../types';
 
 function DetailTablePage() {
   const [shiptmet, setShiptmet] = useState<ShipmentOrdersResponse[]>([]);
+  const [filterShiptment, setFilterShiptment] = useState<string>('');
 
   useEffect(() => {
     getAllShipmentOrdersAsync()
       .then((shipments) => setShiptmet(shipments))
       .catch(console.error);
   }, []);
+
+  const filteresShiptments = filterShiptment
+    ? shiptmet.filter(({ FullName }) =>
+        FullName.toLocaleLowerCase().includes(
+          filterShiptment.toLocaleLowerCase()
+        )
+      )
+    : shiptmet;
 
   return (
     <div className='row'>
@@ -24,7 +33,8 @@ function DetailTablePage() {
                   <input
                     type='text'
                     className='form-control'
-                    placeholder='Search'
+                    placeholder='Buscar usuarios...'
+                    onChange={(e) => setFilterShiptment(e.currentTarget.value)}
                   />
                   <div className='input-group-btn'>
                     <button className='btn btn-primary'>
@@ -53,8 +63,8 @@ function DetailTablePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {shiptmet.map((s, i) => (
-                    <tr key={i}>
+                  {filteresShiptments.map((s) => (
+                    <tr key={s.Id}>
                       <td className='text-center'>{s.FullName}</td>
                       <td className='text-center'>{s.Email}</td>
                       <td className='text-center'>{s.Phone}</td>
