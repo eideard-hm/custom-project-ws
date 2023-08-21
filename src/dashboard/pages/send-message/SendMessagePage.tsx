@@ -33,6 +33,8 @@ import type {
   ShipmentOrdersResponse,
 } from '../../types';
 
+import './SendMessage.css';
+
 const initialValues: IInitialValues = {
   service: '',
   message: '',
