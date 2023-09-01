@@ -265,7 +265,7 @@ function FormUserDataPage() {
 
                 <div className='form-group'>
                   <label>
-                    Genero <span className='mandatory'>*</span> :
+                    Género <span className='mandatory'>*</span> :
                   </label>
                   <div className='mt-3'>
                     {sexs.map(({ Id, TitleNaturalHose }) => (

@@ -276,7 +276,7 @@ function SendMessagePage() {
             <form className='row'>
               <div className='col-sm-12 col-md-6'>
                 <div className='form-group'>
-                  <label>Genero: </label>
+                  <label>Género: </label>
                   <div className='mt-3'>
                     {sexs.map(({ Id, TitleNaturalHose }) => (
                       <label

@@ -55,7 +55,7 @@ function DetailTablePage() {
                     <th className='text-center'>Teléfono</th>
                     <th className='text-center'>Fecha Nacimiento</th>
                     <th className='text-center'>Tipo Documento</th>
-                    <th className='text-center'>Genero</th>
+                    <th className='text-center'>Género</th>
                     <th className='text-center'>Ubicación</th>
                     <th className='text-center'>Dirección</th>
                     <th className='text-center'>Actividad Económica</th>
