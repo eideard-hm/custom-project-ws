@@ -4,12 +4,11 @@ import { lazy, useEffect } from 'react';
 import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../../auth/types';
-import { WHATSAAP_API_URL } from '../../../config';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { getSessionStorageOrNavigate } from '../../../services';
 import { socket } from '../../../web-sockets';
 import { DashboardLayout } from '../../layouts';
-import type { IGenerateQr } from '../../types';
+import type { IGenerateQr, IGetOrCreateUserSession } from '../../types';
 
 import './app.min.css';
 import './style.css';
@@ -26,11 +25,13 @@ function DashboardPage() {
   const { setLoginInfo } = useDashboardContext();
 
   useEffect(() => {
-    // traemo el qr que esta generado
-    setLoginInfo({
-      loginSuccess: false,
-      qrImage: `${WHATSAAP_API_URL}/qr.svg?${Math.random().toString(36)}`,
-    });
+    // emit the user id loggin
+    const userInfo = getSessionStorageOrNavigate();
+    const { userId }: IUserDataLogin = JSON.parse(userInfo);
+    const dataEmit: IGetOrCreateUserSession = {
+      userId,
+    };
+    socket.emit('qr', dataEmit);
 
     // nos suscribimos al socket
     socket.on('qr', receiveQr);
@@ -64,7 +65,6 @@ function DashboardPage() {
 
   const receiveQr = (loginIfo: IGenerateQr) => {
     console.log({ loginIfo });
-    loginIfo.qrImage = `data:image/svg+xml;base64,${loginIfo.qrImage}`;
     setLoginInfo(loginIfo);
     setAuth({ isLoggin: loginIfo.loginSuccess });
 
