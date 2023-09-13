@@ -1,10 +1,10 @@
-import { ILoginResponse } from '../dashboard/types';
+import { IGenerateQr } from '../dashboard/types';
 
 export interface IAttachFileContext {
   attachFile: IAttachFile;
   setAttachFile: (file: IAttachFile) => void;
-  loginInfo: ILoginResponse;
-  setLoginInfo: (loginInfo: ILoginResponse) => void;
+  loginInfo: IGenerateQr;
+  setLoginInfo: (loginInfo: IGenerateQr) => void;
 }
 
 export interface IAttachFile {

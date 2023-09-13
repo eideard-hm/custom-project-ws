@@ -2,11 +2,8 @@ export interface IGenerateQr {
   loginSuccess: boolean;
   qrImage: string;
   userImage: string;
-}
-
-export interface ILoginResponse {
-  loginSuccess: boolean;
-  qrImage: string;
+  socketId: string;
+  reloadPage: boolean;
 }
 
 export interface IGetOrCreateUserSession {

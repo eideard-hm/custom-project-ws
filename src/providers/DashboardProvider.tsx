@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 
 import { DashboardContext } from '../context';
-import type { ILoginResponse } from '../dashboard/types';
+import type { IGenerateQr } from '../dashboard/types';
 import type { IAttachFile } from '../types/dashboard';
 
 interface Props {
@@ -15,17 +15,19 @@ export function DashboardProvider({ children }: Props) {
     name: '',
   });
 
-  const [qrImg, setQrImg] = useState<ILoginResponse>({
+  const [qrImg, setQrImg] = useState<IGenerateQr>({
     loginSuccess: false,
     qrImage: '',
+    userImage: '',
+    reloadPage: false,
+    socketId: '',
   });
 
   const setAttachFile = (file: IAttachFile) => {
     setAttachedFile(file);
   };
 
-  const setLoginInfo = (loginInfo: ILoginResponse) =>
-    setQrImg({ ...loginInfo });
+  const setLoginInfo = (loginInfo: IGenerateQr) => setQrImg({ ...loginInfo });
 
   return (
     <DashboardContext.Provider

@@ -5,7 +5,7 @@ import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../../auth/types';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
-import { getSessionStorageOrNavigate } from '../../../services';
+import { destroySession, getSessionStorageOrNavigate } from '../../../services';
 import { socket } from '../../../web-sockets';
 import { DashboardLayout } from '../../layouts';
 import type { IGenerateQr, IGetOrCreateUserSession } from '../../types';
@@ -63,10 +63,16 @@ function DashboardPage() {
     };
   }, [isLoggin]);
 
-  const receiveQr = (loginIfo: IGenerateQr) => {
+  const receiveQr = async (loginIfo: IGenerateQr) => {
     console.log({ loginIfo });
-    setLoginInfo(loginIfo);
     setAuth({ isLoggin: loginIfo.loginSuccess });
+
+    if (!loginIfo.loginSuccess && !loginIfo.qrImage && !loginIfo.reloadPage) {
+      await destroySession(false);
+      return;
+    }
+
+    setLoginInfo(loginIfo);
 
     // if (loginIfo.userImage) {
     //   setUserData({ ...userData, userImage: loginIfo.userImage });
