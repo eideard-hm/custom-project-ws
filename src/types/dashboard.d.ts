@@ -1,8 +1,8 @@
 import { IGenerateQr } from '../dashboard/types';
 
 export interface IAttachFileContext {
-  attachFile: IAttachFile;
-  setAttachFile: (file: IAttachFile) => void;
+  attachFile: IAttachFile[];
+  setAttachFile: (file: IAttachFile[]) => void;
   loginInfo: IGenerateQr;
   setLoginInfo: (loginInfo: IGenerateQr) => void;
 }

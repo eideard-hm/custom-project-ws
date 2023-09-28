@@ -127,7 +127,6 @@ function SendMessagePage() {
     serviceCode: string
   ) => {
     if (!e) return;
-
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
     const serviceId = (e.target.value ?? '').trim();
@@ -167,7 +166,6 @@ function SendMessagePage() {
     ) {
       setSubmitting(true);
       let filteredShiptments = [...shiptmet.current];
-
       if (values.peopleSend.length > 0) {
         filteredShiptments = filteredShiptments.filter(({ Id }) =>
           values.peopleSend.some(({ value }) =>
