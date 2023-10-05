@@ -28,7 +28,7 @@ export const sendMesssageLead = async (
 
 export const sendMesssageBulkAsync = async (
   message: ISendBulkMessageWithAttach
-): Promise<ISendMessageResponse[]> => {
+): Promise<{ result: { id?: string; error?: string }[] }> => {
   try {
     const userInfo = getSessionStorageOrNavigate();
     const { userId }: IUserDataLogin = JSON.parse(userInfo);
@@ -42,7 +42,7 @@ export const sendMesssageBulkAsync = async (
       },
     });
 
-    return (await response.json()) as ISendMessageResponse[];
+    return await response.json();
   } catch (error) {
     console.error(error);
     throw Error(error.message as string);
