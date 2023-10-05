@@ -9,11 +9,11 @@ interface Props {
 }
 
 export function DashboardProvider({ children }: Props) {
-  const [attachedFile, setAttachedFile] = useState<IAttachFile>({
-    base64: '',
-    type: '',
-    name: '',
-  });
+  
+  const attachFiles: IAttachFile[] = [];
+  attachFiles.push({ base64: '', type: '', name: '' })
+          
+  const [attachedFile, setAttachedFile] = useState<IAttachFile[]>(attachFiles);
 
   const [qrImg, setQrImg] = useState<IGenerateQr>({
     loginSuccess: false,
@@ -23,7 +23,7 @@ export function DashboardProvider({ children }: Props) {
     socketId: '',
   });
 
-  const setAttachFile = (file: IAttachFile) => {
+  const setAttachFile = (file: IAttachFile[]) => {
     setAttachedFile(file);
   };
 

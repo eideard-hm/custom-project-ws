@@ -10,58 +10,64 @@ import {
   MAX_SIZE_MEDIA_ALLOW_BYTES
 } from '../../../utils';
 
+import type { IAttachFile } from '../../../../src/types/dashboard';
+
 export function AttachedFile() {
   const { setAttachFile } = useDashboardContext();
   const inputFileRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChosen = (file: File | undefined) => {
+  const handleFileChosen = (file: FileList | null) => {
     if (!file) {
       toast.error('No se adjunto un archivo valido.');
-      setAttachFile({ base64: '', type: '', name: '' });
       inputFileRef.current!.value = '';
       return;
     }
 
-    if (
-      file.type.includes('video') ||
-      file.type.includes('image') ||
-      file.type.includes('audio')
-    ) {
-      // El tamaño máximo permitido para todos los archivos multimedia (fotos, videos y mensajes de voz) enviados o reenviados por WhatsApp es de 16 MB.
-      // 16MB -> 16_777_216bytes
-      if (file.size >= MAX_SIZE_MEDIA_ALLOW_BYTES) {
-        toast.error('El archivo supera el máximo permitido que son 16MB.');
-        setAttachFile({ base64: '', type: '', name: '' });
-        inputFileRef.current!.value = '';
-        return;
-      }
-    }
+    const files = file ? [...file] : [];
+    // 👇 Create new FormData object and append files
+    const data = new FormData();
+    const attachFiles: IAttachFile[] = [];
 
-    if (file.type.includes('application')) {
-      // Para documentos, el tamaño máximo es de 100 MB.
-      if (file.size >= MAX_SIZE_DOCUMENTS_ALLOW_BYTES) {
-        toast.error('El archivo supera el máximo permitido que son 100MB.');
-        setAttachFile({ base64: '', type: '', name: '' });
-        inputFileRef.current!.value = '';
-        return;
-      }
-    }
+    files.forEach((element, i) => {
+      if (
+        element.type.includes('video') ||
+        element.type.includes('image') ||
+        element.type.includes('audio')) {
+        // El tamaño máximo permitido para todos los archivos multimedia (fotos, videos y mensajes de voz) enviados o reenviados por WhatsApp es de 16 MB.
+        // 16MB -> 16_777_216bytes
+        if (element.size >= MAX_SIZE_MEDIA_ALLOW_BYTES) {
+          toast.error('El archivo supera el máximo permitido que son 16MB.');
+          attachFiles.push({ base64: '', type: '', name: '' })
+          setAttachFile(attachFiles);
+           inputFileRef.current!.value = '';
+          return;
+        }
 
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = () => {
-      const fileBase64 = fileReader.result?.toString().split(',')[1] ?? '';
-      setAttachFile({
-        base64: fileBase64,
-        type: file.type,
-        name: file.name,
-      });
-    };
-    fileReader.onerror = (error) => {
-      console.error(error);
-      setAttachFile({ base64: '', type: '', name: '' });
-    };
-  };
+        if (element.type.includes('application')) {
+          // Para documentos, el tamaño máximo es de 100 MB.
+          if (element.size >= MAX_SIZE_DOCUMENTS_ALLOW_BYTES) {
+            toast.error('El archivo supera el máximo permitido que son 100MB.');
+            attachFiles.push({ base64: '', type: '', name: '' })
+            setAttachFile(attachFiles);
+            inputFileRef.current!.value = '';
+            return;
+          }
+        }
+
+        data.append(`file-${i}`, element, element.name);
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(element);
+        fileReader.onload = () => {
+          const fileBase64 = fileReader.result?.toString().split(',')[1] ?? '';
+          attachFiles.push({ base64: fileBase64, type: element.type, name: element.name })
+        };
+        fileReader.onerror = (error) => {
+          console.error(error);
+          setAttachFile([]);
+        };
+      }
+    });
+    setAttachFile(attachFiles);
+  }
 
   return (
     <div className='row'>
@@ -77,7 +83,8 @@ export function AttachedFile() {
                   ref={inputFileRef}
                   type='file'
                   className='form-control'
-                  onChange={(e) => handleFileChosen(e.target.files?.[0])}
+                  multiple
+                  onChange={(e) => handleFileChosen(e?.target?.files)}
                 />
               </div>
             </form>

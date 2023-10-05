@@ -127,7 +127,6 @@ function SendMessagePage() {
     serviceCode: string
   ) => {
     if (!e) return;
-
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
     const serviceId = (e.target.value ?? '').trim();
@@ -167,7 +166,6 @@ function SendMessagePage() {
     ) {
       setSubmitting(true);
       let filteredShiptments = [...shiptmet.current];
-
       if (values.peopleSend.length > 0) {
         filteredShiptments = filteredShiptments.filter(({ Id }) =>
           values.peopleSend.some(({ value }) =>
@@ -250,11 +248,22 @@ function SendMessagePage() {
         sendWsContacts: values.sendWsContacts,
       };
 
-      const response = await sendMesssageBulkAsync(message);
+      const { result } = await sendMesssageBulkAsync(message);
+      console.log({ result });
       setSubmitting(false);
-      if (response.length > 0) {
+      if (result.length > 0) {
+        const errors = result.some((e) => e?.error);
+        if (errors) {
+          result
+            .filter((e) => e?.error)
+            .forEach(({ error }) => {
+              toast.error(`Ocurrio un error al enviar los mensajes: ${error}`);
+            });
+        } else {
+          toast.success('Mensajes enviados correctamente!');
+        }
+
         resetForm();
-        toast.success('Mensajes enviados correctamente!');
       }
       return;
     }
