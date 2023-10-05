@@ -20,7 +20,7 @@ export interface Lead {
 
 export interface ISendBulkMessageWithAttach {
   content: ISendBulkMessage[];
-  attach: IAttachFile;
+  attach: IAttachFile[];
   sendWsContacts: boolean;
   userId?: string;
 }
