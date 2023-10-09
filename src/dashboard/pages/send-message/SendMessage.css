@@ -6,6 +6,5 @@
 .send-messages-page form textarea {
   resize: none;
   min-height: 36px;
-  width: 250px;
   form-sizing: content;
 }
