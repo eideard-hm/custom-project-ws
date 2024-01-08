@@ -25,6 +25,8 @@ export const destroySession = async (isLoggin = true): Promise<void> => {
     sessionStorage.clear();
     localStorage.clear();
     navigate('/auth', { replace: true });
+
+    window.location.reload();
   } catch (error) {
     console.error(error);
   }
