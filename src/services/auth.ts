@@ -8,6 +8,8 @@ import { getSessionStorageOrNavigate } from './session-storage';
 export const retrieveCurrentStatusAuth = async (): Promise<IAuth> => {
   try {
     const userInfo = getSessionStorageOrNavigate();
+    if (!userInfo) return Promise.resolve({ isLoggin: false });
+
     const { userId }: IUserDataLogin = userInfo
       ? JSON.parse(userInfo)
       : { userId: '0' };
