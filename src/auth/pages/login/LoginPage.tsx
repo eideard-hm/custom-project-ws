@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
-import { navigate } from 'wouter/use-browser-location';
+import { navigate } from 'wouter/use-location';
 
 import { ASSETS_IMAGES } from '../../../assets/img';
 import { useAuthContext } from '../../../hooks';

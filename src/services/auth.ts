@@ -1,4 +1,4 @@
-import { navigate } from 'wouter/use-browser-location';
+import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../auth/types';
 import { WHATSAAP_API_URL } from '../config';

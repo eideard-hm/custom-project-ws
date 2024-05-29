@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { lazy, useEffect } from 'react';
 
-import { navigate } from 'wouter/use-browser-location';
+import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../../auth/types';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
