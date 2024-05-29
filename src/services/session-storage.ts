@@ -1,4 +1,4 @@
-import { navigate } from 'wouter/use-location';
+import { navigate } from 'wouter/use-browser-location';
 
 import { decodeBase64, encodeBase64, USER_ID_KEY } from '../utils';
 

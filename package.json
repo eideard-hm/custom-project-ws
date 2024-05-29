@@ -25,7 +25,7 @@
   "name": "react-custom-project",
   "private": true,
   "scripts": {
-    "build": "npm install --force && vite build",
+    "build": "vite build",
     "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
-import { navigate } from 'wouter/use-location';
+import { navigate } from 'wouter/use-browser-location';
 
 import { ASSETS_IMAGES } from '../../../assets/img';
 import { useAuthContext } from '../../../hooks';
@@ -69,9 +69,7 @@ export default function LoginPage() {
             <div className='form-content'>
               <div className='form-items'>
                 <h3>Iniciar sesión.</h3>
-                <p>
-                  Bienvenido/a es un placer tenerlos en linea.
-                </p>
+                <p>Bienvenido/a es un placer tenerlos en linea.</p>
                 <form onSubmit={handleSubmit}>
                   <input
                     className='form-control'
