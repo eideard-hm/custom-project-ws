@@ -7,7 +7,7 @@ import { useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
 import {
   MAX_SIZE_DOCUMENTS_ALLOW_BYTES,
-  MAX_SIZE_MEDIA_ALLOW_BYTES
+  MAX_SIZE_MEDIA_ALLOW_BYTES,
 } from '../../../utils';
 
 import type { IAttachFile } from '../../../../src/types/dashboard';
@@ -31,14 +31,16 @@ export function AttachedFile() {
       if (
         element.type.includes('video') ||
         element.type.includes('image') ||
-        element.type.includes('audio')) {
+        element.type.includes('audio') ||
+        element.type.includes('application')
+      ) {
         // El tamaño máximo permitido para todos los archivos multimedia (fotos, videos y mensajes de voz) enviados o reenviados por WhatsApp es de 16 MB.
         // 16MB -> 16_777_216bytes
         if (element.size >= MAX_SIZE_MEDIA_ALLOW_BYTES) {
           toast.error('El archivo supera el máximo permitido que son 16MB.');
-          attachFiles.push({ base64: '', type: '', name: '' })
+          attachFiles.push({ base64: '', type: '', name: '' });
           setAttachFile(attachFiles);
-           inputFileRef.current!.value = '';
+          inputFileRef.current!.value = '';
           return;
         }
 
@@ -46,7 +48,7 @@ export function AttachedFile() {
           // Para documentos, el tamaño máximo es de 100 MB.
           if (element.size >= MAX_SIZE_DOCUMENTS_ALLOW_BYTES) {
             toast.error('El archivo supera el máximo permitido que son 100MB.');
-            attachFiles.push({ base64: '', type: '', name: '' })
+            attachFiles.push({ base64: '', type: '', name: '' });
             setAttachFile(attachFiles);
             inputFileRef.current!.value = '';
             return;
@@ -57,8 +59,12 @@ export function AttachedFile() {
         const fileReader = new FileReader();
         fileReader.readAsDataURL(element);
         fileReader.onload = () => {
-          const fileBase64 = fileReader.result?.toString().split(',')[1] ?? '';
-          attachFiles.push({ base64: fileBase64, type: element.type, name: element.name })
+          const fileBase64 = fileReader.result?.toString() ?? '';
+          attachFiles.push({
+            base64: fileBase64,
+            type: element.type,
+            name: element.name,
+          });
         };
         fileReader.onerror = (error) => {
           console.error(error);
@@ -66,8 +72,9 @@ export function AttachedFile() {
         };
       }
     });
+    console.log({ attachFiles });
     setAttachFile(attachFiles);
-  }
+  };
 
   return (
     <div className='row'>
