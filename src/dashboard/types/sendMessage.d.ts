@@ -7,11 +7,6 @@ export interface ISendMessageLead {
   phone: string;
 }
 
-export interface ISendMessageResponse {
-  responseDbSave: Lead | null | undefined;
-  responseExSave: { id?: string; error?: string };
-}
-
 export interface Lead {
   uuid: string;
   message: string;
@@ -38,4 +33,14 @@ export interface IInitialValues {
   sendAllNaturalHoses: boolean;
   economicSector: string;
   peopleSend: Option[];
+}
+
+export type Error = {
+  error: string;
+};
+
+export interface ISendMessageResponse {
+  id?: string;
+  sent: boolean;
+  error?: string;
 }

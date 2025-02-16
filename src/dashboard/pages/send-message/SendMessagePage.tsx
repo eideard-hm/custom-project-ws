@@ -240,27 +240,26 @@ function SendMessagePage() {
                 .replace(/{location}/gi, `*${town.trim()}*`)}`,
         }));
 
-      console.log({ filteredShiptments, receivedMessages });
-
       const message: ISendBulkMessageWithAttach = {
         content: receivedMessages,
         attach: attachFile,
         sendWsContacts: values.sendWsContacts,
       };
 
-      const { result } = await sendMesssageBulkAsync(message);
-      console.log({ result });
+      const res = await sendMesssageBulkAsync(message);
       setSubmitting(false);
-      if (result.length > 0) {
-        const errors = result.some((e) => e?.error);
+
+      if (res.length > 0) {
+        const errors = res.some((e) => e?.error);
         if (errors) {
-          result
+          res
             .filter((e) => e?.error)
             .forEach(({ error }) => {
               toast.error(`Ocurrio un error al enviar los mensajes: ${error}`);
             });
         } else {
-          toast.success('Mensajes enviados correctamente!');
+          const successLeng = res.filter((e) => e.id).length;
+          toast.success(`Mensajes enviados correctamente! ${successLeng}`);
         }
 
         resetForm();

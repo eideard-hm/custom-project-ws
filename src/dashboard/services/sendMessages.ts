@@ -28,7 +28,7 @@ export const sendMesssageLead = async (
 
 export const sendMesssageBulkAsync = async (
   message: ISendBulkMessageWithAttach
-): Promise<{ result: { id?: string; error?: string }[] }> => {
+): Promise<ISendMessageResponse[]> => {
   try {
     const userInfo = getSessionStorageOrNavigate();
     const { userId }: IUserDataLogin = JSON.parse(userInfo);
