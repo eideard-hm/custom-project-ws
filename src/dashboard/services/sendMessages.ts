@@ -34,6 +34,9 @@ export const sendMesssageBulkAsync = async (
     const { userId }: IUserDataLogin = JSON.parse(userInfo);
 
     message.userId = userId;
+    message.attach = message.attach.filter(
+      (file) => !!file.base64 && !!file.name && !!file.type
+    );
     const response = await fetch(`${WHATSAAP_API_URL}/lead`, {
       method: 'POST',
       body: JSON.stringify(message),
