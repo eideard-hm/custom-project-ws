@@ -45,10 +45,6 @@ function DashboardPage() {
     const userInfo = getSessionStorageOrNavigate();
     const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
     setUserData({ ...userData, fullName, town });
-
-    return () => {
-      socket.offAny();
-    };
   }, []);
 
   useEffect(() => {
@@ -57,10 +53,6 @@ function DashboardPage() {
     } else {
       navigate('/dashboard', { replace: true });
     }
-
-    return () => {
-      socket.offAnyOutgoing();
-    };
   }, [isLoggin]);
 
   const receiveQr = async (loginIfo: IGenerateQr) => {

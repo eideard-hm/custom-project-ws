@@ -14,6 +14,7 @@ import {
   OTR_SERVICE_CODE,
   UBI_SERVICE_CODE,
 } from '../../../utils';
+import { socket } from '../../../web-sockets';
 import { AttachedFile, ConventionsReeplace } from '../../components';
 import {
   getAllShipmentOrdersAsync,
@@ -32,6 +33,7 @@ import type {
   ISex,
   ShipmentOrdersResponse,
 } from '../../types';
+import type { SessionStatusEvent, WAConnectionState } from '../../types/ws';
 
 import './SendMessage.css';
 
@@ -46,6 +48,8 @@ const initialValues: IInitialValues = {
 };
 
 function SendMessagePage() {
+  const [sessionStatus, setSessionStatus] =
+    useState<WAConnectionState>('close');
   const [selectedService, setSelectedService] = useState<ISelectedServie>({
     label: '',
     id: '',
@@ -89,6 +93,19 @@ function SendMessagePage() {
 
   useEffect(() => {
     initServices();
+  }, []);
+
+  useEffect(() => {
+    // Suscribirse al evento 'sessionStatus'
+    const handleSessionStatusEvent = (data: SessionStatusEvent) => {
+      console.log({ data });
+      setSessionStatus(data.status);
+    };
+    socket.on('sessionStatus', handleSessionStatusEvent);
+
+    return () => {
+      socket.off('sessionStatus', handleSessionStatusEvent);
+    };
   }, []);
 
   const initServices = () => {
@@ -492,6 +509,9 @@ function SendMessagePage() {
 
           <div className='card-footer text-right'>
             <AttachedFile />
+
+            <span className='mr-2'>{sessionStatus}</span>
+
             <button
               className={`btn btn-icon icon-left btn-success ${
                 isSubmitting ? 'disabled btn-progress' : ''
@@ -500,6 +520,7 @@ function SendMessagePage() {
               disabled={
                 !dirty ||
                 !values.message.trim() ||
+                sessionStatus !== 'open' ||
                 (shiptmet.current.length === 0 && !values.sendWsContacts)
               }
               onClick={handleSendBulkMessages}
