@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from 'react';
 
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
@@ -95,18 +101,20 @@ function SendMessagePage() {
     initServices();
   }, []);
 
+  const handleSessionStatusEvent = useCallback((data: SessionStatusEvent) => {
+    console.log({ data });
+    setSessionStatus(data.status);
+  }, []);
+
   useEffect(() => {
-    // Suscribirse al evento 'sessionStatus'
-    const handleSessionStatusEvent = (data: SessionStatusEvent) => {
-      console.log({ data });
-      setSessionStatus(data.status);
-    };
+    if (!socket) return;
+
     socket.on('sessionStatus', handleSessionStatusEvent);
 
     return () => {
       socket.off('sessionStatus', handleSessionStatusEvent);
     };
-  }, []);
+  }, [handleSessionStatusEvent]);
 
   const initServices = () => {
     getAllShipmentOrders();
@@ -520,7 +528,6 @@ function SendMessagePage() {
               disabled={
                 !dirty ||
                 !values.message.trim() ||
-                sessionStatus !== 'open' ||
                 (shiptmet.current.length === 0 && !values.sendWsContacts)
               }
               onClick={handleSendBulkMessages}
