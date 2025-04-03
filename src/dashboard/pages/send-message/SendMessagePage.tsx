@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-} from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
@@ -20,7 +14,6 @@ import {
   OTR_SERVICE_CODE,
   UBI_SERVICE_CODE,
 } from '../../../utils';
-import { socket } from '../../../web-sockets';
 import { AttachedFile, ConventionsReeplace } from '../../components';
 import {
   getAllShipmentOrdersAsync,
@@ -39,7 +32,6 @@ import type {
   ISex,
   ShipmentOrdersResponse,
 } from '../../types';
-import type { SessionStatusEvent, WAConnectionState } from '../../types/ws';
 
 import './SendMessage.css';
 
@@ -54,8 +46,6 @@ const initialValues: IInitialValues = {
 };
 
 function SendMessagePage() {
-  const [sessionStatus, setSessionStatus] =
-    useState<WAConnectionState>('close');
   const [selectedService, setSelectedService] = useState<ISelectedServie>({
     label: '',
     id: '',
@@ -92,7 +82,7 @@ function SendMessagePage() {
       console.log({ values });
     },
   });
-  const { attachFile } = useDashboardContext();
+  const { attachFile, wsSessionStatus } = useDashboardContext();
   const {
     userData: { fullName, town },
   } = useAuthContext();
@@ -100,21 +90,6 @@ function SendMessagePage() {
   useEffect(() => {
     initServices();
   }, []);
-
-  const handleSessionStatusEvent = useCallback((data: SessionStatusEvent) => {
-    console.log({ data });
-    setSessionStatus(data.status);
-  }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on('sessionStatus', handleSessionStatusEvent);
-
-    return () => {
-      socket.off('sessionStatus', handleSessionStatusEvent);
-    };
-  }, [handleSessionStatusEvent]);
 
   const initServices = () => {
     getAllShipmentOrders();
@@ -518,7 +493,7 @@ function SendMessagePage() {
           <div className='card-footer text-right'>
             <AttachedFile />
 
-            <span className='mr-2'>{sessionStatus}</span>
+            <span className='mr-2'>{wsSessionStatus}</span>
 
             <button
               className={`btn btn-icon icon-left btn-success ${

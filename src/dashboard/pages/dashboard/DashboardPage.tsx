@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { lazy, useEffect } from 'react';
+import { lazy, useCallback, useEffect } from 'react';
 
 import { navigate } from 'wouter/use-location';
 
@@ -9,6 +9,7 @@ import { destroySession, getSessionStorageOrNavigate } from '../../../services';
 import { socket } from '../../../web-sockets';
 import { DashboardLayout } from '../../layouts';
 import type { IGenerateQr, IGetOrCreateUserSession } from '../../types';
+import type { SessionStatusEvent } from '../../types/ws';
 
 import './app.min.css';
 import './style.css';
@@ -22,7 +23,7 @@ function DashboardPage() {
     setUserData,
     userData,
   } = useAuthContext();
-  const { setLoginInfo } = useDashboardContext();
+  const { setLoginInfo, setWsSessionStatus } = useDashboardContext();
 
   useEffect(() => {
     // emit the user id loggin
@@ -42,6 +43,18 @@ function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    const handleSessionStatusEvent = (data: SessionStatusEvent) => {
+      setWsSessionStatus(data);
+    };
+
+    socket.on('sessionStatus', handleSessionStatusEvent);
+
+    return () => {
+      socket.off('sessionStatus', handleSessionStatusEvent);
+    };
+  }, []);
+
+  useEffect(() => {
     const userInfo = getSessionStorageOrNavigate();
     const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
     setUserData({ ...userData, fullName, town });
@@ -55,21 +68,20 @@ function DashboardPage() {
     }
   }, [isLoggin]);
 
-  const receiveQr = async (loginIfo: IGenerateQr) => {
-    console.log({ loginIfo });
-    setAuth({ isLoggin: loginIfo.loginSuccess });
+  const receiveQr = useCallback(
+    async (loginIfo: IGenerateQr) => {
+      console.log({ loginIfo });
+      setAuth({ isLoggin: loginIfo.loginSuccess });
 
-    if (!loginIfo.loginSuccess && !loginIfo.qrImage && !loginIfo.reloadPage) {
-      await destroySession(false);
-      return;
-    }
+      if (!loginIfo.loginSuccess && !loginIfo.reloadPage) {
+        await destroySession(false);
+        return;
+      }
 
-    setLoginInfo(loginIfo);
-
-    // if (loginIfo.userImage) {
-    //   setUserData({ ...userData, userImage: loginIfo.userImage });
-    // }
-  };
+      setLoginInfo(loginIfo);
+    },
+    [setAuth, setLoginInfo]
+  );
 
   return (
     <DashboardLayout>

@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 
 import { DashboardContext } from '../context';
 import type { IGenerateQr } from '../dashboard/types';
+import type { SessionStatusEvent, WAConnectionState } from '../dashboard/types/ws';
 import type { IAttachFile } from '../types/dashboard';
 
 interface Props {
@@ -9,11 +10,12 @@ interface Props {
 }
 
 export function DashboardProvider({ children }: Props) {
-  
   const attachFiles: IAttachFile[] = [];
-  attachFiles.push({ base64: '', type: '', name: '' })
-          
+  attachFiles.push({ base64: '', type: '', name: '' });
+
   const [attachedFile, setAttachedFile] = useState<IAttachFile[]>(attachFiles);
+   const [sessionStatus, setSessionStatus] =
+      useState<WAConnectionState>('close');
 
   const [qrImg, setQrImg] = useState<IGenerateQr>({
     loginSuccess: false,
@@ -29,6 +31,9 @@ export function DashboardProvider({ children }: Props) {
 
   const setLoginInfo = (loginInfo: IGenerateQr) => setQrImg({ ...loginInfo });
 
+  const setWsSessionStatus = (status: SessionStatusEvent) =>
+    setSessionStatus(status.status);
+
   return (
     <DashboardContext.Provider
       value={{
@@ -36,6 +41,8 @@ export function DashboardProvider({ children }: Props) {
         setAttachFile,
         loginInfo: qrImg,
         setLoginInfo,
+        wsSessionStatus: sessionStatus,
+        setWsSessionStatus,
       }}
     >
       {children}
