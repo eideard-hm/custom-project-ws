@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { lazy, useCallback, useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 
 import { navigate } from 'wouter/use-location';
 
@@ -34,6 +34,22 @@ function DashboardPage() {
     };
     socket.emit('qr', dataEmit);
 
+    const receiveQr = (loginIfo: IGenerateQr) => {
+      console.log({ loginIfo });
+      setAuth({ isLoggin: loginIfo.loginSuccess });
+
+      if (!loginIfo.loginSuccess && !loginIfo.qrImage && !loginIfo.reloadPage) {
+        destroySession(false);
+        return;
+      }
+
+      setLoginInfo(loginIfo);
+
+      // if (loginIfo.userImage) {
+      //   setUserData({ ...userData, userImage: loginIfo.userImage });
+      // }
+    };
+
     // nos suscribimos al socket
     socket.on('qr', receiveQr);
 
@@ -67,21 +83,6 @@ function DashboardPage() {
       navigate('/dashboard', { replace: true });
     }
   }, [isLoggin]);
-
-  const receiveQr = useCallback(
-    async (loginIfo: IGenerateQr) => {
-      console.log({ loginIfo });
-      setAuth({ isLoggin: loginIfo.loginSuccess });
-
-      if (!loginIfo.loginSuccess && !loginIfo.reloadPage) {
-        await destroySession(false);
-        return;
-      }
-
-      setLoginInfo(loginIfo);
-    },
-    [setAuth, setLoginInfo]
-  );
 
   return (
     <DashboardLayout>

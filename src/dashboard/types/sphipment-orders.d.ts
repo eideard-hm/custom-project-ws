@@ -17,6 +17,7 @@ export interface ShipmentOrdersCreateInput {
   ModifyUserId?: string;
   EconomicActivity?: string | undefined;
   ServiceActivityId?: string | undefined;
+  PhoneCode?: string | undefined;
 }
 
 export type ShipmentOrdersCreateResponse = {
@@ -58,4 +59,5 @@ export interface IShipmentOrdersCreateInput {
   ModifyUserId?: string;
   EconomicActivity?: string | null;
   ServiceActivityId?: string | null;
+  PhoneCode?: string | null;
 }

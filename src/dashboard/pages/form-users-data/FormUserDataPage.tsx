@@ -34,6 +34,7 @@ const initialState: ShipmentOrdersCreateInput = {
   EconomicActivity: '',
   HouseId: '',
   ServiceActivityId: '',
+  PhoneCode: '57'
 };
 
 function FormUserDataPage() {
@@ -62,6 +63,7 @@ function FormUserDataPage() {
         !values.FirstName ||
         !values.LastName ||
         !values.SexId ||
+        !values.Phone ||
         !values.ServicesId
       ) {
         toast.error('Debe de llenar los campos del formulario correctamente!');
@@ -76,6 +78,10 @@ function FormUserDataPage() {
       valuesToSend.HouseId = valuesToSend.HouseId || null;
       valuesToSend.EconomicActivity = valuesToSend.EconomicActivity || null;
       valuesToSend.ServiceActivityId = valuesToSend.ServiceActivityId || null;
+      valuesToSend.Phone = `${values?.PhoneCode ?? 57}${values.Phone?.trim()}` || null;
+
+      delete valuesToSend.PhoneCode;
+      delete values.PhoneCode;
 
       const { Id } = await createShipmentOrders({ ...valuesToSend });
       if (Id === 0) {
@@ -86,8 +92,8 @@ function FormUserDataPage() {
           'Verifique que el número de teléfono ingresado no exista. Intente nuevamente.'
         );
       } else {
-        resetForm();
         toast.success(`Se creó el registro con el Id: ${Id}`);
+        resetForm();
       }
 
       setIsSending(false);
@@ -199,7 +205,18 @@ function FormUserDataPage() {
                   </label>
                   <div className='input-group'>
                     <div className='input-group-prepend'>
-                      <div className='input-group-text'>57</div>
+                      <div className='input-group-text'>
+                        {/* input for enter the phone code */}
+                        <input
+                          className='form-control'
+                          type='number'
+                          name='PhoneCode'
+                          onChange={handleChange}
+                          value={values.PhoneCode}
+                          placeholder='57'
+                          maxLength={3}
+                        />
+                      </div>
                     </div>
                     <input
                       type='text'
