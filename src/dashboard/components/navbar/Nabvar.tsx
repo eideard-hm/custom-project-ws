@@ -16,7 +16,7 @@ export function Nabvar() {
   };
 
   const handleLogout = async () => {
-    destroySession(isLoggin);
+    await destroySession(isLoggin);
   };
 
   return (
@@ -145,7 +145,7 @@ export function Nabvar() {
                 className='dropdown-item has-icon text-danger'
               >
                 <i className='fas fa-sign-out-alt'></i>
-                Logout
+                Cerrar Sesión
               </a>
             </div>
           </li>
