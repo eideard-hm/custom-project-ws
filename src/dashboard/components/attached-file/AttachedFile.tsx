@@ -32,7 +32,8 @@ export function AttachedFile() {
         element.type.includes('video') ||
         element.type.includes('image') ||
         element.type.includes('audio') ||
-        element.type.includes('application')
+        element.type.startsWith('application/') ||
+        element.type.startsWith('text/')
       ) {
         // El tamaño máximo permitido para todos los archivos multimedia (fotos, videos y mensajes de voz) enviados o reenviados por WhatsApp es de 16 MB.
         // 16MB -> 16_777_216bytes
