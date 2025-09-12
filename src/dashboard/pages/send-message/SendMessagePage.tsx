@@ -70,16 +70,16 @@ function SendMessagePage() {
   const {
     dirty,
     handleChange,
+    handleSubmit,
+    isSubmitting,
+    resetForm,
     setFieldValue,
     values,
-    isSubmitting,
-    setSubmitting,
-    resetForm,
   } = useFormik({
     initialValues,
     enableReinitialize: true,
-    onSubmit(values) {
-      console.log({ values });
+    onSubmit: async (values) => {
+      await handleSendBulkMessages(values);
     },
   });
   const { attachFile, wsSessionStatus } = useDashboardContext();
@@ -158,13 +158,12 @@ function SendMessagePage() {
     }
   };
 
-  const handleSendBulkMessages = async () => {
+  const handleSendBulkMessages = async (values: IInitialValues) => {
     const messageConvertLower = values.message.toLocaleLowerCase();
     if (
       messageConvertLower.includes('{user}') &&
       messageConvertLower.includes('{location}')
     ) {
-      setSubmitting(true);
       let filteredShiptments = [...shiptmet.current];
       if (values.peopleSend.length > 0) {
         filteredShiptments = filteredShiptments.filter(({ Id }) =>
@@ -224,7 +223,6 @@ function SendMessagePage() {
         toast.error(
           'No se encontrarón receptores asociados a los criteríos de busqueda.'
         );
-        setSubmitting(false);
         return;
       }
 
@@ -247,7 +245,6 @@ function SendMessagePage() {
       };
 
       const res = await sendMesssageBulkAsync(message);
-      setSubmitting(false);
 
       if (res.length > 0) {
         const errors = res.some((e) => e?.error);
@@ -281,7 +278,11 @@ function SendMessagePage() {
             <h4>Envio Mensajes</h4>
           </div>
           <section className='card-body'>
-            <form className='row'>
+            <form
+              className='row'
+              id='form-send-message'
+              onSubmit={handleSubmit}
+            >
               <div className='col-sm-12 col-md-6'>
                 <div className='form-group'>
                   <label>Género: </label>
@@ -501,11 +502,12 @@ function SendMessagePage() {
               }`}
               type='submit'
               disabled={
+                isSubmitting ||
                 !dirty ||
                 !values.message.trim() ||
                 (shiptmet.current.length === 0 && !values.sendWsContacts)
               }
-              onClick={handleSendBulkMessages}
+              form='form-send-message'
             >
               <i className='fa-solid fa-paper-plane mr-2'></i>
               Envíar Mensaje
