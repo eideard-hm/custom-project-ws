@@ -7,11 +7,9 @@ export function App() {
   return (
     <AuthProvider>
       <DashboardProvider>
-        <main>
           <AppRouting />
 
           <Toaster position='bottom-center' />
-        </main>
       </DashboardProvider>
     </AuthProvider>
   );
