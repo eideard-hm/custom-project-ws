@@ -1,0 +1,51 @@
+.footer {
+  border-radius: 8px;
+  background-color: var(--bg);
+  border-top: 1px solid var(--gray);
+}
+
+.inner {
+  max-width: 1180px;  
+  margin: 0 auto;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.status {
+  font-size: 0.9rem;
+  color: var(--color);
+}
+
+.cta {
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease-in;
+}
+
+.cta:hover {
+  background-color: color-mix(in srgb, var(--primary) 85%, black);
+}
+.ctaDisabled {
+  filter: saturate(0.7);
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.dark .footer {
+  background-color: var(--dark);
+  border-top-color: var(--gray-dark);
+}

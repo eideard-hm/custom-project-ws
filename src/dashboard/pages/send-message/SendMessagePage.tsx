@@ -1,39 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 
 import { useFormik } from 'formik';
-import toast from 'react-hot-toast';
-import { MultiSelect, type Option } from 'react-multi-select-component';
+import type { Option } from 'react-multi-select-component';
 
 import { useAuthContext, useDashboardContext } from '../../../hooks';
-import { Card } from '../../../shared/components';
 import {
-  equalsIgnoringCase,
-  isNullOrWhiteSpaces,
   OTR_SERVICE_CODE,
-  UBI_SERVICE_CODE,
+  UBI_SERVICE_CODE
 } from '../../../utils';
-import { AttachedFile, ConventionsReeplace } from '../../components';
+import FormFilters from '../../components/filters/FormFilters';
+import MessageEditor from '../../components/filters/MessageEditor';
+import PreviewPanel from '../../components/filters/PreviewPanel';
+import StickyFooterActions from '../../components/filters/StickyFooterActions';
 import {
   getAllShipmentOrdersAsync,
   getLocations,
   retrieveNaturalHoses,
-  retrieveSexs,
-  sendMesssageBulkAsync,
+  retrieveSexs
 } from '../../services';
 import type {
   IInitialValues,
   INaturalHoseByService,
   ISelectedServie,
-  ISendBulkMessage,
-  ISendBulkMessageWithAttach,
   IService,
   ISex,
-  ShipmentOrdersResponse,
+  ShipmentOrdersResponse
 } from '../../types';
 
-import './SendMessage.css';
+import { useBulkMessaging } from '../../../hooks/useBulkMessaging';
+import AttachedFile from '../../components/attached-file/AttachedFile';
+import styles from './SendMessagePage.module.css';
 
 const initialValues: IInitialValues = {
   service: '',
@@ -46,6 +42,14 @@ const initialValues: IInitialValues = {
 };
 
 function SendMessagePage() {
+  const [sexs, setSexs] = useState<ISex[]>([]);
+  const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
+  const [economySectors, setEconomySectors] = useState<IService[]>([]);
+  const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
+  const [naturalHosesEcoSector, setNaturalHosesEcoSector] = useState<
+    INaturalHoseByService[]
+  >([]);
+
   const [selectedService, setSelectedService] = useState<ISelectedServie>({
     label: '',
     id: '',
@@ -54,19 +58,46 @@ function SendMessagePage() {
     label: '',
     id: '',
   });
-  const [sexs, setSexs] = useState<ISex[]>([]);
-  const [naturalHoses, setNaturalHoses] = useState<INaturalHoseByService[]>([]);
-  const [naturalHosesEcoSector, setNaturalHosesEcoSector] = useState<
-    INaturalHoseByService[]
-  >([]);
-  const [peopleLocation, setPeopleLocation] = useState<IService[]>([]);
-  const [economySectors, setEconomySectors] = useState<IService[]>([]);
+
   const [selected, setSelected] = useState<Option[]>([]);
   const [peopleSendOptions, setPeopleSendOptions] = useState<Option[]>([]);
   const [optionsSelectedEconSector, setOptionsSelectedEconSector] = useState<
     Option[]
   >([]);
-  const shiptmet = useRef<ShipmentOrdersResponse[]>([]);
+
+  const shipmentsRef = useRef<ShipmentOrdersResponse[]>([]);
+
+  const { attachFile, wsSessionStatus } = useDashboardContext();
+  const filteredAttachment = attachFile.filter(a => a.base64 && a.name)
+  const {
+    userData: { fullName, town },
+  } = useAuthContext();
+  const { send } = useBulkMessaging({
+    shipments: shipmentsRef.current,
+    fullName,
+    town,
+    attach: filteredAttachment,
+    onSuccess: () => resetForm(),
+  });
+
+  const onSubmit = async (vals: IInitialValues) => {
+    const criteria = {
+      peopleIds: vals.peopleSend.map((o) => String(o.value)),
+      serviceId: vals.service || undefined,
+      sexId: vals.sex || undefined,
+      economicSectorId: vals.economicSector || undefined,
+      naturalHoseIdsByService: !vals.sendAllNaturalHoses
+        ? selected.map((o) => String(o.value))
+        : [],
+      naturalHoseIdsByEco: optionsSelectedEconSector.map((o) =>
+        String(o.value)
+      ),
+      sendAllNaturalHoses: vals.sendAllNaturalHoses,
+    } as const;
+
+    await send(vals, criteria);
+  };
+
   const {
     dirty,
     handleChange,
@@ -75,42 +106,22 @@ function SendMessagePage() {
     resetForm,
     setFieldValue,
     values,
-  } = useFormik({
+  } = useFormik<IInitialValues>({
     initialValues,
     enableReinitialize: true,
-    onSubmit: async (values) => {
-      await handleSendBulkMessages(values);
-    },
+    onSubmit: onSubmit,
   });
-  const { attachFile, wsSessionStatus } = useDashboardContext();
-  const {
-    userData: { fullName, town },
-  } = useAuthContext();
 
   useEffect(() => {
-    initServices();
-  }, []);
-
-  const initServices = () => {
-    getAllShipmentOrders();
-
-    getLocations(UBI_SERVICE_CODE)
-      .then((location) => setPeopleLocation(location))
-      .catch(console.error);
-
-    getLocations(OTR_SERVICE_CODE)
-      .then((sectors) => setEconomySectors(sectors))
-      .catch(console.error);
-
-    retrieveSexs()
-      .then((sex) => setSexs(sex))
-      .catch(console.error);
-  };
-
-  const getAllShipmentOrders = () => {
-    getAllShipmentOrdersAsync()
-      .then((shipments) => {
-        shiptmet.current = [...shipments];
+    const init = async () => {
+      try {
+        const [shipments, ubi, econ, sex] = await Promise.all([
+          getAllShipmentOrdersAsync(),
+          getLocations(UBI_SERVICE_CODE),
+          getLocations(OTR_SERVICE_CODE),
+          retrieveSexs(),
+        ]);
+        shipmentsRef.current = shipments;
         setPeopleSendOptions(
           shipments.map(({ FullName, Id }) => ({
             label: FullName,
@@ -118,403 +129,113 @@ function SendMessagePage() {
             key: Id.toString(),
           }))
         );
-      })
-      .catch(console.error);
-  };
+        setPeopleLocation(ubi);
+        setEconomySectors(econ);
+        setSexs(sex);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    init();
+  }, []);
 
   const handlePeopleLocation = async (
     e: ChangeEvent<HTMLSelectElement>,
     serviceCode: string
   ) => {
-    if (!e) return;
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
     const serviceId = (e.target.value ?? '').trim();
 
     if (serviceId) {
-      getNaturalHoses(serviceId, serviceCode);
-
+      const hoses = await retrieveNaturalHoses(serviceId);
       if (serviceCode === UBI_SERVICE_CODE) {
+        setNaturalHoses(hoses);
         setSelectedService({ label, id: serviceId });
       } else {
+        setNaturalHosesEcoSector(hoses);
         setSelectedEcoSector({ label, id: serviceId });
       }
       return;
     }
 
-    if (serviceCode === UBI_SERVICE_CODE) {
+    if (serviceCode === UBI_SERVICE_CODE)
       setSelectedService({ label: '', id: '' });
-    } else {
-      setSelectedEcoSector({ label: '', id: '' });
-    }
+    else setSelectedEcoSector({ label: '', id: '' });
   };
 
-  const getNaturalHoses = async (serviceId: string, serviceCode: string) => {
-    const naturalHouse = await retrieveNaturalHoses(serviceId);
-    if (serviceCode === UBI_SERVICE_CODE) {
-      setNaturalHoses(naturalHouse);
-    } else {
-      setNaturalHosesEcoSector(naturalHouse);
-    }
-  };
+  const recipientsCount = useMemo(
+    () => (values.sendWsContacts ? 1 : 0) + (values.peopleSend?.length ?? 0),
+    [values.peopleSend, values.sendWsContacts]
+  );
 
-  const handleSendBulkMessages = async (values: IInitialValues) => {
-    const messageConvertLower = values.message.toLocaleLowerCase();
-    if (
-      messageConvertLower.includes('{user}') &&
-      messageConvertLower.includes('{location}')
-    ) {
-      let filteredShiptments = [...shiptmet.current];
-      if (values.peopleSend.length > 0) {
-        filteredShiptments = filteredShiptments.filter(({ Id }) =>
-          values.peopleSend.some(({ value }) =>
-            equalsIgnoringCase(Id.toString(), value)
-          )
-        );
-      }
-
-      if (!isNullOrWhiteSpaces(values.service)) {
-        filteredShiptments = filteredShiptments.filter(({ Services: { Id } }) =>
-          equalsIgnoringCase(values.service, String(Id))
-        );
-      }
-
-      if (!isNullOrWhiteSpaces(values.sex)) {
-        filteredShiptments = filteredShiptments.filter(({ Sex: { Id } }) =>
-          equalsIgnoringCase(values.sex, String(Id))
-        );
-      }
-
-      if (!isNullOrWhiteSpaces(values.economicSector)) {
-        filteredShiptments = filteredShiptments.filter(
-          ({
-            Services_ShipmentOrders_ServiceActivityIdToServices: econActSer,
-          }) =>
-            equalsIgnoringCase(
-              values.economicSector,
-              String(econActSer?.Id ?? '')
-            )
-        );
-      }
-
-      if (!values.sendAllNaturalHoses && selected.length > 0) {
-        filteredShiptments = filteredShiptments.filter(({ NaturalHose }) =>
-          selected.some(({ value }) =>
-            equalsIgnoringCase(value, String(NaturalHose?.Id ?? ''))
-          )
-        );
-      }
-
-      if (
-        optionsSelectedEconSector.length > 0 &&
-        !isNullOrWhiteSpaces(optionsSelectedEconSector[0]?.value ?? '')
-      ) {
-        filteredShiptments = filteredShiptments.filter(
-          ({
-            NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose: econAct,
-          }) =>
-            optionsSelectedEconSector.some(({ value }) =>
-              equalsIgnoringCase(value, String(econAct?.Id ?? ''))
-            )
-        );
-      }
-
-      if (filteredShiptments.length === 0) {
-        toast.error(
-          'No se encontrarón receptores asociados a los criteríos de busqueda.'
-        );
-        return;
-      }
-
-      const receivedMessages: ISendBulkMessage[] = filteredShiptments
-        .filter(({ Phone }) => Phone)
-        .map(({ FullName: receiver, Phone }) => ({
-          phone: Phone ?? '',
-          message: values.sendWsContacts
-            ? values.message
-            : `${values.message
-                .replace(/{name}/gi, `*${receiver.trim()}*`)
-                .replace(/{user}/gi, `*${fullName.trim()}*`)
-                .replace(/{location}/gi, `*${town.trim()}*`)}`,
-        }));
-
-      const message: ISendBulkMessageWithAttach = {
-        content: receivedMessages,
-        attach: attachFile,
-        sendWsContacts: values.sendWsContacts,
-      };
-
-      const res = await sendMesssageBulkAsync(message);
-
-      if (res.length > 0) {
-        const errors = res.some((e) => e?.error);
-        if (errors) {
-          res
-            .filter((e) => e?.error)
-            .forEach(({ error }) => {
-              toast.error(`Ocurrio un error al enviar los mensajes: ${error}`);
-            });
-        } else {
-          const successLeng = res.filter((e) => e.id).length;
-          toast.success(`Mensajes enviados correctamente! ${successLeng}`);
-        }
-
-        resetForm();
-      }
-      return;
-    }
-
-    toast.error(
-      'Debe de agregar la convensión para reemplazar la información.'
-    );
-  };
+  const parsedMessage = useMemo(
+    () => values.message.trim()
+    .replace(/{user}/gi, fullName)
+    .replace(/{location}/gi, town),
+    [values.message, fullName, town]
+  )
 
   return (
-    <section className='send-messages-page'>
-      <ConventionsReeplace />
-      <Card>
-        <div className='col-12'>
-          <div className='card-header'>
-            <h4>Envio Mensajes</h4>
-          </div>
-          <section className='card-body'>
-            <form
-              className='row'
-              id='form-send-message'
-              onSubmit={handleSubmit}
-            >
-              <div className='col-sm-12 col-md-6'>
-                <div className='form-group'>
-                  <label>Género: </label>
-                  <div className='mt-3'>
-                    {sexs.map(({ Id, TitleNaturalHose }) => (
-                      <label
-                        className='custom-switch'
-                        key={Id}
-                      >
-                        <input
-                          type='radio'
-                          name='sex'
-                          value={Id}
-                          className='custom-switch-input'
-                          onChange={handleChange}
-                        />
-                        <span className='custom-switch-indicator'></span>
-                        <span className='custom-switch-description'>
-                          {TitleNaturalHose}
-                        </span>
-                      </label>
-                    ))}
-                    <label className='custom-switch'>
-                      <input
-                        type='radio'
-                        name='sex'
-                        value=''
-                        className='custom-switch-input'
-                        defaultChecked={true}
-                        onChange={handleChange}
-                      />
-                      <span className='custom-switch-indicator'></span>
-                      <span className='custom-switch-description'>Todos</span>
-                    </label>
-                  </div>
-                </div>
+    <section className={styles.page}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>📨 Envío de Mensajes Másivos</h2>
+        <p className={styles.subtitle}>
+          Configura y envía mensajes personalizados a tus contactos usando las
+          convenciones disponibles.
+        </p>
+      </div>
 
-                {selectedService.id && (
-                  <div className='form-group'>
-                    <label>{selectedService.label} :</label>
-                    <MultiSelect
-                      value={selected}
-                      disabled={values.sendAllNaturalHoses}
-                      onChange={setSelected}
-                      options={naturalHoses.map(({ Id, TitleNaturalHose }) => ({
-                        value: String(Id),
-                        label: TitleNaturalHose,
-                      }))}
-                      labelledBy='Select'
-                      className='dark'
-                    />
-                  </div>
-                )}
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <FormFilters
+            sexs={sexs}
+            selectedService={selectedService}
+            selectedEcoSector={selectedEcoSector}
+            naturalHoses={naturalHoses}
+            naturalHosesEcoSector={naturalHosesEcoSector}
+            peopleLocation={peopleLocation}
+            economySectors={economySectors}
+            values={values}
+            handleChange={handleChange}
+            handlePeopleLocation={handlePeopleLocation}
+            selected={selected}
+            setSelected={setSelected}
+            optionsSelectedEconSector={optionsSelectedEconSector}
+            setOptionsSelectedEconSector={setOptionsSelectedEconSector}
+            setFieldValue={setFieldValue}
+          />
 
-                <div className='form-group'>
-                  <label>Actividad Económica :</label>
-                  <select
-                    className='form-control'
-                    name='economicSector'
-                    onChange={async (e) => {
-                      handleChange(e);
-                      await handlePeopleLocation(e, OTR_SERVICE_CODE);
-                    }}
-                  >
-                    <option value=''>
-                      -- Seleccione un Actividad Económica --
-                    </option>
-                    {economySectors.map(({ Id, TitleNameServices }) => (
-                      <option
-                        key={Id}
-                        value={Id}
-                      >
-                        {TitleNameServices}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className='col-sm-12 col-md-6'>
-                <div className='form-group'>
-                  <label>Ubicación Persona: </label>
-                  <select
-                    className='form-control'
-                    name='service'
-                    value={values.service}
-                    onChange={async (e) => {
-                      handleChange(e);
-                      await handlePeopleLocation(e, UBI_SERVICE_CODE);
-                    }}
-                  >
-                    <option value=''>-- Seleccione un servicio --</option>
-                    {peopleLocation.map(({ Id, TitleNameServices }) => (
-                      <option
-                        key={Id}
-                        value={Id}
-                      >
-                        {TitleNameServices}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {selectedService.id && (
-                  <div
-                    className='form-group'
-                    style={{ marginTop: '4.5rem' }}
-                  >
-                    <label
-                      htmlFor='sendAllNaturalHoses'
-                      className='d-block'
-                    >
-                      Receptores
-                    </label>
-                    <div className='form-check'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='sendAllNaturalHoses'
-                        name='sendAllNaturalHoses'
-                        defaultChecked={values.sendAllNaturalHoses}
-                        onChange={async (e) =>
-                          await setFieldValue(
-                            'sendAllNaturalHoses',
-                            e.target.checked
-                          )
-                        }
-                      />
-                      <label
-                        className='form-check-label'
-                        htmlFor='sendAllNaturalHoses'
-                      >
-                        ¿ Envíar a todos/as {selectedService.label} ?
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {selectedEcoSector.id && (
-                  <div className='form-group'>
-                    <label>{selectedEcoSector.label} :</label>
-                    <MultiSelect
-                      value={optionsSelectedEconSector}
-                      onChange={setOptionsSelectedEconSector}
-                      options={naturalHosesEcoSector.map(
-                        ({ Id, TitleNaturalHose }) => ({
-                          value: String(Id),
-                          label: TitleNaturalHose,
-                        })
-                      )}
-                      labelledBy='Select'
-                      className='dark'
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className='col-12'>
-                <div className='form-group'>
-                  <label>Personas a Envíar:</label>
-                  <div className='form-group'>
-                    <MultiSelect
-                      value={values.peopleSend}
-                      options={peopleSendOptions}
-                      onChange={async (e: Option[]) =>
-                        await setFieldValue('peopleSend', e)
-                      }
-                      labelledBy='Select'
-                      className='dark'
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className='col-12'>
-                <div className='form-group'>
-                  <label>
-                    Mensaje
-                    <span className='mandatory'> *</span> :
-                  </label>
-                  <textarea
-                    className='form-control'
-                    name='message'
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='sendWsContacts'
-                  id='send-ws-contacts'
-                  checked={values.sendWsContacts}
-                  onChange={handleChange}
-                />
-                <label
-                  className='form-check-label'
-                  htmlFor='send-ws-contacts'
-                >
-                  Enviar a mis <strong>contactos de WhatsApp.</strong>
-                </label>
-              </div>
-            </form>
-          </section>
-
-          <div className='card-footer text-right'>
-            <AttachedFile />
-
-            <span className='mr-2'>{wsSessionStatus}</span>
-
-            <button
-              className={`btn btn-icon icon-left btn-success ${
-                isSubmitting ? 'disabled btn-progress' : ''
-              }`}
-              type='submit'
-              disabled={
-                isSubmitting ||
-                !dirty ||
-                !values.message.trim() ||
-                (shiptmet.current.length === 0 && !values.sendWsContacts)
-              }
-              form='form-send-message'
-            >
-              <i className='fa-solid fa-paper-plane mr-2'></i>
-              Envíar Mensaje
-            </button>
-          </div>
+          <MessageEditor
+            peopleSendOptions={peopleSendOptions}
+            values={values}
+            handleChange={handleChange}
+            setFieldValue={setFieldValue}
+          />
         </div>
-      </Card>
+
+        <div className={styles.right}>
+          <PreviewPanel
+            rawMessage={parsedMessage}
+            recipientsCount={recipientsCount}
+            attachmentsCount={filteredAttachment.length}
+          />
+        </div>
+      </div>
+
+      <StickyFooterActions
+        isSubmitting={isSubmitting}
+        disabled={
+          isSubmitting ||
+          !dirty ||
+          !values.message.trim() ||
+          (shipmentsRef.current.length === 0 && !values.sendWsContacts)
+        }
+        onSubmit={handleSubmit}
+        wsSessionStatus={wsSessionStatus}
+      >
+        <AttachedFile />
+      </StickyFooterActions>
     </section>
   );
 }

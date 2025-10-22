@@ -19,6 +19,9 @@
   --warning: color(warning);
   --danger: color(danger);
   --dark: color(dark);
+
+  --bg: #353c48;
+  --color: #96a2b4;
 }
 
 * {
@@ -54,4 +57,15 @@ a:hover {
 
 .mandatory {
   color: red;
+}
+
+.rmsc * {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+textarea {
+  resize: none;
+  min-height: 120px;
+  form-sizing: content;
 }

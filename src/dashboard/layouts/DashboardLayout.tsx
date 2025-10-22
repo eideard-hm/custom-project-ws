@@ -16,11 +16,11 @@ export function DashboardLayout({ children }: Props) {
         <Sidebar />
 
         {/* <!-- Main Content --> */}
-        <section className='main-content'>
+        <main className='main-content'>
           <section className='section'>
             <div className='section-body'>{children}</div>
           </section>
-        </section>
+        </main>
       </div>
     </>
   );
