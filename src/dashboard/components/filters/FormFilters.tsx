@@ -99,7 +99,10 @@ export default function FormFilters({
             className={styles.select}
             name='service'
             value={values.service}
-            onChange={(e) => handlePeopleLocation(e, UBI_SERVICE_CODE)}
+            onChange={(e) => {
+              handleChange(e);
+              handlePeopleLocation(e, UBI_SERVICE_CODE);
+            }}
           >
             <option value=''>-- Seleccione un servicio --</option>
             {peopleLocation.map(({ Id, TitleNameServices }) => (
@@ -150,7 +153,11 @@ export default function FormFilters({
           <select
             className={styles.select}
             name='economicSector'
-            onChange={(e) => handlePeopleLocation(e, OTR_SERVICE_CODE)}
+            value={values.economicSector}
+            onChange={(e) => {
+              handleChange(e);
+              handlePeopleLocation(e, OTR_SERVICE_CODE);
+            }}
           >
             <option value=''>-- Seleccione una actividad --</option>
             {economySectors.map(({ Id, TitleNameServices }) => (

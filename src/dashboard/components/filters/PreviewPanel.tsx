@@ -4,6 +4,7 @@ import styles from './PreviewPanel.module.css';
 
 type Props = {
   rawMessage: string;
+  parsedMessage: string;
   recipientsCount: number;
   attachmentsCount: number;
 };
@@ -16,10 +17,11 @@ const renderTemplate = (m: string) =>
 
 function PreviewPanel({
   rawMessage,
+  parsedMessage,
   recipientsCount,
   attachmentsCount,
 }: Props) {
-  const preview = useMemo(() => renderTemplate(rawMessage || ''), [rawMessage]);
+  const preview = useMemo(() => renderTemplate(parsedMessage || ''), [parsedMessage]);
   const okName = rawMessage.toLowerCase().includes('{name}');
   const okUser = rawMessage.toLowerCase().includes('{user}');
   const okLoc = rawMessage.toLowerCase().includes('{location}');
@@ -29,7 +31,7 @@ function PreviewPanel({
       <div className={styles.card}>
         <div className={styles.header}>
           <span className={styles.title}>Vista previa</span>
-          <span className={styles.counter}>{rawMessage.length} caracteres</span>
+          <span className={styles.counter}>{parsedMessage.length} caracteres</span>
         </div>
 
         <div className={styles.body}>
@@ -75,8 +77,7 @@ function PreviewPanel({
 
           {(!okName || !okUser || !okLoc) && (
             <p className={styles.warn}>
-              Recuerda incluir <code>{'{name}'}</code>, <code>{'{user}'}</code>{' '}
-              y <code>{'{location}'}</code> para poder enviar.
+              Recuerda incluir {!okName && (<code>{'{name}'}</code>)} {!okUser && (<code>{'{user}'}</code>)} y {!okLoc && (<code>{'{location}'}</code>)} para poder enviar.
             </p>
           )}
         </div>

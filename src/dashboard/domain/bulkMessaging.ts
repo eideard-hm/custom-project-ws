@@ -1,3 +1,4 @@
+import { equalsIgnoringCase } from '../../utils';
 import type {
   ISendBulkMessage,
   ISendBulkMessageWithAttach,
@@ -30,10 +31,6 @@ export function validateTemplate(
   return missing.length ? { ok: false, missing } : { ok: true };
 }
 
-export function equalsIgnoringCase(a: string, b: string) {
-  return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0;
-}
-
 export function compileTemplate(
   template: string,
   ctx: TemplateContext,
@@ -51,6 +48,7 @@ export function filterRecipients(
   shipments: ShipmentOrdersResponse[],
   criteria: FilterCriteria
 ): ShipmentOrdersResponse[] {
+  console.log({shipments, criteria});
   let result = shipments;
 
   const peopleSet = new Set((criteria.peopleIds ?? []).map(String));
