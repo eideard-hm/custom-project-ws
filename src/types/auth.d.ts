@@ -4,9 +4,9 @@ export interface IAuth {
 
 export interface IAuthContextProps {
   auth: IAuth;
-  setAuth: (status: IAuth) => void;
-  userData: IUserData,
-  setUserData: (userData: IUserData) => void
+  setAuth: (status: IAuth | ((prev: IAuth) => IAuth)) => void;
+  userData: IUserData;
+  setUserData: (userData: IUserData | ((prev: IUserData) => IUserData)) => void;
 }
 
 export interface IUserData {

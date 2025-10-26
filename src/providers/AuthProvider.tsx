@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { AuthContext } from '../context';
 import { retrieveCurrentStatusAuth } from '../services';
@@ -18,25 +18,48 @@ export function AuthProvider({ children }: Props) {
 
   useEffect(() => {
     retrieveCurrentStatusAuth()
-      .then((res) => setAuth(res))
+      .then((res) => {
+        setAuth((prev) => (prev.isLoggin === res.isLoggin ? prev : res));
+      })
       .catch(console.error);
   }, []);
 
-  const setCurrentStatusAuth = (status: IAuth) => setAuth(status);
+  const setCurrentStatusAuth = (status: IAuth | ((prev: IAuth) => IAuth)) => {
+    if (typeof status === 'function') {
+      setAuth(status);
+      return;
+    }
+    setAuth((prev) => (prev.isLoggin === status.isLoggin ? prev : status));
+  };
 
-  const updateUserData = (userDataInput: IUserData) =>
-    setUserData(userDataInput);
+  const updateUserData = (
+    patch: Partial<IUserData> | ((prev: IUserData) => IUserData)
+  ) => {
+    if (typeof patch === 'function') {
+      setUserData(patch);
+      return;
+    }
+    setUserData((prev) => {
+      const next = { ...prev, ...patch };
+      if (
+        next.fullName === prev.fullName &&
+        next.town === prev.town &&
+        next.userImage === prev.userImage
+      )
+        return prev;
+      return next;
+    });
+  };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        auth,
-        setAuth: setCurrentStatusAuth,
-        userData,
-        setUserData: updateUserData,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      auth,
+      setAuth: setCurrentStatusAuth,
+      userData,
+      setUserData: updateUserData,
+    }),
+    [auth, userData]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
