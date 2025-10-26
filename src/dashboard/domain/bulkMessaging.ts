@@ -48,7 +48,6 @@ export function filterRecipients(
   shipments: ShipmentOrdersResponse[],
   criteria: FilterCriteria
 ): ShipmentOrdersResponse[] {
-  console.log({shipments, criteria});
   let result = shipments;
 
   const peopleSet = new Set((criteria.peopleIds ?? []).map(String));
