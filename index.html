@@ -1,17 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/vite.svg"
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+
+    <!-- Básico -->
+    <title>
+      VoxNet – Comunicación directa y efectiva por WhatsApp para campañas
+    </title>
+    <meta
+      name="description"
+      content="VoxNet es una plataforma gestionada de comunicación por WhatsApp: segmentamos contactos, personalizamos mensajes y ejecutamos envíos para campañas políticas y organizaciones. Servicio integral con reportes y soporte."
     />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
-    <title>VoxNet – Comunicación Directa y Efectiva</title>
+    <link
+      rel="canonical"
+      href="https://voxnet-ws.netlify.app/"
+    />
+
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+    />
+    <meta
+      name="googlebot"
+      content="index,follow"
+    />
+
+    <meta
+      property="og:type"
+      content="website"
+    />
+    <meta
+      property="og:locale"
+      content="es_CO"
+    />
+    <meta
+      property="og:site_name"
+      content="VoxNet"
+    />
+    <meta
+      property="og:title"
+      content="VoxNet – Comunicación directa y efectiva por WhatsApp"
+    />
+    <meta
+      property="og:description"
+      content="Segmentación precisa, mensajes personalizados y ejecución gestionada para campañas. Reportes y soporte incluido."
+    />
+    <meta
+      property="og:url"
+      content="https://voxnet-ws.netlify.app/"
+    />
+    <meta
+      property="og:image"
+      content="https://voxnet-ws.netlify.app/og/og-voxnet.jpg"
+    />
+    <meta
+      property="og:image:width"
+      content="1200"
+    />
+    <meta
+      property="og:image:height"
+      content="630"
+    />
+
+    <meta
+      name="twitter:card"
+      content="summary_large_image"
+    />
+    <meta
+      name="twitter:title"
+      content="VoxNet – Comunicación directa y efectiva por WhatsApp"
+    />
+    <meta
+      name="twitter:description"
+      content="Plataforma gestionada para campañas: segmentación, personalización y envío de mensajes por WhatsApp."
+    />
+    <meta
+      name="twitter:image"
+      content="https://voxnet-ws.netlify.app/og/og-voxnet.jpg"
+    />
+
+    <link
+      rel="alternate"
+      href="https://voxnet-ws.netlify.app/"
+      hreflang="es-co"
+    />
+    <link
+      rel="alternate"
+      href="https://voxnet-ws.netlify.app/"
+      hreflang="x-default"
+    />
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -19,7 +105,54 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "VoxNet",
+        "url": "https://voxnet-ws.netlify.app/",
+        "logo": "https://voxnet-ws.netlify.app/og/logo-voxnet.png",
+        "email": "mailto:edierhernandezmo@gmail.com",
+        "telephone": "+57-320-637-1091",
+        "sameAs": []
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "VoxNet",
+        "url": "https://voxnet-ws.netlify.app/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://voxnet-ws.netlify.app/buscar?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Comunicación por WhatsApp gestionada",
+        "provider": { "@type": "Organization", "name": "VoxNet" },
+        "areaServed": { "@type": "Country", "name": "Colombia" },
+        "serviceType": "Marketing político y comunicación directa",
+        "description": "Segmentación de contactos, personalización de mensajes y ejecución de envíos por WhatsApp. Reportes semanales y soporte durante la campaña.",
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "COP",
+          "price": "2500000",
+          "priceValidUntil": "2025-12-31",
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    </script>
   </head>
+
   <body class="dark dark-sidebar theme-purple">
     <div id="app"></div>
     <script
