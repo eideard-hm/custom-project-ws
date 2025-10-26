@@ -68,8 +68,8 @@ export default function LoginPage() {
           <div className='form-holder'>
             <div className='form-content'>
               <div className='form-items'>
-                <h3>Iniciar sesión.</h3>
-                <p>Bienvenido/a es un placer tenerlos en linea.</p>
+                <h3>Iniciar sesión en <strong>VoxNet</strong></h3>
+                <p>Bienvenido/a a <strong>VoxNet</strong>, es un placer tenerlos en línea.</p>
                 <form onSubmit={handleSubmit}>
                   <input
                     className='form-control'
