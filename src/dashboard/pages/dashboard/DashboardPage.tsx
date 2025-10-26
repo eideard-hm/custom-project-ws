@@ -1,11 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { lazy, useEffect } from 'react';
+import { lazy, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { navigate } from 'wouter/use-location';
 
 import type { IUserDataLogin } from '../../../auth/types';
 import { useAuthContext, useDashboardContext } from '../../../hooks';
 import { destroySession, getSessionStorageOrNavigate } from '../../../services';
+import { parseJsonSafe } from '../../../utils/json';
 import { socket } from '../../../web-sockets';
 import { DashboardLayout } from '../../layouts';
 import type { IGenerateQr, IGetOrCreateUserSession } from '../../types';
@@ -17,71 +17,88 @@ import './style.css';
 const DashboardRouting = lazy(() => import('../../routes/DashboardRouting'));
 
 function DashboardPage() {
+  const mountedRef = useRef(true);
+
   const {
     auth: { isLoggin },
     setAuth,
     setUserData,
-    userData,
   } = useAuthContext();
+
   const { setLoginInfo, setWsSessionStatus } = useDashboardContext();
 
+  const userInfo = useMemo(() => {
+    const raw = getSessionStorageOrNavigate();
+    return parseJsonSafe<IUserDataLogin>(raw);
+  }, []);
+
   useEffect(() => {
-    // emit the user id loggin
-    const userInfo = getSessionStorageOrNavigate();
-    const { userId }: IUserDataLogin = JSON.parse(userInfo);
-    const dataEmit: IGetOrCreateUserSession = {
-      userId,
-    };
+    mountedRef.current = true;
+
+    if (!userInfo?.userId) {
+      destroySession(false);
+      return;
+    }
+    const dataEmit: IGetOrCreateUserSession = { userId: userInfo.userId };
     socket.emit('qr', dataEmit);
 
-    const receiveQr = (loginIfo: IGenerateQr) => {
-      console.log({ loginIfo });
-      setAuth({ isLoggin: loginIfo.loginSuccess });
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [userInfo?.userId]);
 
-      if (!loginIfo.loginSuccess && !loginIfo.qrImage && !loginIfo.reloadPage) {
+  const onQr = useCallback(
+    (loginInfo: IGenerateQr) => {
+      if (!mountedRef.current) return;
+
+      const next = !!loginInfo.loginSuccess;
+      setAuth((prev) => (prev.isLoggin === next ? prev : { isLoggin: next }));
+
+      if (!next && !loginInfo.qrImage && !loginInfo.reloadPage) {
         destroySession(false);
         return;
       }
 
-      setLoginInfo(loginIfo);
-
-      // if (loginIfo.userImage) {
-      //   setUserData({ ...userData, userImage: loginIfo.userImage });
-      // }
-    };
-
-    // nos suscribimos al socket
-    socket.on('qr', receiveQr);
-
-    return () => {
-      socket.off('qr', receiveQr);
-    };
-  }, []);
+      setLoginInfo(loginInfo);
+    },
+    [setAuth, setLoginInfo]
+  );
 
   useEffect(() => {
-    const handleSessionStatusEvent = (data: SessionStatusEvent) => {
+    socket.on('qr', onQr);
+    return () => {
+      socket.off('qr', onQr);
+    };
+  }, [onQr]);
+
+  const onSessionStatus = useCallback(
+    (data: SessionStatusEvent) => {
+      if (!mountedRef.current) return;
       setWsSessionStatus(data);
-    };
+    },
+    [setWsSessionStatus]
+  );
 
-    socket.on('sessionStatus', handleSessionStatusEvent);
-
+  useEffect(() => {
+    socket.on('sessionStatus', onSessionStatus);
     return () => {
-      socket.off('sessionStatus', handleSessionStatusEvent);
+      socket.off('sessionStatus', onSessionStatus);
     };
-  }, []);
+  }, [onSessionStatus]);
 
   useEffect(() => {
-    const userInfo = getSessionStorageOrNavigate();
-    const { fullName, town }: IUserDataLogin = JSON.parse(userInfo);
-    setUserData({ ...userData, fullName, town });
-  }, []);
+    if (!userInfo) return;
+    const { fullName, town } = userInfo;
+
+    setUserData((prev) => {
+      if (prev.fullName === fullName && prev.town === town) return prev;
+      return { ...prev, fullName, town };
+    });
+  }, [userInfo, setUserData]);
 
   useEffect(() => {
-    if (isLoggin) {
-      navigate('/dashboard/sphipment-order', { replace: true });
-    } else {
-      navigate('/dashboard', { replace: true });
-    }
+    const target = isLoggin ? '/dashboard/sphipment-order' : '/dashboard';
+    navigate(target, { replace: true });
   }, [isLoggin]);
 
   return (
