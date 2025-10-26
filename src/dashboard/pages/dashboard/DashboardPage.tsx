@@ -51,6 +51,8 @@ function DashboardPage() {
     (loginInfo: IGenerateQr) => {
       if (!mountedRef.current) return;
 
+      console.log({loginInfo});
+
       const next = !!loginInfo.loginSuccess;
       setAuth((prev) => (prev.isLoggin === next ? prev : { isLoggin: next }));
 
