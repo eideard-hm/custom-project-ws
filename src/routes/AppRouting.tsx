@@ -5,25 +5,22 @@ import { Redirect, Route, Router } from 'wouter';
 import { NestedRoutes } from '../components';
 
 const AuthRouting = lazy(() => import('../auth/routes/AuthRouting'));
-const DashboardPage = lazy(
-  () => import('../dashboard/pages/dashboard/DashboardPage')
-);
+const DashboardRoutes = lazy(() => import('../dashboard/routes/DashboardRouting'));
 
 export function AppRouting() {
   return (
-    <Suspense fallback={<>loading</>}>
-      <Router
-        base='/auth'
-        key='/auth'
-      >
-        <AuthRouting />
-      </Router>
+    <Router>
+      <Suspense fallback={<>loading</>}>
+        <NestedRoutes base='/auth'>
+          <AuthRouting />
+        </NestedRoutes>
 
-      <NestedRoutes base='/dashboard'>
-        <DashboardPage />
-      </NestedRoutes>
+        <NestedRoutes base='/dashboard'>
+          <DashboardRoutes />
+        </NestedRoutes>
 
-      <Route>{() => <Redirect to='/auth' />}</Route>
-    </Suspense>
+        <Route>{() => <Redirect to='/auth/login' />}</Route>
+      </Suspense>
+    </Router>
   );
 }
