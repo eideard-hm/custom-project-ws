@@ -1,0 +1,118 @@
+.navbarBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  z-index: 998;
+  pointer-events: none;
+}
+
+.bell {
+  display: block;
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  margin: 5px auto 0;
+  color: #9e9e9e;
+  animation: ring 4s 0.7s ease-in-out infinite;
+  transform-origin: 50% 4px;
+}
+
+@keyframes ring {
+  0% { transform: rotate(0); }
+  1% { transform: rotate(30deg); }
+  3% { transform: rotate(-28deg); }
+  5% { transform: rotate(34deg); }
+  7% { transform: rotate(-32deg); }
+  9% { transform: rotate(30deg); }
+  11% { transform: rotate(-28deg); }
+  13% { transform: rotate(26deg); }
+  15% { transform: rotate(-24deg); }
+  17% { transform: rotate(22deg); }
+  19% { transform: rotate(-20deg); }
+  21% { transform: rotate(18deg); }
+  23% { transform: rotate(-16deg); }
+  25% { transform: rotate(14deg); }
+  27% { transform: rotate(-12deg); }
+  29% { transform: rotate(10deg); }
+  31% { transform: rotate(-8deg); }
+  33% { transform: rotate(6deg); }
+  35% { transform: rotate(-4deg); }
+  37% { transform: rotate(2deg); }
+  39% { transform: rotate(-1deg); }
+  41% { transform: rotate(1deg); }
+  43%, 100% { transform: rotate(0); }
+}
+
+/* Dropdown user */
+.show {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
+  transition: all 0.2s ease-in;
+}
+
+.dropdownMenu {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  border-radius: .5rem;
+}
+
+.dropdownTitle {
+  font-weight: 600;
+  color: #333;
+}
+
+.dropdownDivider {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: #444;
+  background-color: transparent;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.dropdownItem:hover {
+  background-color: #f8f9fa;
+}
+
+.textDanger {
+  color: #ea5455 !important;
+}
+
+.dark .dropdownMenu {
+  background-color: #353c48;
+  color: #96a2b4;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark .dropdownTitle {
+  color: #fff;
+}
+
+.dark .dropdownDivider {
+  border-top-color: #96a2b4;
+}
+
+.dark .dropdownItem {
+  color: #96a2b4;
+}
+
+.themePurple {
+  background-color: #5864bd;
+  color: #fff;
+}
+
+@media (max-width: 991.98px) {
+  .navbarBg {
+    height: 60px;
+  }
+}

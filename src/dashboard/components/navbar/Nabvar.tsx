@@ -3,36 +3,52 @@ import { useRef } from 'react';
 import { useAuthContext } from '../../../hooks';
 import { destroySession } from '../../../services';
 import { UserImage } from '../user-img/UserImage';
+import { useMediaQuery } from '../../../hooks/useMediaQuery';
+
+import cls from './Nabvar.module.css';
 
 export function Nabvar() {
   const {
     auth: { isLoggin },
     userData: { fullName },
   } = useAuthContext();
+  const isMobile = useMediaQuery('(max-width: 992px)');
+
   const userDropdown = useRef<HTMLDivElement>(null);
 
   const handleUserDropdown = () => {
-    userDropdown.current?.classList.toggle('show');
+    userDropdown.current?.classList.toggle(cls.show);
   };
 
   const handleLogout = async () => {
     await destroySession(isLoggin);
   };
 
+  const handleToggleSidebar = () => {
+    if (isMobile) {
+      document.body.classList.toggle('sidebar-show');
+      document.body.classList.remove('sidebar-gone');
+      document.body.classList.remove('sidebar-mini');
+    } else {
+      document.body.classList.toggle('sidebar-mini');
+      document.body.classList.remove('sidebar-show');
+    }
+  };
+
   return (
     <>
-      <div className='navbar-bg'></div>
-      <nav className='navbar navbar-expand-lg main-navbar sticky'>
+      <div className={cls.navbarBg}></div>
+      <nav
+        className={`${cls.themePurple} navbar navbar-expand-lg main-navbar sticky`}
+      >
         <div className='form-inline mr-auto'>
           <ul className='navbar-nav mr-3'>
             <li>
               <a
+                onClick={handleToggleSidebar}
                 href='#'
-                data-toggle='sidebar'
-                className='nav-link nav-link-lg
-									collapse-btn'
+                className='nav-link nav-link-lg collapse-btn'
               >
-                {' '}
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='24'
@@ -91,7 +107,7 @@ export function Nabvar() {
                 strokeWidth='2'
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                className='feather feather-bell bell'
+                className={`feather feather-bell ${cls.bell}`}
               >
                 <path d='M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9'></path>
                 <path d='M13.73 21a2 2 0 0 1-3.46 0'></path>
@@ -111,41 +127,34 @@ export function Nabvar() {
             </a>
             <div
               ref={userDropdown}
-              className='dropdown-menu dropdown-menu-right pullDown'
+              className={`${cls.dropdownMenu} dropdown-menu dropdown-menu-right pullDown`}
             >
-              <div className='dropdown-title'>Hola {fullName}</div>
+              <div className={cls.dropdownTitle}>Hola {fullName}</div>
               <a
                 href='#'
-                className='dropdown-item has-icon'
+                className={cls.dropdownItem}
               >
-                <i
-                  className='far
-										fa-user'
-                ></i>
-                Profile
+                <i className='far fa-user'></i> Profile
               </a>
               <a
                 href='#'
-                className='dropdown-item has-icon'
+                className={cls.dropdownItem}
               >
-                <i className='fas fa-bolt'></i>
-                Activities
+                <i className='fas fa-bolt'></i> Activities
               </a>
               <a
                 href='#'
-                className='dropdown-item has-icon'
+                className={cls.dropdownItem}
               >
-                <i className='fas fa-cog'></i>
-                Settings
+                <i className='fas fa-cog'></i> Settings
               </a>
-              <div className='dropdown-divider'></div>
+              <div className={cls.dropdownDivider}></div>
               <a
                 onClick={handleLogout}
                 href='#'
-                className='dropdown-item has-icon text-danger'
+                className={`${cls.dropdownItem} ${cls.textDanger}`}
               >
-                <i className='fas fa-sign-out-alt'></i>
-                Cerrar Sesión
+                <i className='fas fa-sign-out-alt'></i> Cerrar Sesión
               </a>
             </div>
           </li>

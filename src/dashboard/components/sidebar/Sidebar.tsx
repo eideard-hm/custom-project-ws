@@ -1,12 +1,42 @@
+import { useEffect } from 'react';
+
 import { NavLink } from '../../../components';
 import { links } from '../../../data';
 import { useAuthContext } from '../../../hooks';
+import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import { UserProfile } from '../user-profile/UserProfile';
 
 export function Sidebar() {
   const {
     auth: { isLoggin },
   } = useAuthContext();
+  const isMobile = useMediaQuery('(max-width: 992px)');
+
+  useEffect(() => {
+    if (!isMobile) {
+      document.body.classList.remove('sidebar-gone');
+      document.body.classList.remove('sidebar-show');
+      return;
+    };
+
+    const handleBodyClick = (e: MouseEvent) => {
+      const sidebar = document.querySelector('.sidebar');
+      const navbar = document.querySelector('nav');
+
+      if (
+        sidebar?.contains(e.target as Node) ||
+        navbar?.contains(e.target as Node)
+      ) {
+        return;
+      }
+
+      document.body.classList.add('sidebar-gone');
+      document.body.classList.remove('sidebar-show');
+    };
+
+    document.body.addEventListener('click', handleBodyClick);
+    return () => document.body.removeEventListener('click', handleBodyClick);
+  }, [isMobile]);
 
   return (
     <div className='main-sidebar sidebar-style-2'>
