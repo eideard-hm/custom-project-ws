@@ -1,38 +1,32 @@
 import { ASSETS_IMAGES } from '../../../assets/img';
-
+import { useDashboardContext } from '../../../hooks';
 import { Card } from '../../../shared/components';
 import { WsOptions } from '../../../ws/components';
 import { ReloadPage } from '../../components';
-import { useDashboardContext } from '../../../hooks';
 
-import './QrImgPage.css';
+import styles from './QrImgPage.module.css'
 
 function QrImgPage() {
   const { loginInfo } = useDashboardContext();
 
   return (
     <Card>
-      <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-5'>
+      <div className='col-lg-6 col-md-6 col-sm-12 pl-5'>
         <div className='card-content'>
           <WsOptions />
         </div>
       </div>
       <div
-        className='col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0'
+        className='col-lg-6 col-md-6 col-sm-12 pl-0'
         style={{ backgroundColor: '#fff' }}
       >
-        <div className='banner-img'>
+        <div className={styles.bannerImg}>
           {(() => {
             if (loginInfo.reloadPage) return <ReloadPage />;
             if (!loginInfo.qrImage) {
               return (
                 <section
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    alignContent: 'center',
-                  }}
+                  className={styles.loadingGenerateQR}
                 >
                   <p>Generando el código QR...</p>
                   <img
@@ -47,6 +41,7 @@ function QrImgPage() {
             return (
               <img
                 src={loginInfo.qrImage}
+                className={styles.qrImg}
                 style={{
                   padding: '16px',
                   display:

@@ -1,0 +1,17 @@
+.qrImg {
+  background-color: #fff !important;
+}
+
+.bannerImg {
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.loadingGenerateQR {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
