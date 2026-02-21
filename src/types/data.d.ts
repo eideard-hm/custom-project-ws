@@ -7,5 +7,6 @@ export interface ILink {
   label: string;
   href: string;
   icon: string;
-  disabled: boolean  
+  disabled: boolean;
+  public: boolean;
 }

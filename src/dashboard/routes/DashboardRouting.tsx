@@ -10,16 +10,20 @@ import { socket } from '../../web-sockets';
 import { DashboardLayout } from '../layouts';
 import type { IGenerateQr, IGetOrCreateUserSession } from '../types';
 import type { SessionStatusEvent } from '../types/ws';
+import { PUBLIC_ROUTES } from '../../data';
 
 const QrImPage = lazy(() => import('../pages/qr-img/QrImgPage'));
 const FormUserDataPage = lazy(
-  () => import('../pages/form-users-data/FormUserDataPage')
+  () => import('../pages/form-users-data/FormUserDataPage'),
 );
 const DetailTablePage = lazy(
-  () => import('../pages/detail-table/DetailTablePage')
+  () => import('../pages/detail-table/DetailTablePage'),
 );
 const SendMessagePage = lazy(
-  () => import('../pages/send-message/SendMessagePage')
+  () => import('../pages/send-message/SendMessagePage'),
+);
+const WeeklyReportPage = lazy(
+  () => import('../pages/reports/WeeklyReportPage'),
 );
 
 /**
@@ -39,7 +43,7 @@ function Private({ children }: { children: React.ReactNode }) {
  * @param param0 - children components
  * @returns JSX.Element
  */
-function PrivateDashboard({ children }: { children: React.ReactNode; }) {
+function PrivateDashboard({ children }: { children: React.ReactNode }) {
   const {
     auth: { isLoggin },
   } = useAuthContext();
@@ -47,6 +51,11 @@ function PrivateDashboard({ children }: { children: React.ReactNode; }) {
 
   const pathOnly = location.split('?')[0].split('#')[0];
   const isRoot = pathOnly === '/' || pathOnly === '';
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathOnly);
+
+  if (isPublicRoute) {
+    return <>{children}</>;
+  }
 
   if (!isLoggin && !isRoot) {
     return <Redirect to='/' />;
@@ -76,7 +85,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     setUserData((prev) =>
       prev.fullName === fullName && prev.town === town
         ? prev
-        : { ...prev, fullName, town }
+        : { ...prev, fullName, town },
     );
   }, [setUserData]);
 
@@ -127,6 +136,10 @@ export default function DashboardRoutes() {
           <Route
             path='/save'
             component={FormUserDataPage}
+          />
+          <Route
+            path='/reports'
+            component={WeeklyReportPage}
           />
           <Route>{() => <Redirect to='/' />}</Route>
         </PrivateDashboard>

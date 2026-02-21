@@ -17,7 +17,7 @@ export function Sidebar() {
       document.body.classList.remove('sidebar-gone');
       document.body.classList.remove('sidebar-show');
       return;
-    };
+    }
 
     const handleBodyClick = (e: MouseEvent) => {
       const sidebar = document.querySelector('.sidebar');
@@ -45,14 +45,15 @@ export function Sidebar() {
 
         <ul className='sidebar-menu'>
           <li className='menu-header'>Main</li>
-          {links.map(({ href, label, icon, disabled }, i) => (
+          {links.map(({ href, label, icon, disabled, public: isPublic }, i) => (
             <NavLink
               href={href}
               key={i}
             >
               <a
                 className={`nav-link ${
-                  (disabled && isLoggin) || (!disabled && !isLoggin)
+                  !isPublic &&
+                  ((disabled && isLoggin) || (!disabled && !isLoggin))
                     ? 'disabled'
                     : ''
                 }`}
