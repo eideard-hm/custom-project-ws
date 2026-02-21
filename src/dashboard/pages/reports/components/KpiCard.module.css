@@ -1,0 +1,23 @@
+.card {
+  border: 1px solid var(--gray);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--bg);
+  min-height: 92px;
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+}
+
+.value {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hint {
+  font-size: 12px;
+}
