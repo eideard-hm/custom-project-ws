@@ -14,14 +14,22 @@ export function AuthProvider({ children }: Props) {
     fullName: '',
     town: '',
     userImage: '',
+    validateDateOfBirth: false,
   });
 
   useEffect(() => {
+    let alive = true;
+
     retrieveCurrentStatusAuth()
       .then((res) => {
+        if (!alive) return;
         setAuth((prev) => (prev.isLoggin === res.isLoggin ? prev : res));
       })
-      .catch(console.error);
+      .catch((e) => console.error('[AuthProvider]', e));
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const setCurrentStatusAuth = (status: IAuth | ((prev: IAuth) => IAuth)) => {
@@ -33,7 +41,7 @@ export function AuthProvider({ children }: Props) {
   };
 
   const updateUserData = (
-    patch: Partial<IUserData> | ((prev: IUserData) => IUserData)
+    patch: Partial<IUserData> | ((prev: IUserData) => IUserData),
   ) => {
     if (typeof patch === 'function') {
       setUserData(patch);
@@ -44,7 +52,8 @@ export function AuthProvider({ children }: Props) {
       if (
         next.fullName === prev.fullName &&
         next.town === prev.town &&
-        next.userImage === prev.userImage
+        next.userImage === prev.userImage &&
+        next.validateDateOfBirth === prev.validateDateOfBirth
       )
         return prev;
       return next;
@@ -58,7 +67,7 @@ export function AuthProvider({ children }: Props) {
       userData,
       setUserData: updateUserData,
     }),
-    [auth, userData]
+    [auth, userData],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

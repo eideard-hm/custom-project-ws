@@ -13,4 +13,5 @@ export interface IUserData {
   fullName: string;
   town: string;
   userImage: string;
+  validateDateOfBirth: boolean;
 }

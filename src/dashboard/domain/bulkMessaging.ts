@@ -24,7 +24,7 @@ export type TemplateContext = {
 export const REQUIRED_TOKENS = ['{name}', '{user}', '{location}'] as const;
 
 export function validateTemplate(
-  message: string
+  message: string,
 ): { ok: true } | { ok: false; missing: string[] } {
   const lower = message.toLowerCase();
   const missing = REQUIRED_TOKENS.filter((t) => !lower.includes(t));
@@ -34,7 +34,7 @@ export function validateTemplate(
 export function compileTemplate(
   template: string,
   ctx: TemplateContext,
-  keepTokens = false
+  keepTokens = false,
 ): string {
   if (keepTokens) return template;
   return template
@@ -46,7 +46,7 @@ export function compileTemplate(
 /** Filtrado puro, O(n) con sets para mejor perf. */
 export function filterRecipients(
   shipments: ShipmentOrdersResponse[],
-  criteria: FilterCriteria
+  criteria: FilterCriteria,
 ): ShipmentOrdersResponse[] {
   let result = shipments;
 
@@ -57,13 +57,13 @@ export function filterRecipients(
 
   if (criteria.serviceId) {
     result = result.filter((s) =>
-      equalsIgnoringCase(String(s.Services?.Id ?? ''), criteria.serviceId!)
+      equalsIgnoringCase(String(s.Services?.Id ?? ''), criteria.serviceId!),
     );
   }
 
   if (criteria.sexId) {
     result = result.filter((s) =>
-      equalsIgnoringCase(String(s.Sex?.Id ?? ''), criteria.sexId!)
+      equalsIgnoringCase(String(s.Sex?.Id ?? ''), criteria.sexId!),
     );
   }
 
@@ -71,18 +71,18 @@ export function filterRecipients(
     result = result.filter((s) =>
       equalsIgnoringCase(
         String(s.Services_ShipmentOrders_ServiceActivityIdToServices?.Id ?? ''),
-        criteria.economicSectorId!
-      )
+        criteria.economicSectorId!,
+      ),
     );
   }
 
   if (!criteria.sendAllNaturalHoses) {
     const hoseSet = new Set(
-      (criteria.naturalHoseIdsByService ?? []).map(String)
+      (criteria.naturalHoseIdsByService ?? []).map(String),
     );
     if (hoseSet.size > 0) {
       result = result.filter((s) =>
-        hoseSet.has(String(s.NaturalHose?.Id ?? ''))
+        hoseSet.has(String(s.NaturalHose?.Id ?? '')),
       );
     }
   }
@@ -92,9 +92,9 @@ export function filterRecipients(
     result = result.filter((s) =>
       econHoseSet.has(
         String(
-          s.NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose?.Id ?? ''
-        )
-      )
+          s.NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose?.Id ?? '',
+        ),
+      ),
     );
   }
 
@@ -106,7 +106,7 @@ export function buildPayload(
   template: string,
   recipients: ShipmentOrdersResponse[],
   opts: { sendWsContacts: boolean; user: string; location: string },
-  attach: ISendBulkMessageWithAttach['attach']
+  attach: ISendBulkMessageWithAttach['attach'],
 ): ISendBulkMessageWithAttach {
   const content: ISendBulkMessage[] = recipients
     .filter((r) => r.Phone)
@@ -119,9 +119,44 @@ export function buildPayload(
           user: opts.user,
           location: opts.location,
         },
-        opts.sendWsContacts
+        opts.sendWsContacts,
       ),
     }));
 
   return { content, attach, sendWsContacts: opts.sendWsContacts };
 }
+
+export const MIN_AGE = 16;
+
+export function isAtLeastAge(
+  birthDate: string | null | undefined,
+  minAge: number,
+): boolean {
+  if (!birthDate) return true;
+
+  const d = new Date(birthDate);
+  if (Number.isNaN(d.getTime())) return true;
+
+  const today = new Date();
+
+  let age = today.getFullYear() - d.getFullYear();
+
+  const m = today.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < d.getDate())) {
+    age--;
+  }
+
+  return age >= minAge;
+}
+
+export const getRecipientsCount = (
+  shipments: ShipmentOrdersResponse[],
+  criteria: FilterCriteria,
+  sendWsContacts: boolean,
+  validateDateOfBirth: boolean,
+): number => {
+  const filteredRecipients = filterRecipients(shipments, criteria).filter(
+    (r) => !validateDateOfBirth || isAtLeastAge(r.BirthDate, MIN_AGE),
+  );
+  return (sendWsContacts ? 1 : 0) + filteredRecipients.length;
+};

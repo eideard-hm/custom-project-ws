@@ -12,4 +12,5 @@ export interface IUserDataLogin {
   userId: string;
   fullName: string;
   town: string;
+  validateDateOfBirth: boolean;
 }

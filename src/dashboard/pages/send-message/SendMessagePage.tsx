@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from 'react';
 
 import { useFormik } from 'formik';
 import type { Option } from 'react-multi-select-component';
@@ -15,7 +22,11 @@ import FormFilters from '../../components/filters/FormFilters';
 import MessageEditor from '../../components/filters/MessageEditor';
 import PreviewPanel from '../../components/filters/PreviewPanel';
 import StickyFooterActions from '../../components/filters/StickyFooterActions';
-import { type FilterCriteria, filterRecipients } from '../../domain/bulkMessaging';
+import {
+  type FilterCriteria,
+  filterRecipients,
+  getRecipientsCount,
+} from '../../domain/bulkMessaging';
 import {
   getAllShipmentOrdersAsync,
   getLocations,
@@ -71,79 +82,80 @@ function SendMessagePage() {
   const { attachFile, wsSessionStatus } = useDashboardContext();
   const filteredAttachment = attachFile.filter((a) => a.base64 && a.name);
   const {
-    userData: { fullName, town },
+    userData: { fullName, town, validateDateOfBirth },
   } = useAuthContext();
   const { send } = useBulkMessaging({
     shipments: shipmentsRef.current,
     fullName,
+    validateDateOfBirth,
     town,
     attach: filteredAttachment,
     onSuccess: () => resetForm(),
   });
 
- useEffect(() => {
-   const ac = new AbortController();
+  useEffect(() => {
+    const ac = new AbortController();
 
-   const init = async () => {
-     const results = await Promise.allSettled([
-       getAllShipmentOrdersAsync(), 
-       getLocations(UBI_SERVICE_CODE),
-       getLocations(OTR_SERVICE_CODE),
-       retrieveSexs(),
-     ]);
+    const init = async () => {
+      const results = await Promise.allSettled([
+        getAllShipmentOrdersAsync(),
+        getLocations(UBI_SERVICE_CODE),
+        getLocations(OTR_SERVICE_CODE),
+        retrieveSexs(),
+      ]);
 
-     if (results[0].status === 'fulfilled') {
-       const shipments = results[0].value;
-       shipmentsRef.current = shipments;
-       setPeopleSendOptions(
-         shipments.map(({ FullName, Id }: any) => ({
-           label: FullName,
-           value: Id,
-           key: String(Id),
-         }))
-       );
-     } else {
-       console.error('getAllShipmentOrdersAsync error:', results[0].reason);
-     }
+      if (results[0].status === 'fulfilled') {
+        const shipments = results[0].value;
+        shipmentsRef.current = shipments;
+        setPeopleSendOptions(
+          shipments.map(({ FullName, Id }: any) => ({
+            label: FullName,
+            value: Id,
+            key: String(Id),
+          })),
+        );
+      } else {
+        console.error('getAllShipmentOrdersAsync error:', results[0].reason);
+      }
 
-     if (results[1].status === 'fulfilled') {
-       setPeopleLocation(results[1].value);
-     } else {
-       console.error('getLocations(UBI) error:', results[1].reason);
-     }
+      if (results[1].status === 'fulfilled') {
+        setPeopleLocation(results[1].value);
+      } else {
+        console.error('getLocations(UBI) error:', results[1].reason);
+      }
 
-     if (results[2].status === 'fulfilled') {
-       setEconomySectors(results[2].value);
-     } else {
-       console.error('getLocations(OTR) error:', results[2].reason);
-     }
+      if (results[2].status === 'fulfilled') {
+        setEconomySectors(results[2].value);
+      } else {
+        console.error('getLocations(OTR) error:', results[2].reason);
+      }
 
-     if (results[3].status === 'fulfilled') {
-       setSexs(results[3].value);
-     } else {
-       console.error('retrieveSexs error:', results[3].reason);
-     }
-   };
+      if (results[3].status === 'fulfilled') {
+        setSexs(results[3].value);
+      } else {
+        console.error('retrieveSexs error:', results[3].reason);
+      }
+    };
 
-   init();
-   return () => ac.abort();
- }, []);
+    init();
+    return () => ac.abort();
+  }, []);
 
-   const {
-     dirty,
-     handleChange,
-     handleSubmit,
-     isSubmitting,
-     resetForm,
-     setFieldValue,
-     values,
-   } = useFormik<IInitialValues>({
-     initialValues,
-     enableReinitialize: true,
-     onSubmit: async (vals) => {
-       await send(vals, buildCriteria())
-     },
-   });
+  const {
+    dirty,
+    handleChange,
+    handleSubmit,
+    isSubmitting,
+    resetForm,
+    setFieldValue,
+    values,
+  } = useFormik<IInitialValues>({
+    initialValues,
+    enableReinitialize: true,
+    onSubmit: async (vals) => {
+      await send(vals, buildCriteria());
+    },
+  });
 
   const buildCriteria = useCallback(() => {
     const criteria: FilterCriteria = {
@@ -155,7 +167,7 @@ function SendMessagePage() {
         ? selected.map((o) => String(o.value))
         : [],
       naturalHoseIdsByEco: optionsSelectedEconSector.map((o) =>
-        String(o.value)
+        String(o.value),
       ),
       sendAllNaturalHoses: values.sendAllNaturalHoses,
     };
@@ -169,16 +181,23 @@ function SendMessagePage() {
     selected,
     optionsSelectedEconSector,
   ]);
-  
+
   const criteria = useMemo(buildCriteria, [buildCriteria]);
 
-  const filteredRecipients = useMemo(() => {
-    return filterRecipients(shipmentsRef.current, criteria);
-  }, [criteria]);
+  const filteredRecipients = useMemo<number>(
+    () =>
+      getRecipientsCount(
+        shipmentsRef.current,
+        criteria,
+        values.sendWsContacts,
+        validateDateOfBirth,
+      ),
+    [criteria, values.sendWsContacts, validateDateOfBirth],
+  );
 
   const recipientsCount = useMemo(() => {
-    return (values.sendWsContacts ? 1 : 0) + filteredRecipients.length;
-  }, [values.sendWsContacts, filteredRecipients.length]);
+    return (values.sendWsContacts ? 1 : 0) + filteredRecipients;
+  }, [values.sendWsContacts, filteredRecipients]);
 
   const parsedMessage = useMemo(
     () =>
@@ -186,12 +205,12 @@ function SendMessagePage() {
         .trim()
         .replace(/{user}/gi, fullName)
         .replace(/{location}/gi, town),
-    [values.message, fullName, town]
+    [values.message, fullName, town],
   );
 
   const handlePeopleLocation = async (
     e: ChangeEvent<HTMLSelectElement>,
-    serviceCode: string
+    serviceCode: string,
   ) => {
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';

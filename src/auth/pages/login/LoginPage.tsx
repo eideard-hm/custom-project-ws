@@ -40,15 +40,21 @@ export default function LoginPage() {
         const { loginSuccess, userData } = await loginUser(formValues);
 
         if (!loginSuccess || !userData) {
-          toast.error('Correo o contraseña inválidos. Intenta nuevamente.', { style: { zIndex: 1000 } });
+          toast.error('Correo o contraseña inválidos. Intenta nuevamente.', {
+            style: { zIndex: 1000 },
+          });
           return;
         }
 
-        setSessionStorage({ key: USER_ID_KEY, value: JSON.stringify(userData) });
+        setSessionStorage({
+          key: USER_ID_KEY,
+          value: JSON.stringify(userData),
+        });
         setUserData({
           ...userDataProvider,
           fullName: userData.fullName,
           town: userData.town,
+          validateDateOfBirth: userData.validateDateOfBirth,
         });
         navigate('/dashboard', { replace: true });
       } catch (err) {
@@ -61,11 +67,20 @@ export default function LoginPage() {
   });
 
   return (
-    <section id="form-login" className={styles.formLogin}>
+    <section
+      id='form-login'
+      className={styles.formLogin}
+    >
       <div className={styles.formBody}>
-        <div className={styles.imgHolder} aria-hidden="true">
+        <div
+          className={styles.imgHolder}
+          aria-hidden='true'
+        >
           <div className={styles.bg}>
-            <img src={ASSETS_IMAGES.login} alt="Imagen de inicio de sesión" />
+            <img
+              src={ASSETS_IMAGES.login}
+              alt='Imagen de inicio de sesión'
+            />
           </div>
           <div className={styles.infoHolder} />
         </div>
@@ -74,57 +89,90 @@ export default function LoginPage() {
           <div className={styles.formContent}>
             <div className={styles.formItems}>
               <header className={styles.logoWrapper}>
-                <VoxNetLogo size={100} className={styles.logoSpacing} />
+                <VoxNetLogo
+                  size={100}
+                  className={styles.logoSpacing}
+                />
               </header>
 
               <h3 className={styles.title}>
                 Iniciar sesión en <strong>VoxNet</strong>
               </h3>
               <p className={styles.subtitle}>
-                Bienvenido/a a <strong>VoxNet</strong>, es un placer tenerte en línea.
+                Bienvenido/a a <strong>VoxNet</strong>, es un placer tenerte en
+                línea.
               </p>
 
-              <form onSubmit={handleSubmit} noValidate>
-                <label htmlFor="email" className={styles.label}>Correo electrónico</label>
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+              >
+                <label
+                  htmlFor='email'
+                  className={styles.label}
+                >
+                  Correo electrónico
+                </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id='email'
+                  name='email'
+                  type='email'
                   className={styles.input}
-                  placeholder="example@example.com"
+                  placeholder='example@example.com'
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.email}
-                  autoComplete="email"
+                  autoComplete='email'
                   autoFocus
                   aria-invalid={!!(touched.email && errors.email)}
-                  aria-describedby={touched.email && errors.email ? 'email-error' : undefined}
+                  aria-describedby={
+                    touched.email && errors.email ? 'email-error' : undefined
+                  }
                 />
                 {touched.email && errors.email && (
-                  <span id="email-error" className={styles.errorMsg}>Email inválido</span>
+                  <span
+                    id='email-error'
+                    className={styles.errorMsg}
+                  >
+                    Email inválido
+                  </span>
                 )}
 
-                <label htmlFor="password" className={styles.label}>Contraseña</label>
+                <label
+                  htmlFor='password'
+                  className={styles.label}
+                >
+                  Contraseña
+                </label>
                 <input
-                  id="password"
-                  name="password"
-                  type="password"
+                  id='password'
+                  name='password'
+                  type='password'
                   className={styles.input}
-                  placeholder="Contraseña"
+                  placeholder='Contraseña'
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.password}
-                  autoComplete="current-password"
+                  autoComplete='current-password'
                   aria-invalid={!!(touched.password && errors.password)}
-                  aria-describedby={touched.password && errors.password ? 'password-error' : undefined}
+                  aria-describedby={
+                    touched.password && errors.password
+                      ? 'password-error'
+                      : undefined
+                  }
                 />
                 {touched.password && errors.password && (
-                  <span id="password-error" className={styles.errorMsg}>Contraseña inválida</span>
+                  <span
+                    id='password-error'
+                    className={styles.errorMsg}
+                  >
+                    Contraseña inválida
+                  </span>
                 )}
 
                 <div className={styles.formButton}>
                   <button
-                    type="submit"
+                    type='submit'
                     className={styles.btn}
                     disabled={isLoading}
                     aria-busy={isLoading}

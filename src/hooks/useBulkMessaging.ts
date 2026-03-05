@@ -6,6 +6,8 @@ import {
   buildPayload,
   FilterCriteria,
   filterRecipients,
+  isAtLeastAge,
+  MIN_AGE,
   validateTemplate,
 } from '../dashboard/domain/bulkMessaging';
 import { sendMesssageBulkAsync } from '../dashboard/services';
@@ -19,6 +21,7 @@ type Deps = {
   shipments: ShipmentOrdersResponse[];
   fullName: string;
   town: string;
+  validateDateOfBirth: boolean;
   attach: ISendBulkMessageWithAttach['attach'];
   onSuccess?: () => void;
 };
@@ -26,6 +29,7 @@ type Deps = {
 export function useBulkMessaging({
   shipments,
   fullName,
+  validateDateOfBirth,
   town,
   attach,
   onSuccess,
@@ -41,12 +45,27 @@ export function useBulkMessaging({
       }
 
       // 2) Filtrado
-      const recipients = filterRecipients(shipments, criteria);
+      let recipients = filterRecipients(shipments, criteria);
       if (recipients.length === 0) {
         toast.error(
-          'No se encontraron receptores para los criterios de búsqueda.'
+          'No se encontraron receptores para los criterios de búsqueda.',
         );
         return;
+      }
+
+      // 2.5) Validación DOB (si aplica)
+      if (validateDateOfBirth) {
+        recipients = recipients.filter((r) => {
+          if (!r.BirthDate) return true;
+          return isAtLeastAge(r.BirthDate, MIN_AGE);
+        });
+
+        if (recipients.length === 0) {
+          toast.error(
+            `Todos los receptores con fecha de nacimiento registrada son menores de ${MIN_AGE} años.`,
+          );
+          return;
+        }
       }
 
       // 3) Payload
@@ -54,7 +73,7 @@ export function useBulkMessaging({
         form.message,
         recipients,
         { sendWsContacts: form.sendWsContacts, user: fullName, location: town },
-        attach
+        attach,
       );
 
       // 4) Llamada API
@@ -76,7 +95,7 @@ export function useBulkMessaging({
       toast.success(`Mensajes enviados correctamente: ${res.length}`);
       onSuccess?.();
     },
-    [shipments, fullName, town, attach, onSuccess]
+    [shipments, fullName, town, attach, validateDateOfBirth, onSuccess],
   );
 
   return { send };

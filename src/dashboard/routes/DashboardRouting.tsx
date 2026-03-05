@@ -81,11 +81,13 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     }
     const dataEmit: IGetOrCreateUserSession = { userId: userInfo.userId };
     socket.emit('qr', dataEmit);
-    const { fullName, town } = userInfo;
+    const { fullName, town, validateDateOfBirth } = userInfo;
     setUserData((prev) =>
-      prev.fullName === fullName && prev.town === town
+      prev.fullName === fullName &&
+      prev.town === town &&
+      prev.validateDateOfBirth === validateDateOfBirth
         ? prev
-        : { ...prev, fullName, town },
+        : { ...prev, fullName, town, validateDateOfBirth },
     );
   }, [setUserData]);
 

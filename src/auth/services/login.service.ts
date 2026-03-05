@@ -4,7 +4,7 @@ import type { IFormValues, ILoginResponse } from '../types';
 const apiUrl = API_URL;
 
 export const loginUser = async (
-  credentials: IFormValues
+  credentials: IFormValues,
 ): Promise<ILoginResponse> => {
   try {
     const response = await fetch(`${apiUrl}/auth/login`, {
@@ -20,7 +20,12 @@ export const loginUser = async (
     console.error(error);
     return {
       loginSuccess: false,
-      userData: { fullName: '', town: '', userId: '' },
+      userData: {
+        fullName: '',
+        town: '',
+        userId: '',
+        validateDateOfBirth: false,
+      },
     };
   }
 };
