@@ -19,6 +19,7 @@ import type {
   IShipmentOrdersCreateInput,
   ShipmentOrdersCreateInput,
 } from '../../types';
+import { SearchableSelect } from '../../../shared/components/search/SearchableSelect';
 
 const initialState: ShipmentOrdersCreateInput = {
   FirstName: '',
@@ -34,7 +35,7 @@ const initialState: ShipmentOrdersCreateInput = {
   EconomicActivity: '',
   HouseId: '',
   ServiceActivityId: '',
-  PhoneCode: '57'
+  PhoneCode: '57',
 };
 
 function FormUserDataPage() {
@@ -54,51 +55,55 @@ function FormUserDataPage() {
   const [naturalHosesEcoSector, setNaturalHosesEcoSector] = useState<
     INaturalHoseByService[]
   >([]);
-  const { dirty, handleSubmit, handleChange, values, isValid } = useFormik({
-    initialValues: initialState,
-    onSubmit: async (values, { resetForm }) => {
-      if (
-        !isValid ||
-        !values.ServicesId ||
-        !values.FirstName ||
-        !values.LastName ||
-        !values.SexId ||
-        !values.Phone ||
-        !values.ServicesId
-      ) {
-        toast.error('Debe de llenar los campos del formulario correctamente!');
-        return;
-      }
+  const { dirty, handleSubmit, handleChange, values, isValid, setFieldValue } =
+    useFormik({
+      initialValues: initialState,
+      onSubmit: async (values, { resetForm }) => {
+        if (
+          !isValid ||
+          !values.ServicesId ||
+          !values.FirstName ||
+          !values.LastName ||
+          !values.SexId ||
+          !values.Phone ||
+          !values.ServicesId
+        ) {
+          toast.error(
+            'Debe de llenar los campos del formulario correctamente!',
+          );
+          return;
+        }
 
-      setIsSending(true);
-      const valuesToSend: IShipmentOrdersCreateInput = { ...values };
-      valuesToSend.DocumentType = valuesToSend.DocumentType || null;
-      valuesToSend.BirthDate = valuesToSend.BirthDate || null;
-      valuesToSend.Email = valuesToSend.Email || null;
-      valuesToSend.HouseId = valuesToSend.HouseId || null;
-      valuesToSend.EconomicActivity = valuesToSend.EconomicActivity || null;
-      valuesToSend.ServiceActivityId = valuesToSend.ServiceActivityId || null;
-      valuesToSend.Phone = `${values?.PhoneCode ?? 57}${values.Phone?.trim()}` || null;
+        setIsSending(true);
+        const valuesToSend: IShipmentOrdersCreateInput = { ...values };
+        valuesToSend.DocumentType = valuesToSend.DocumentType || null;
+        valuesToSend.BirthDate = valuesToSend.BirthDate || null;
+        valuesToSend.Email = valuesToSend.Email || null;
+        valuesToSend.HouseId = valuesToSend.HouseId || null;
+        valuesToSend.EconomicActivity = valuesToSend.EconomicActivity || null;
+        valuesToSend.ServiceActivityId = valuesToSend.ServiceActivityId || null;
+        valuesToSend.Phone =
+          `${values?.PhoneCode ?? 57}${values.Phone?.trim()}` || null;
 
-      delete valuesToSend.PhoneCode;
-      delete values.PhoneCode;
+        delete valuesToSend.PhoneCode;
+        delete values.PhoneCode;
 
-      const { Id } = await createShipmentOrders({ ...valuesToSend });
-      if (Id === 0) {
-        toast.error(
-          'Ocurrió un error al momento de insertar el registro. Intente nuevamente.'
-        );
-        toast.error(
-          'Verifique que el número de teléfono ingresado no exista. Intente nuevamente.'
-        );
-      } else {
-        toast.success(`Se creó el registro con el Id: ${Id}`);
-        resetForm();
-      }
+        const { Id } = await createShipmentOrders({ ...valuesToSend });
+        if (Id === 0) {
+          toast.error(
+            'Ocurrió un error al momento de insertar el registro. Intente nuevamente.',
+          );
+          toast.error(
+            'Verifique que el número de teléfono ingresado no exista. Intente nuevamente.',
+          );
+        } else {
+          toast.success(`Se creó el registro con el Id: ${Id}`);
+          resetForm();
+        }
 
-      setIsSending(false);
-    },
-  });
+        setIsSending(false);
+      },
+    });
 
   useEffect(() => initServices(), []);
 
@@ -118,13 +123,19 @@ function FormUserDataPage() {
 
   const handlePeopleLocation = async (
     e: ChangeEvent<HTMLSelectElement>,
-    serviceCode: string
+    serviceCode: string,
   ) => {
     if (!e) return;
 
     const index = e.target.selectedIndex;
     const label = e.target[index].textContent ?? '';
     const serviceId = (e.target.value ?? '').trim();
+
+    if (serviceCode === UBI_SERVICE_CODE) {
+      setFieldValue('HouseId', '');
+    } else {
+      setFieldValue('EconomicActivity', '');
+    }
 
     if (serviceId) {
       getNaturalHoses(serviceId, serviceCode);
@@ -139,8 +150,10 @@ function FormUserDataPage() {
 
     if (serviceCode === UBI_SERVICE_CODE) {
       setSelectedService({ label: '', id: '' });
+      setNaturalHoses([]);
     } else {
       setSelectedEcoSector({ label: '', id: '' });
+      setNaturalHosesEcoSector([]);
     }
   };
 
@@ -152,6 +165,18 @@ function FormUserDataPage() {
       setNaturalHosesEcoSector(naturalHouse);
     }
   };
+
+  const naturalHoseOptions = naturalHoses.map(({ Id, TitleNaturalHose }) => ({
+    value: String(Id),
+    label: TitleNaturalHose,
+  }));
+
+  const naturalHoseEcoOptions = naturalHosesEcoSector.map(
+    ({ Id, TitleNaturalHose }) => ({
+      value: String(Id),
+      label: TitleNaturalHose,
+    }),
+  );
 
   return (
     <div className='row'>
@@ -345,7 +370,7 @@ function FormUserDataPage() {
                   />
                 </div>
 
-                {selectedService.id && (
+                {/* {selectedService.id && (
                   <div className='form-group'>
                     <label>{selectedService.label}:</label>
                     <select
@@ -390,6 +415,34 @@ function FormUserDataPage() {
                         </option>
                       ))}
                     </select>
+                  </div>
+                )} */}
+
+                {selectedService.id && (
+                  <div className='form-group'>
+                    <label>{selectedService.label}:</label>
+                    <SearchableSelect
+                      name='HouseId'
+                      value={values.HouseId ?? ''}
+                      options={naturalHoseOptions}
+                      placeholder={`Buscar ${selectedService.label}...`}
+                      emptyText={`No se encontraron opciones para ${selectedService.label}`}
+                      onChange={setFieldValue}
+                    />
+                  </div>
+                )}
+
+                {selectedEcoSector.id && (
+                  <div className='form-group'>
+                    <label>{selectedEcoSector.label}:</label>
+                    <SearchableSelect
+                      name='EconomicActivity'
+                      value={values.EconomicActivity ?? ''}
+                      options={naturalHoseEcoOptions}
+                      placeholder={`Buscar ${selectedEcoSector.label}...`}
+                      emptyText={`No se encontraron opciones para ${selectedEcoSector.label}`}
+                      onChange={setFieldValue}
+                    />
                   </div>
                 )}
               </div>
