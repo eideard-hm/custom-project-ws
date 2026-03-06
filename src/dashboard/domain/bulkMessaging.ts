@@ -34,9 +34,7 @@ export function validateTemplate(
 export function compileTemplate(
   template: string,
   ctx: TemplateContext,
-  keepTokens = false,
 ): string {
-  if (keepTokens) return template;
   return template
     .replace(/{name}/gi, `*${ctx.receiverName.trim()}*`)
     .replace(/{user}/gi, `*${ctx.user.trim()}*`)
@@ -112,15 +110,11 @@ export function buildPayload(
     .filter((r) => r.Phone)
     .map((r) => ({
       phone: r.Phone ?? '',
-      message: compileTemplate(
-        template,
-        {
-          receiverName: r.FullName ?? '',
-          user: opts.user,
-          location: opts.location,
-        },
-        opts.sendWsContacts,
-      ),
+      message: compileTemplate(template, {
+        receiverName: r.FullName ?? '',
+        user: opts.user,
+        location: opts.location,
+      }),
     }));
 
   return { content, attach, sendWsContacts: opts.sendWsContacts };
@@ -155,8 +149,10 @@ export const getRecipientsCount = (
   sendWsContacts: boolean,
   validateDateOfBirth: boolean,
 ): number => {
+  if (sendWsContacts) return 1;
+
   const filteredRecipients = filterRecipients(shipments, criteria).filter(
     (r) => !validateDateOfBirth || isAtLeastAge(r.BirthDate, MIN_AGE),
   );
-  return (sendWsContacts ? 1 : 0) + filteredRecipients.length;
+  return filteredRecipients.length;
 };

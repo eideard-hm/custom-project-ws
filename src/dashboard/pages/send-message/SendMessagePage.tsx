@@ -23,9 +23,8 @@ import MessageEditor from '../../components/filters/MessageEditor';
 import PreviewPanel from '../../components/filters/PreviewPanel';
 import StickyFooterActions from '../../components/filters/StickyFooterActions';
 import {
-  type FilterCriteria,
-  filterRecipients,
   getRecipientsCount,
+  type FilterCriteria,
 } from '../../domain/bulkMessaging';
 import {
   getAllShipmentOrdersAsync,
@@ -192,12 +191,13 @@ function SendMessagePage() {
         values.sendWsContacts,
         validateDateOfBirth,
       ),
-    [criteria, values.sendWsContacts, validateDateOfBirth],
+    [
+      shipmentsRef.current,
+      criteria,
+      values.sendWsContacts,
+      validateDateOfBirth,
+    ],
   );
-
-  const recipientsCount = useMemo(() => {
-    return (values.sendWsContacts ? 1 : 0) + filteredRecipients;
-  }, [values.sendWsContacts, filteredRecipients]);
 
   const parsedMessage = useMemo(
     () =>
@@ -275,7 +275,7 @@ function SendMessagePage() {
           <PreviewPanel
             parsedMessage={parsedMessage}
             rawMessage={values.message.trim()}
-            recipientsCount={recipientsCount}
+            recipientsCount={filteredRecipients}
             attachmentsCount={filteredAttachment.length}
           />
         </div>

@@ -45,38 +45,67 @@ export function useBulkMessaging({
       }
 
       // 2) Filtrado
-      let recipients = filterRecipients(shipments, criteria);
-      if (recipients.length === 0) {
-        toast.error(
-          'No se encontraron receptores para los criterios de búsqueda.',
-        );
-        return;
-      }
+      let recipients: ShipmentOrdersResponse[] = [];
 
-      // 2.5) Validación DOB (si aplica)
-      if (validateDateOfBirth) {
-        recipients = recipients.filter((r) => {
-          if (!r.BirthDate) return true;
-          return isAtLeastAge(r.BirthDate, MIN_AGE);
-        });
+      if (!form.sendWsContacts) {
+        recipients = filterRecipients(shipments, criteria);
 
         if (recipients.length === 0) {
           toast.error(
-            `Todos los receptores con fecha de nacimiento registrada son menores de ${MIN_AGE} años.`,
+            'No se encontraron receptores para los criterios de búsqueda.',
           );
           return;
         }
+
+        if (validateDateOfBirth) {
+          recipients = recipients.filter((r) => {
+            if (!r.BirthDate) return true;
+            return isAtLeastAge(r.BirthDate, MIN_AGE);
+          });
+
+          if (recipients.length === 0) {
+            toast.error(
+              `Todos los receptores con fecha de nacimiento registrada son menores de ${MIN_AGE} años.`,
+            );
+            return;
+          }
+        }
+      } else {
+        // send template for build when send to their ws contacts
+        recipients = [
+          {
+            Phone: '573104867527',
+            FullName: 'Jhon Doe',
+            Id: Date.now(),
+            Email: null,
+            BirthDate: null,
+            DocumentType: null,
+            NaturalHose: null,
+            NaturalHose_ShipmentOrders_EconomicActivityToNaturalHose: null,
+            Services_ShipmentOrders_ServiceActivityIdToServices: null,
+            Services: {
+              Id: 1,
+              TitleNameServices: 'Servicio de prueba',
+            },
+            Sex: {
+              Id: 1,
+              TitleNaturalHose: 'Masculino',
+            },
+          },
+        ];
       }
 
-      // 3) Payload
       const payload = buildPayload(
         form.message,
         recipients,
-        { sendWsContacts: form.sendWsContacts, user: fullName, location: town },
+        {
+          sendWsContacts: form.sendWsContacts,
+          user: fullName,
+          location: town,
+        },
         attach,
       );
 
-      // 4) Llamada API
       const res = await sendMesssageBulkAsync(payload);
 
       if (!res || res.length === 0) {
