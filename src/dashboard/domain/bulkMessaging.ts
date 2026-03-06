@@ -34,9 +34,10 @@ export function validateTemplate(
 export function compileTemplate(
   template: string,
   ctx: TemplateContext,
+  keepTokens = false,
 ): string {
   return template
-    .replace(/{name}/gi, `*${ctx.receiverName.trim()}*`)
+    .replace(/{name}/gi, keepTokens ? '{name}' : `*${ctx.receiverName.trim()}*`)
     .replace(/{user}/gi, `*${ctx.user.trim()}*`)
     .replace(/{location}/gi, `*${ctx.location.trim()}*`);
 }
@@ -110,11 +111,15 @@ export function buildPayload(
     .filter((r) => r.Phone)
     .map((r) => ({
       phone: r.Phone ?? '',
-      message: compileTemplate(template, {
-        receiverName: r.FullName ?? '',
-        user: opts.user,
-        location: opts.location,
-      }),
+      message: compileTemplate(
+        template,
+        {
+          receiverName: r.FullName ?? '',
+          user: opts.user,
+          location: opts.location,
+        },
+        opts.sendWsContacts,
+      ),
     }));
 
   return { content, attach, sendWsContacts: opts.sendWsContacts };
